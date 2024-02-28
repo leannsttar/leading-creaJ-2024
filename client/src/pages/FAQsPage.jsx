@@ -5,7 +5,7 @@ export const FAQsPage = () => {
 
   return (
     <>
-      <MobileNavBar />
+
       <p>Preguntas frecuentes</p>
     </>
   )

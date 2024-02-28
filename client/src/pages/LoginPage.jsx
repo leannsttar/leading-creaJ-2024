@@ -5,7 +5,6 @@ export const LoginPage = () => {
 
   return (
     <>
-      <MobileNavBar />
       <p>Login</p>
     </>
   )

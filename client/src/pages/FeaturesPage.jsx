@@ -5,7 +5,7 @@ export const FeaturesPage = () => {
 
   return (
     <>
-      <MobileNavBar />
+
       <p>Características</p>
     </>
   )

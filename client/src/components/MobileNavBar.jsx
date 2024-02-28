@@ -53,7 +53,7 @@ export const MobileNavBar = () => {
 
   return (
     <header>
-      <nav className="flex justify-between items-center py-4 px-4">
+      <nav className="flex justify-between items-center py-4 px-4 h-[10vh]">
         <img src="/logoTemporalBlack.svg" alt="" />
         <img
           onClick={toggleMenu}
@@ -82,6 +82,7 @@ export const MobileNavBar = () => {
                 animate="open"
                 exit="initial"
                 className="flex flex-col h-full justify-center items-center gap-4 p-10"
+                onClick={toggleMenu}
               >
                 {navLinks.map((link, index) => {
                   return (

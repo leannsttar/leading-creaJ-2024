@@ -1,11 +1,10 @@
 import { MobileNavBar } from '../components/MobileNavBar.jsx'
 
 
-export const AboutUs = () => {
+export const AboutUsPage = () => {
 
   return (
     <>
-      <MobileNavBar />
       <p>About</p>
     </>
   )

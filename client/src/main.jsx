@@ -1,37 +1,63 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Route, RouterProvider } from "react-router-dom";
 
 import "./index.css";
 
 import { HomePage } from "./pages/HomePage.jsx";
-import { AboutUs } from "./pages/AboutUsPage.jsx";
+import { AboutUsPage } from "./pages/AboutUsPage.jsx";
 import { NotFoundPage } from "./pages/NotFoundPage.jsx";
 import { FeaturesPage } from "./pages/FeaturesPage.jsx";
 import { FAQsPage } from "./pages/FAQsPage.jsx";
 import { LoginPage } from "./pages/LoginPage.jsx";
+import { MobileNavBar } from "./components/MobileNavBar.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
-    errorElement: <NotFoundPage />
+    element: (
+      <>
+        <MobileNavBar />
+        <HomePage />
+      </>
+    ),
+    errorElement: <NotFoundPage />,
   },
   {
     path: "/about",
-    element: <AboutUs />
+    element: (
+      <>
+        <MobileNavBar />
+        <AboutUsPage />
+      </>
+    ),
   },
   {
     path: "/features",
-    element: <FeaturesPage />
+    element: (
+      <>
+        <MobileNavBar />
+        <FeaturesPage />
+      </>
+    ),
   },
   {
     path: "/faqs",
-    element: <FAQsPage />
+    element: (
+      <>
+        <MobileNavBar />
+        <FAQsPage />
+      </>
+    ),
   },
   {
     path: "/login",
-    element: <LoginPage />
+    element: (
+      <>
+        <LoginPage />
+        <HomePage />
+      </>
+    ),
   },
 ]);
 
