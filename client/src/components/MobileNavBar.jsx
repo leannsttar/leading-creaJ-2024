@@ -53,7 +53,7 @@ export const MobileNavBar = () => {
 
   return (
     <header>
-      <nav className="flex justify-between items-center py-4 px-4 h-[10vh]">
+      <nav className="flex justify-between items-center py-4 px-4 h-[10vh] font-prompt">
         <img src="/logoTemporalBlack.svg" alt="" />
         <img
           onClick={toggleMenu}
