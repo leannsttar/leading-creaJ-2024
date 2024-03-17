@@ -5,7 +5,7 @@ export const SignUpPage = () => {
 
   return (
     <>
-      {/* <MobileNavBar /> */}
+      <MobileNavBar />
       <p>Registrarse</p>
     </>
   )

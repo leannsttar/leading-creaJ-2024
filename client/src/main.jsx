@@ -11,6 +11,7 @@ import { FeaturesPage } from "./pages/FeaturesPage.jsx";
 import { FAQsPage } from "./pages/FAQsPage.jsx";
 import { LoginPage } from "./pages/LoginPage.jsx";
 import { MobileNavBar } from "./components/MobileNavBar.jsx";
+import { Footer } from "./components/Footer.jsx"
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
       <>
         <MobileNavBar />
         <HomePage />
+        <Footer />
       </>
     ),
     errorElement: <NotFoundPage />,
@@ -29,6 +31,7 @@ const router = createBrowserRouter([
       <>
         <MobileNavBar />
         <AboutUsPage />
+        <Footer />
       </>
     ),
   },
@@ -54,8 +57,8 @@ const router = createBrowserRouter([
     path: "/login",
     element: (
       <>
+        <MobileNavBar />
         <LoginPage />
-        <HomePage />
       </>
     ),
   },
