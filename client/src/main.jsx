@@ -10,15 +10,15 @@ import { NotFoundPage } from "./pages/NotFoundPage.jsx";
 import { FeaturesPage } from "./pages/FeaturesPage.jsx";
 import { FAQsPage } from "./pages/FAQsPage.jsx";
 import { LoginPage } from "./pages/LoginPage.jsx";
-import { MobileNavBar } from "./components/MobileNavBar.jsx";
 import { Footer } from "./components/Footer.jsx"
+import { Header } from "./components/Header.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <>
-        <MobileNavBar />
+        <Header />
         <HomePage />
         <Footer />
       </>
@@ -29,7 +29,7 @@ const router = createBrowserRouter([
     path: "/about",
     element: (
       <>
-        <MobileNavBar />
+        <Header />
         <AboutUsPage />
         <Footer />
       </>
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
     path: "/features",
     element: (
       <>
-        <MobileNavBar />
+        <Header />
         <FeaturesPage />
       </>
     ),
@@ -48,7 +48,7 @@ const router = createBrowserRouter([
     path: "/faqs",
     element: (
       <>
-        <MobileNavBar />
+        <Header />
         <FAQsPage />
       </>
     ),
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
     path: "/login",
     element: (
       <>
-        <MobileNavBar />
+        <Header />
         <LoginPage />
       </>
     ),

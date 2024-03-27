@@ -34,7 +34,7 @@ export const AboutUsPage = () => {
             trabajo en equipo.
           </p>
           <p>
-            En TeamSync, creamos una plataforma integral que te permite
+            En Leading, creamos una plataforma integral que te permite
             organizar proyectos, asignar tareas, seguir el progreso y programar
             reuniones de manera fluida. Facilitamos la gestión de equipos, la
             comunicación efectiva y la toma de decisiones colaborativa. Únete a
