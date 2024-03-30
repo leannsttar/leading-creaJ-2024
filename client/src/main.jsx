@@ -41,6 +41,7 @@ const router = createBrowserRouter([
       <>
         <Header />
         <FeaturesPage />
+        <Footer />
       </>
     ),
   },

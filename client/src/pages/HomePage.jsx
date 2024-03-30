@@ -75,12 +75,12 @@ export const HomePage = () => {
   return (
     <div className="mx-[1.25rem] mb-[4rem] md:items-center md:justify-center flex flex-col gap-8 md:gap-20">
       <div className="flex md:mt-[1rem] md:h-[85vh] md:w-[93%]">
-        <div className="w-full px-[1.25rem] flex flex-col items-center h-[80vh] justify-between mb-[3rem] md:mb-0 md:items-start md:justify-center md:gap-[0rem] md:shrink md:px-0 1380:justify-normal ">
+        <div className="w-full px-[1.25rem] flex flex-col items-center h-[80vh] justify-between mb-[3rem] md:mb-0 md:items-start md:justify-center md:gap-[0rem] md:shrink md:px-0">
           <p className="max-w-fit px-[0.75rem] py-[0.25rem] bg-[#d5e0ff] rounded-full text-[1em] font-prompt font-[500]">
             Bienvenido a Leading
           </p>
           <div className="w-full mt-[0.5rem] flex flex-col items-center gap-[1.25rem]">
-            <h1 className="350:text-[2.6em] text-[2em] text-center font-md font-prompt w-full leading-[2.6rem] md:text-start md:font-anonymous md:text-[5rem] md:leading-[5.8rem] md:tracking-tight 1380:text-[1rem]">
+            <h1 className="text-[2em] text-center font-md font-prompt w-full leading-[2.6rem] md:text-start md:font-anonymous md:text-[5rem] md:leading-[5.8rem] md:tracking-tight">
               Productividad Con Una Gestión De Equipo Sencilla
             </h1>
             <img
@@ -131,7 +131,7 @@ export const HomePage = () => {
             <BlackButton text={"Empieza ya"} />
           </div>
         </div>
-        <div className="hidden 1380:flex w-[100%] items-center h-full justify-center">
+        <div className="hidden xl:flex w-[100%] items-center h-full justify-center">
           <img src="/ImageHomeDesktop.svg" className="w-auto" alt="" />
         </div>
       </div>
@@ -192,7 +192,7 @@ export const HomePage = () => {
             permiten asignar tareas, responsabilidades y supervisar hitos del
             proyecto con facilidad.
           </p>
-          <div className="space-y-3 hidden 1380:block ">
+          <div className="space-y-3 hidden xl:block ">
             {secondThreeFeatures.map((feature, index) => {
               return (
                 <div
@@ -228,7 +228,7 @@ export const HomePage = () => {
               return (
                 <div
                   key={index}
-                  className="hidden gap-2 items-center text-left md:text-[1.2rem] md:flex 1380:absolute 1380:invisible"
+                  className="hidden gap-2 items-center text-left md:text-[1.2rem] md:flex xl:hidden"
                 >
                   <img src={feature.img} alt="" className="w-[20px]" />
                   <p>{feature.text}</p>
@@ -276,7 +276,7 @@ export const HomePage = () => {
       <div className="mt-[3.5rem] md:w-[75%]">
         <TitleSection
           title={"Lo Que Los Usuarios Dicen De Nosotros"}
-          className={"md:text-[3rem] md:text-left 1380:w-[60%]"}
+          className={"md:text-[3rem] md:text-left xl:w-[60%]"}
         />
         <div className="md:flex md:justify-between">
           <RatingCard
