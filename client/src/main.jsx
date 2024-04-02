@@ -12,6 +12,8 @@ import { FAQsPage } from "./pages/FAQsPage.jsx";
 import { LoginPage } from "./pages/LoginPage.jsx";
 import { Footer } from "./components/Footer.jsx"
 import { Header } from "./components/Header.jsx";
+import { SideBar } from "./components/SideBar.jsx";
+import { DashboardScreen } from "./pages/(logged in)/DashboardScreen.jsx";
 
 const router = createBrowserRouter([
   {
@@ -61,6 +63,15 @@ const router = createBrowserRouter([
         <Header />
         <LoginPage />
       </>
+    ),
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <div className="flex">
+        <SideBar />
+        <DashboardScreen />
+      </div>
     ),
   },
 ]);
