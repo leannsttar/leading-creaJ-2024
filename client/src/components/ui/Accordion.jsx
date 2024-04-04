@@ -3,7 +3,7 @@ import { Input } from "./Input"
 export default function Accordion() {
   return (
     <div className="max-w-2xl mx-auto my-10 p-6">
-      <h1 className="text-4xl font-bold text-center mb-6">¿Cómo podemos ayudarte?</h1>
+      <h1 className="text-4xl font-bold text-center mb-6 font-anonymous">¿Cómo podemos ayudarte?</h1>
       <div className="flex items-center rounded-md border-2 border-gray-200 mb-6">
         <MicroscopeIcon className="text-gray-400 w-6 h-6 ml-4" />
         <Input className="pl-2 py-3 w-full border-none" placeholder="Article name or keywords.." type="text" />
@@ -11,7 +11,7 @@ export default function Accordion() {
       <div className="space-y-4">
         <details className="border-t border-gray-200 pt-4">
           <summary className="flex justify-between items-center">
-            <span>Do I need to register with 6Degree to place orders?</span>
+            <span className="font-prompt">Do I need to register with 6Degree to place orders?</span>
             <PlusIcon className="text-gray-400 w-6 h-6 cursor-pointer"/>
           </summary>
           <p className="mt-2">
@@ -21,7 +21,7 @@ export default function Accordion() {
         </details>
         <details className="border-t border-gray-200 pt-4">
           <summary className="flex justify-between items-center">
-            <span>How do I Register?</span>
+            <span className="font-prompt">How do I Register?</span>
             <PlusIcon className="text-gray-400 w-6 h-6 cursor-pointer"/>
           </summary>
           <p className="mt-2">
@@ -31,7 +31,7 @@ export default function Accordion() {
         </details>
         <details className="border-t border-gray-200 pt-4">
           <summary className="flex justify-between items-center">
-            <span>I have forgotten my password. How do I change it?</span>
+            <span className="font-prompt">I have forgotten my password. How do I change it?</span>
             <PlusIcon className="text-gray-400 w-6 h-6 cursor-pointer"/>
           </summary>
           <p className="mt-2">
@@ -41,7 +41,7 @@ export default function Accordion() {
         </details>
         <details className="border-t border-gray-200 pt-4">
           <summary className="flex justify-between items-center">
-            <span>How can I change my personal details or shipping address?</span>
+            <span className="font-prompt">How can I change my personal details or shipping address?</span>
             <PlusIcon className="text-gray-400 w-6 h-6 cursor-pointer"/>
           </summary>
           <p className="mt-2">
@@ -51,7 +51,7 @@ export default function Accordion() {
         </details>
         <details className="border-t border-gray-200 pt-4">
           <summary className="flex justify-between items-center">
-            <span>How do I select my size?</span>
+            <span className="font-prompt">How do I select my size?</span>
             <PlusIcon className="text-gray-400 w-6 h-6 cursor-pointer"/>
           </summary>
           <p className="mt-2">
@@ -61,7 +61,7 @@ export default function Accordion() {
         </details>
         <details className="border-t border-gray-200 pt-4">
           <summary className="flex justify-between items-center">
-            <span>Does 6Degree provide alterations?</span>
+            <span className="font-prompt">Does 6Degree provide alterations?</span>
             <PlusIcon className="text-gray-400 w-6 h-6 cursor-pointer"/>
           </summary>
           <p className="mt-2">
@@ -71,7 +71,7 @@ export default function Accordion() {
         </details>
         <details className="border-t border-b border-gray-200 pt-4 pb-6">
           <summary className="flex justify-between items-center">
-            <span>I need help to decide what to buy, can I speak to a stylist?</span>
+            <span className="font-prompt">I need help to decide what to buy, can I speak to a stylist?</span>
             <PlusIcon className="text-gray-400 w-6 h-6 cursor-pointer"/>
           </summary>
           <p className="mt-2">

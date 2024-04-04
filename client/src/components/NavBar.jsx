@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { SessionButton } from "./ui/SessionButton";
 
 const navLinks = [
-  { title: "Home", href: "/" },
+  { title: "Inicio", href: "/" },
   { title: "Sobre nosotros", href: "/about" },
   { title: "Características", href: "/features" },
-  { title: "FAQs", href: "/faqs" },
+  { title: "Preguntas frecuentes", href: "/faqs" },
   //   { title: "Iniciar Sesión", href: "/login" },
 ];
 
@@ -28,7 +28,7 @@ export const NavBar = () => {
           <Link to={'/login'}>
             <SessionButton text={"Inicia sesión"} color={"white"} />
           </Link>
-          <Link to={'/login'}>
+          <Link to={'/signup'}>
             <SessionButton text={"Regístrate"} color={"black"} />
           </Link>
         </div>

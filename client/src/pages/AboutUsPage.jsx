@@ -3,7 +3,7 @@ export const AboutUsPage = () => {
     <div className="mx-[1.25rem] mb-[4rem] md:flex md:flex-col md:items-center">
       <div className="w-full font-prompt flex flex-col h-[90vh] justify-between pb-[5rem] md:items-center">
         <h1 className="text-[2rem] text-center md:text-[1.2rem]">
-          Sobre Nosotros
+          Sobre nosotros
         </h1>
         <h2 className="text-[3rem] text-center font-semibold font-anonymous tracking-[.1rem] leading-[3.4rem] md:text-[4rem] md:w-[70%] lg:w-[50%] md:leading-[5rem] md:tracking-tighter mx-3 ">
           <span className="text-[#7889E1]">Eres increíble,</span> tus proyectos
@@ -93,23 +93,13 @@ export const AboutUsPage = () => {
           <div className="mb-8">
             <p className="font-anonymous text-[6rem] leading-[1rem] md:mt-[2rem]">“</p>
             <p className="font-light text-[1rem] md:text-[1.2rem]">
-              I have tried deep breathing and meditating in the past with no
-              luck, so I figured I'd give this little tool a try! Initially, I
-              didn't like it, because it didn't feel like it did anything. Then
-              I tried it a few more times and started to get the feel for it.
-              The Shift really helps me to focus on my breathing, and counting
-              as I inhale and exhale. I've noticed a significant change in my
-              general mood in the short time I've had mine. I find myself often
-              reaching for it just to hold, because even the reminder that it's
-              there is soothing. I highly recommend The Shift to anyone who
-              struggles with their mental health. Also, their customer service
-              is amazing!
+            "¡Estoy absolutamente impresionado con la plataforma Leading! Como gerente de proyectos, siempre he buscado una herramienta que me permita organizar mis proyectos de manera eficiente y colaborativa, ¡y Leading lo hace todo y más! La interfaz es increíblemente intuitiva, lo que facilita la navegación y la gestión de tareas. Además, la integración con GitHub y Figma ha sido una verdadera bendición, permitiéndome colaborar con mi equipo de manera más efectiva. ¡Definitivamente recomendaría Leading a cualquier persona que busque una solución completa para la gestión de proyectos!"
             </p>
           </div>
           <div className="space-y-3">
             <div className="flex gap-[.7rem]">
               <img src="/checkIcon.svg" alt="" className="w-[2rem]" />
-              <p className="text-[1.2rem]">JuanCharlie, Leading</p>
+              <p className="text-[1.2rem]">Nacely Orellana, Leading</p>
             </div>
             <p className="text-sm md:hidden">PRODUCTIVIDAD ESTELAR</p>
           </div>
