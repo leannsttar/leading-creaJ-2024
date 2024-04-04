@@ -16,12 +16,14 @@ const Feature = ({ title, description, children, className }) => {
   );
 };
 
-const ButtonChangeFrame = ({ name, onClick }) => {
+const ButtonChangeFrame = ({ name, onClick, isActive }) => {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="bg-white p-1 rounded-lg border-[1px] border-[#CFCFCF]"
+      className={`bg-white p-1 rounded-lg border-[1px] border-[#CFCFCF] ${
+        isActive ? "bg-[#E4E4E4]" : ""
+      }`}
     >
       {name}
     </button>
@@ -82,6 +84,10 @@ export const FeaturesPage = () => {
               <div className="flex flex-wrap gap-3 text-[.9rem] justify-center">
                 <ButtonChangeFrame
                   name={"Tablero"}
+                  isActive={
+                    frame === "/frameTableroDesktop.jpg" ||
+                    frame === "/frameTablero.jpg"
+                  }
                   onClick={() =>
                     isDesktop
                       ? changeFrame("/frameTableroDesktop.jpg")
@@ -90,6 +96,10 @@ export const FeaturesPage = () => {
                 />
                 <ButtonChangeFrame
                   name={"Timeline"}
+                  isActive={
+                    frame === "/frameTimelineDesktop.jpg" ||
+                    frame === "/frameTimeline.jpg"
+                  }
                   onClick={() =>
                     isDesktop
                       ? changeFrame("/frameTimelineDesktop.jpg")
@@ -98,6 +108,10 @@ export const FeaturesPage = () => {
                 />
                 <ButtonChangeFrame
                   name={"Reuniones"}
+                  isActive={
+                    frame === "/frameReunionesDesktop.jpg" ||
+                    frame === "/frameReuniones.jpg"
+                  }
                   onClick={() =>
                     isDesktop
                       ? changeFrame("/frameReunionesDesktop.jpg")
@@ -106,6 +120,10 @@ export const FeaturesPage = () => {
                 />
                 <ButtonChangeFrame
                   name={"Archivos"}
+                  isActive={
+                    frame === "/frameArchivosDesktop.jpg" ||
+                    frame === "/frameArchivos.jpg"
+                  }
                   onClick={() =>
                     isDesktop
                       ? changeFrame("/frameArchivosDesktop.jpg")
@@ -164,7 +182,11 @@ export const FeaturesPage = () => {
           </div>
           <div className="space-y-[2.2rem] flex flex-col items-center xl:flex-row-reverse xl:items-center xl:gap-8">
             <div className="flex justify-center md:w-[70%] xl:p-[4rem]">
-              <img src="/doodleChatting.svg" alt="Ilustration person chatting" className="w-full"/>
+              <img
+                src="/doodleChatting.svg"
+                alt="Ilustration person chatting"
+                className="w-full"
+              />
             </div>
             <div className="bg-[#F5F5F7] rounded-xl">
               <img
