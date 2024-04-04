@@ -16,6 +16,8 @@ export default {
       fontFamily: {
         anonymous: ['Anonymous Pro', 'monospace'],
         prompt: ['Prompt', 'monospace'],
+        inter: ['Inter', 'monospace'],
+        Poppins: ["Poppins", "sans-serif"]
       },
     },
   },
