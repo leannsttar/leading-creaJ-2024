@@ -1,5 +1,4 @@
-import { MobileNavBar } from '../components/MobileNavBar.jsx'
-import Accordion from '../components/ui/Accordion.jsx'
+import Accordion from '../components/Accordion.jsx'
 
 export const FAQsPage = () => {
 
