@@ -53,5 +53,4 @@ Con la implementación de la licencia Creative Commons en nuestro proyecto de Pl
 
 
 ---
-
 ¡Gracias por tu interés en nuestro proyecto Leading! Si tienes alguna pregunta o sugerencia, no dudes en abrir un problema o enviar un mensaje.
