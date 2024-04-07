@@ -13,21 +13,15 @@ import { useState } from "react";
 const SideBarLink = ({ name, img, isProject, isShrinked }) => {
   return isProject ? (
     <div
-      className={`flex items-center gap-4 py-[0.40rem] px-3 hover:bg-[#f1eefd] rounded-lg cursor-pointer relative ${
-        isShrinked ? "px-1 " : ""
-      }`}
+      className={`flex items-center gap-4 py-[0.40rem] px-2 hover:bg-[#f1eefd] rounded-lg cursor-pointer relative`}
     >
       <img
         src={img}
         alt="Project image"
-        className={`rounded-full min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem] object-cover ${
-          isShrinked ? "ml-1" : ""
-        }`}
+        className="rounded-full min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem] object-cover"
       />
       <p
-        className={`text-[1rem] ${
-          isShrinked ? "opacity-0" : ""
-        }`}
+        className={`text-[1rem] ${isShrinked ? "opacity-0" : ""}`}
         style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
       >
         {name}
@@ -63,13 +57,13 @@ export const SideBar = () => {
 
   return (
     <aside
-      className={`w-[20rem] h-screen font-inter flex flex-col justify-between  ${
+      className={`w-[20rem] h-screen font-inter  flex flex-col  justify-between  ${
         isShrinked ? "w-[5rem]" : ""
       }`}
       style={{ transition: "width 500ms ease" }}
     >
       <div>
-        <div className="flex items-center gap-3 border-b-[1px] border-[#e9e8e8] px-6 h-[5rem] relative justify-end">
+        <div className={`flex items-center gap-3 border-b-[1px] border-[#e9e8e8] px-6 h-[5rem] relative justify-end ${isShrinked ? '!px-1 !mx-5' : ''}`}>
           <div
             className={`flex items-center gap-3 ${
               isShrinked ? "opacity-0 absolute left-0 -z-10" : ""
@@ -83,9 +77,7 @@ export const SideBar = () => {
             src={threeLinesMenu}
             onClick={changeView}
             alt=""
-            className={`ml-auto cursor-pointer ${
-              isShrinked && "mr-1"
-            }`}
+            className={`ml-auto cursor-pointer ${isShrinked && "mr-1"}`}
           />
         </div>
         <div className="p-4">
@@ -115,13 +107,21 @@ export const SideBar = () => {
             <hr className="w-[87%] m-auto" />
             <div className="mt-7">
               <div className="flex justify-end px-4">
-                <p className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${isShrinked ? 'opacity-0 absolute left-0' : ''}`} style={{ whiteSpace: "nowrap", transition: "opacity 300ms ease" }}>
+                <p
+                  className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${
+                    isShrinked ? "opacity-0 absolute left-0" : ""
+                  }`}
+                  style={{
+                    whiteSpace: "nowrap",
+                    transition: "opacity 300ms ease",
+                  }}
+                >
                   MIS PROYECTOS
                 </p>
                 <img
                   src={addProjectIcon}
                   alt="Icono añadir proyecto"
-                  className={`cursor-pointer ${isShrinked && 'h-[18px]'}`}
+                  className={`cursor-pointer ${isShrinked && "h-[18px]"}`}
                 />
               </div>
               <div className="mt-3 space-y-1">
@@ -165,17 +165,39 @@ export const SideBar = () => {
       <div className="p-4 flex flex-col gap-6">
         <button
           onClick={changeMode}
-          className={`flex bg-[#F5F5F5] rounded-full p-1 w-fit relative  ${
-            isDark ? "flex-row-reverse " : "",
-            isShrinked ? "" : ""
+          className={`flex bg-[#F5F5F5] rounded-full p-1.5 w-fit relative   ${
+            (isShrinked ? "flex-col" : "")
           } `}
         >
-          <div className="bg-[#fff] rounded-full shadow-lg absolute place-self-end">
-            <img src={sunLightMode} alt="" className="py-2 px-4 invisible" />
+          <div
+            className={`bg-[#fff] rounded-full shadow-lg absolute ${
+              isShrinked
+                ? ''
+                : isDark
+                ? " translate-x-[100%]"
+                : ""
+            }`}
+            style={{ transition: "all 250ms ease", transform: (isShrinked && isDark) && 'translateY(52px)' }}
+          >
+            <img
+              src={sunLightMode}
+              alt=""
+              className={`invisible ${
+                isShrinked ? "px-2 py-4" : "py-2 px-4"
+              } `}
+            />
           </div>
-          <div className={`flex`}>
-            <img src={sunLightMode} alt="" className="py-2 px-4 z-10" />
-            <img src={moonDarkMode} alt="" className="p-2 px-4 z-10" />
+          <div className={`flex ${isShrinked ? "flex-col" : ""}`}>
+            <img
+              src={sunLightMode}
+              alt=""
+              className={`z-10 ${isShrinked ? "px-2 py-4" : "py-2 px-4"} `}
+            />
+            <img
+              src={moonDarkMode}
+              alt=""
+              className={` z-10 ${isShrinked ? "px-2 py-4" : "p-2 px-4"} `}
+            />
           </div>
         </button>
         <hr />
