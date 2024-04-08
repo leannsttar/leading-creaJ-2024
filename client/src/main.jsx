@@ -10,11 +10,12 @@ import { NotFoundPage } from "./pages/NotFoundPage.jsx";
 import { FeaturesPage } from "./pages/FeaturesPage.jsx";
 import { FAQsPage } from "./pages/FAQsPage.jsx";
 import { LoginPage } from "./pages/LoginPage.jsx";
-import { Footer } from "./components/Footer.jsx"
+import { Footer } from "./components/Footer.jsx";
 import { Header } from "./components/Header.jsx";
 import { SideBar } from "./components/SideBar.jsx";
 import { DashboardScreen } from "./pages/(logged in)/DashboardScreen.jsx";
 import { SignUpPage } from "./pages/SignUpPage.jsx";
+import { LayoutWorkspace } from "./components/LayoutWorkspace.jsx";
 
 const router = createBrowserRouter([
   {
@@ -78,10 +79,9 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <div className="flex">
-        <SideBar />
+      <LayoutWorkspace>
         <DashboardScreen />
-      </div>
+      </LayoutWorkspace>
     ),
   },
 ]);
