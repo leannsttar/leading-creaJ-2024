@@ -1,8 +1,7 @@
-export const DashboardScreen = () => {
+export const MessagesScreen = () => {
   return (
     <div className="w-full min-h-full max-h-full overflow-y-scroll bg-[#f7f7f7] flex flex-col">
-      
-      <p>Dashboard</p>
+      <p>Messages</p>
     </div>
   );
 };
