@@ -185,11 +185,11 @@ export const SideBar = () => {
         >
           <div
             className={`bg-[#fff] rounded-full shadow-lg absolute ${
-              isShrinked ? "" : isDark ? " translate-x-[100%]" : ""
+              isShrinked ? "" : isDark ? " translate-x-[95%]" : ""
             }`}
             style={{
               transition: "all 250ms ease",
-              transform: isShrinked && isDark && "translateY(52px)",
+              transform: isShrinked && isDark && "translateY(50px)",
             }}
           >
             <img
@@ -241,6 +241,8 @@ export const SideBar = () => {
     </aside>
   );
 };
+
+
 
 {
   /* <aside className={`w-[20rem] h-screen font-inter flex flex-col justify-between`}>

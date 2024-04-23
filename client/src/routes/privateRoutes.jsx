@@ -5,6 +5,7 @@ import { TasksScreen } from "../pages/(logged in)/TasksScreen.jsx";
 import { MessagesScreen } from "../pages/(logged in)/MessagesScreen.jsx";
 import { NotificationsScreen } from "../pages/(logged in)/NotificationsScreen.jsx";
 import { ProjectScreen } from "../pages/(logged in)/ProjectScreen.jsx";
+import { Overview } from "../pages/(logged in)/projectTabs/Overview.jsx";
 
 const privateRoutes = [
   {
@@ -30,6 +31,12 @@ const privateRoutes = [
       {
         path: "project",
         element: <ProjectScreen />,
+        children: [
+          {
+            path: "",
+            element: <Overview />
+          }
+        ]
       },
     ],
   },
