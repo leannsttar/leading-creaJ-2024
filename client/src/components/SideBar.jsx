@@ -145,6 +145,7 @@ export const SideBar = () => {
                   }
                   isProject
                   isShrinked={isShrinked}
+                  href={'/dashboard/project'}
                 />
                 <SideBarLink
                   name={"Website Redesign"}
