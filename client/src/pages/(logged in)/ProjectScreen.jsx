@@ -1,5 +1,5 @@
-export const ProjectScreen = ({ children }) => {
-  return (
-    {children}
-  );
+import { Outlet } from "react-router-dom";
+
+export const ProjectScreen = () => {
+  return <Outlet />;
 };

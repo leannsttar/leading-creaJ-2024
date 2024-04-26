@@ -7,7 +7,7 @@
 - **Fernando Alexánder Jiménez Artiga | #1 - 20220599**
 - **Rodrigo Daniel Pineda Ardón | #13 - 20220241**
 - **Juan Carlos Quinteros Araujo | #14 - 20220643**
-- **Leandro Alberto Valencia Escobar | #1 - 20220590**
+- **Leandro Alberto Valencia Escobar | #23 - 20220590**
 
 ## Enlaces Importantes
 

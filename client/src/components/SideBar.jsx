@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { MdKeyboardArrowLeft } from "react-icons/md";
+
 import dashboardIcon from "../assets/dashboardIcon.svg";
 import tasksIcon from "../assets/tasksIcon.svg";
 import messagesIcon from "../assets/messagesIcon.svg";
-import notificationIcon from "../assets/notificationIcon.svg"
+import notificationIcon from "../assets/notificationIcon.svg";
 import addProjectIcon from "../assets/addProjectIcon.svg";
 import sunLightMode from "../assets/sunLightMode.svg";
 import moonDarkMode from "../assets/moonDarkMode.svg";
@@ -15,7 +17,11 @@ const navLinks = [
   { title: "Dashboard", href: "/dashboard", img: dashboardIcon },
   { title: "Tareas", href: "/dashboard/tasks", img: tasksIcon },
   { title: "Mensajes", href: "/dashboard/messages", img: messagesIcon },
-  { title: "Notificaciones", href: "/dashboard/notifications", img: notificationIcon },
+  {
+    title: "Notificaciones",
+    href: "/dashboard/notifications",
+    img: notificationIcon,
+  },
 ];
 
 const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
@@ -44,7 +50,7 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
       <div
         className={`flex gap-4 py-[0.60rem] px-3 hover:bg-[#EBF1FD] rounded-lg cursor-pointer `}
       >
-        <img src={img} alt={`${img}`} className="w-5"/>
+        <img src={img} alt={`${img}`} className="w-5" />
         <p
           className={`text-[1rem] ${
             isShrinked ? "opacity-0 pointer-events-none	" : ""
@@ -145,7 +151,7 @@ export const SideBar = () => {
                   }
                   isProject
                   isShrinked={isShrinked}
-                  href={'/dashboard/project'}
+                  href={"/dashboard/project"}
                 />
                 <SideBarLink
                   name={"Website Redesign"}
@@ -212,18 +218,20 @@ export const SideBar = () => {
           </div>
         </button>
         <hr />
-        <div className="flex gap-3 items-center mb-5">
-          <img
-            src="https://i.pinimg.com/564x/ab/33/a6/ab33a6e1ddfcff8e5b8d7daa262d1c1f.jpg"
-            alt=""
-            className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
-          />
-          <div
-            className={`${isShrinked ? "opacity-0" : ""}`}
-            style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
-          >
-            <p className="font-semibold">Doyne</p>
-            <p className="text-[.8rem] text-[#667085]">collins@brees.com</p>
+        <div className="flex gap-3 items-center justify-between mb-5">
+          <div className="flex gap-3 items-center">
+            <img
+              src="https://i.pinimg.com/564x/ab/33/a6/ab33a6e1ddfcff8e5b8d7daa262d1c1f.jpg"
+              alt=""
+              className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
+            />
+            <div
+              className={`${isShrinked ? "opacity-0" : ""}`}
+              style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
+            >
+              <p className="font-semibold">Doyne</p>
+              <p className="text-[.8rem] text-[#667085]">collins@brees.com</p>
+            </div>
           </div>
           <img
             src={threeDotsIcon}
@@ -242,43 +250,91 @@ export const SideBar = () => {
   );
 };
 
+export const MobileSideBar = ({ isOpen, onClose }) => {
+  const [isDark, setIsDark] = useState(false);
 
+  const [isShrinked, setIsShrinked] = useState(false);
 
-{
-  /* <aside className={`w-[20rem] h-screen font-inter flex flex-col justify-between`}>
+  const changeMode = () => {
+    setIsDark(!isDark);
+  };
+
+  const changeView = () => {
+    setIsShrinked(!isShrinked);
+  };
+
+  return (
+    <aside
+      className={`fixed z-20 w-[20rem] font-inter flex flex-col justify-between border-r-[1px] bg-white ${
+        isOpen ? "" : "-translate-x-[100vw]"
+      }`}
+      style={{ minHeight: '-webkit-fill-available', transitionTimingFunction: "cubic-bezier(.3,.65,.36,.66)", transition: "all 500ms" }}
+    >
       <div>
-        <div className="flex items-center gap-3 border-b-[1px] border-[#e9e8e8] px-6 py-6">
-          <img src="/logoTemporalBlack.svg" alt="Logo" className="w-[2rem]" />
-          <p className="font-[600] text-[1.3rem]">Leading</p>
-          
+        <div
+          className={`flex items-center gap-3 px-6 h-[5rem] justify-between ${
+            isShrinked ? "!px-1 !mx-5" : ""
+          }`}
+        >
+          <div
+            className={`flex items-center gap-3 ${
+              isShrinked ? "opacity-0 absolute left-0 -z-10" : ""
+            }`}
+            style={{ transition: "opacity 300ms ease" }}
+          >
+            <img src="/logoTemporalBlack.svg" alt="Logo" className="w-[2rem]" />
+            <p className="font-[600] text-[1.3rem]">Leading</p>
+          </div>
+          <div className="bg-[#ebebeb] p-2 rounded-full">
+            <MdKeyboardArrowLeft size={30} onClick={onClose} className="cursor-pointer"/>
+          </div>
         </div>
+        <hr className="w-[85%] m-auto" />
         <div className="p-4">
           <div>
             <div className="mt-1 space-y-[0.40rem] text-[#000000] pb-5 ">
-              <SideBarLink name={"Dashboard"} img={dashboardIcon} />
-              <SideBarLink name={"Tareas"} img={tasksIcon} />
-              <SideBarLink name={"Mensajes"} img={messagesIcon} />
-              <SideBarLink name={"Usuarios"} img={usersIcon} />
+              {navLinks.map((link, index) => {
+                return (
+                  <div key={index} className="overflow-hidden" onClick={onClose}>
+                    <SideBarLink
+                      name={link.title}
+                      img={link.img}
+                      href={link.href}
+                      isShrinked={isShrinked}
+                    />
+                  </div>
+                );
+              })}
             </div>
             <hr className="w-[87%] m-auto" />
             <div className="mt-7">
-              <div className="flex justify-between px-4">
-                <p className="text-[.75rem] font-semibold text-[#787486]">
+              <div className="flex justify-end px-4">
+                <p
+                  className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${
+                    isShrinked ? "opacity-0 absolute left-0" : ""
+                  }`}
+                  style={{
+                    whiteSpace: "nowrap",
+                    transition: "opacity 300ms ease",
+                  }}
+                >
                   MIS PROYECTOS
                 </p>
                 <img
                   src={addProjectIcon}
                   alt="Icono añadir proyecto"
-                  className="cursor-pointer"
+                  className={`cursor-pointer ${isShrinked && "h-[18px]"}`}
                 />
               </div>
-              <div className="mt-3 space-y-1">
+              <div className="mt-3 space-y-1" onClick={onClose}>
                 <SideBarLink
                   name={"Sao web project"}
                   img={
                     "https://i.pinimg.com/564x/e0/fc/a8/e0fca85a942e80d6cbb40787d59a3de1.jpg"
                   }
                   isProject
+                  isShrinked={isShrinked}
+                  href={"/dashboard/project"}
                 />
                 <SideBarLink
                   name={"Website Redesign"}
@@ -286,6 +342,7 @@ export const SideBar = () => {
                     "https://i.pinimg.com/564x/b9/6d/51/b96d515e1839a055244a8dea35703dcc.jpg"
                   }
                   isProject
+                  isShrinked={isShrinked}
                 />
                 <SideBarLink
                   name={"Design System"}
@@ -293,6 +350,7 @@ export const SideBar = () => {
                     "https://i.pinimg.com/564x/08/be/63/08be63fcc6d8f35377afb9c1ded05094.jpg"
                   }
                   isProject
+                  isShrinked={isShrinked}
                 />
                 <SideBarLink
                   name={"Wireframes"}
@@ -300,6 +358,7 @@ export const SideBar = () => {
                     "https://i.pinimg.com/564x/e2/41/ad/e241ad2db149b457d44b45121b92bdab.jpg"
                   }
                   isProject
+                  isShrinked={isShrinked}
                 />
               </div>
             </div>
@@ -307,29 +366,35 @@ export const SideBar = () => {
         </div>
       </div>
       <div className="p-4 flex flex-col gap-6">
-        <button
-          onClick={changeMode}
-          className={`flex bg-[#F5F5F5] rounded-full p-2 w-fit relative  ${
-            isDark ? "flex-row-reverse " : ""
-          } `}
-        >
-          <div className="bg-[#fff] rounded-full shadow-lg absolute place-self-end">
-            <img src={sunLightMode} alt="" className="py-2 px-4 invisible" />
-          </div>
-          <div className="flex">
-            <img src={sunLightMode} alt="" className="py-2 px-4 z-10" />
-            <img src={moonDarkMode} alt="" className="p-2 px-4 z-10" />
-          </div>
-        </button>
         <hr />
-        <div className="flex gap-3 items-center mb-5">
-          <img src="https://i.pinimg.com/564x/ab/33/a6/ab33a6e1ddfcff8e5b8d7daa262d1c1f.jpg" alt="" className="w-[3rem] h-[3rem] rounded-full object-cover"/>
-          <div>
-            <p className="font-semibold">Doyne</p>
-            <p className="text-[.8rem] text-[#667085]">collins@brees.com</p>
+        <div className="flex gap-3 items-center justify-between mb-5">
+          <div className="flex gap-3 items-center">
+            <img
+              src="https://i.pinimg.com/564x/ab/33/a6/ab33a6e1ddfcff8e5b8d7daa262d1c1f.jpg"
+              alt=""
+              className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
+            />
+            <div
+              className={`${isShrinked ? "opacity-0" : ""}`}
+              style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
+            >
+              <p className="font-semibold">Doyne</p>
+              <p className="text-[.8rem] text-[#667085]">collins@brees.com</p>
+            </div>
           </div>
-          <img src={threeDotsIcon} alt="" className="cursor-pointer"/>
+          <img
+            src={threeDotsIcon}
+            alt=""
+            className={`cursor-pointer ${
+              isShrinked ? "opacity-0 absolute" : ""
+            }`}
+            style={{
+              transition: "opacity 150ms ease",
+              transition: "position 300ms ease",
+            }}
+          />
         </div>
       </div>
-    </aside> */
-}
+    </aside>
+  );
+};

@@ -75,7 +75,7 @@ export const HomePage = () => {
   return (
     <div className="mx-[1.25rem] mb-[4rem] md:items-center md:justify-center flex flex-col gap-8 md:gap-20">
       <div className="flex md:mt-[1rem] md:h-[85vh] md:w-[93%]">
-        <div className="w-full px-[1.25rem] flex flex-col items-center h-[80vh] justify-between mb-[3rem] md:mb-0 md:items-start md:justify-center md:gap-[0rem] md:shrink md:px-0">
+        <div className="w-full px-[1.25rem] flex flex-col items-center justify-between mb-[3rem] md:mb-0 md:items-start md:justify-center md:gap-[0rem] md:shrink md:px-0" style={{minHeight: '-webkit-fill-available'}}>
           <p className="max-w-fit px-[0.75rem] py-[0.25rem] bg-[#d5e0ff] rounded-full text-[1em] font-prompt font-[500]">
             Bienvenido a Leading
           </p>
@@ -137,13 +137,13 @@ export const HomePage = () => {
       </div>
       <div className="md:w-[75%] md:flex md:justify-center">
         <div className="bg-[#D5E0FF] rounded-[4em] p-6 text-center flex flex-col gap-6 md:p-12 md:gap-[4rem]">
-          <div className="md:flex md:flex-row md:justify-between">
+          <div className="md:flex md:flex-row md:justify-between space-y-3 md:space-y-0">
             <TitleSection
               title={"Herramientas Para Una Colaboración Eficaz En Equipo"}
               className={"md:text-[3rem] md:text-left md:w-[40%]"}
             />
-            <div className="font-prompt md:w-[30%] md:flex md:flex-col md:gap-8">
-              <p className="text-[#5B5B5B] text-left w-full text-[.85em] md:text-[1.1rem]">
+            <div className="font-prompt md:w-[30%] md:flex md:flex-col md:gap-8 space-y-3 md:space-y-0">
+              <p className="text-[#5B5B5B] text-center w-full text-[.85em] md:text-[1.1rem] md:text-left">
                 Libera el potencial de tu equipo con nuestras herramientas
                 integrales de colaboración en un solo lugar.
               </p>

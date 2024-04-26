@@ -1,7 +1,7 @@
 export const AboutUsPage = () => {
   return (
     <div className="mx-[1.25rem] mb-[4rem] md:flex md:flex-col md:items-center">
-      <div className="w-full font-prompt flex flex-col h-[90vh] justify-between pb-[5rem] md:items-center">
+      <div className="w-full font-prompt flex flex-col sm:h-[90vh] justify-between pb-[8rem] md:pb-[7rem] md:items-center" style={{minHeight: '-webkit-fill-available'}}>
         <h1 className="text-[2rem] text-center md:text-[1.2rem]">
           Sobre nosotros
         </h1>

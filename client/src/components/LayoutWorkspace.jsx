@@ -1,19 +1,23 @@
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, Outlet } from "react-router-dom";
 
 import configIcon from "../assets/configIcon.svg";
 import threeDotsSmaller from "../assets/threeDotsSmaller.svg";
 import plusIcon from "../assets/plusIcon.svg";
-import usersProjectIcon from "../assets/usersProjectIcon.svg"
-import editIcon from "../assets/editIcon.svg"
+import usersProjectIcon from "../assets/usersProjectIcon.svg";
+import editIcon from "../assets/editIcon.svg";
 
-import { SideBar } from "./SideBar.jsx";
-
-
+import { MobileSideBar, SideBar } from "./SideBar.jsx";
+import { HeaderMobileWorkspace } from "./HeaderMobileWorkspace.jsx";
 
 const MiniTabLink = ({ title, notification, href }) => {
   return (
     <Link to={href}>
-      <p className={`pb-2 px-6 hover:text-black cursor-pointer border-b-[2px] border-white hover:border-black ${notification ? 'hover:border-[#625DF5] border-b-[3px]' : ''}`}>
+      <p
+        className={`pb-2 px-6 hover:text-black cursor-pointer border-b-[2px] border-white hover:border-black ${
+          notification ? "hover:border-[#625DF5] border-b-[3px]" : ""
+        }`}
+      >
         {title}
       </p>
     </Link>
@@ -23,10 +27,10 @@ const MiniTabLink = ({ title, notification, href }) => {
 const AvatarMember = ({ img, className }) => {
   return (
     <img src={img} alt="" className={`w-8 h-8 rounded-full ${className}`} />
-  )
-}
+  );
+};
 
-const LayoutHome = ({ children }) => {
+const LayoutHome = () => {
   return (
     <div className="w-full max-h-screen overflow-y-hidden">
       <div className="h-[10rem] px-10 w-full flex items-center">
@@ -52,12 +56,14 @@ const LayoutHome = ({ children }) => {
         </div>
       </div>
       <hr />
-      <div className="h-full">{children}</div>
+      <div className="h-full">
+        <Outlet />
+      </div>
     </div>
   );
 };
 
-const LayoutTasks = ({ children }) => {
+const LayoutTasks = () => {
   return (
     <div className="w-full max-h-screen overflow-y-hidden">
       <div className="h-[10rem] px-10 w-full flex items-center justify-between">
@@ -87,13 +93,16 @@ const LayoutTasks = ({ children }) => {
         </div>
       </div>
       <hr />
-      <div className="h-full">{children}</div>
+      <div className="h-full">
+        {" "}
+        <Outlet />
+      </div>
     </div>
   );
 };
 
 const tabLinksProject = [
-  { title: "Vista general", href: "/" },
+  { title: "Vista general", href: "/dashboard/project" },
   { title: "Tablero", href: "/dashboard/project/board" },
   { title: "Timeline", href: "/dashboard/project/timeline" },
   { title: "Reuniones", href: "/dashboard/project/meetings" },
@@ -101,7 +110,7 @@ const tabLinksProject = [
   { title: "Configuración", href: "/dashboard/project/config" },
 ];
 
-const LayoutProject = ({ children }) => {
+const LayoutProject = () => {
   return (
     <div className="w-full max-h-screen overflow-y-hidden">
       <div className="h-[10rem] px-10 w-full flex items-center justify-between">
@@ -115,10 +124,26 @@ const LayoutProject = ({ children }) => {
               <img src={usersProjectIcon} alt="" />
               <p>Asignar al proyecto</p>
               <div className="flex">
-                <AvatarMember img={'https://i.pinimg.com/564x/bb/47/80/bb4780347a759a484265b65cb91d481a.jpg'} />
-                <AvatarMember img={'https://i.pinimg.com/564x/33/f1/45/33f14533966e1d68e90b8646e82bd291.jpg'} className={'relative right-2'} />
-                <AvatarMember img={'https://i.pinimg.com/564x/e1/d0/4e/e1d04e0e45c1301b98e7028955a9dfb9.jpg'} className={'relative right-4'} />
-                <div className="bg-[#D9D9D9] w-8 h-8 flex justify-center items-center rounded-full relative right-6 font-semibold"><p>4+</p></div>
+                <AvatarMember
+                  img={
+                    "https://i.pinimg.com/564x/bb/47/80/bb4780347a759a484265b65cb91d481a.jpg"
+                  }
+                />
+                <AvatarMember
+                  img={
+                    "https://i.pinimg.com/564x/33/f1/45/33f14533966e1d68e90b8646e82bd291.jpg"
+                  }
+                  className={"relative right-2"}
+                />
+                <AvatarMember
+                  img={
+                    "https://i.pinimg.com/564x/e1/d0/4e/e1d04e0e45c1301b98e7028955a9dfb9.jpg"
+                  }
+                  className={"relative right-4"}
+                />
+                <div className="bg-[#D9D9D9] w-8 h-8 flex justify-center items-center rounded-full relative right-6 font-semibold">
+                  <p>4+</p>
+                </div>
               </div>
               <button className="px-4 py-2 bg-[#D6EAF5] text-[#0070D8] font-semibold rounded-3xl">
                 Añadir miembro
@@ -126,12 +151,12 @@ const LayoutProject = ({ children }) => {
             </div>
           </div>
           <div className="flex gap-6 text-[#7C7C7C] ">
-            {tabLinksProject.map((link, index)=>{
-              return(
+            {tabLinksProject.map((link, index) => {
+              return (
                 <div key={index}>
-                  <MiniTabLink title={link.title} href={link.href}/>
+                  <MiniTabLink title={link.title} href={link.href} />
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -149,12 +174,14 @@ const LayoutProject = ({ children }) => {
         </div>
       </div>
       <hr />
-      <div className="h-full">{children}</div>
+      <div className="h-full">
+        <Outlet />
+      </div>
     </div>
   );
 };
 
-const LayoutNotifications = ({ children }) => {
+const LayoutNotifications = () => {
   return (
     <div className="w-full max-h-screen overflow-y-hidden">
       <div className="h-[10rem] px-10 w-full flex items-center justify-between">
@@ -184,34 +211,86 @@ const LayoutNotifications = ({ children }) => {
         </div>
       </div>
       <hr />
-      <div className="h-full">{children}</div>
+      <div className="h-full">
+        {" "}
+        <Outlet />
+      </div>
     </div>
   );
 };
 
-export const LayoutWorkspace = ({ children }) => {
+export const LayoutWorkspace = () => {
   const location = useLocation();
   const { pathname } = location;
 
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 900);
+    };
+
+    // Se llama para que cuando cargue se ponga el valor inicial
+    handleResize();
+
+    // Listener para detectar el resize
+    window.addEventListener("resize", handleResize);
+
+    // Se quita por problemas de memoria
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
-    <div className="flex">
-      <SideBar />
-      {pathname == "/dashboard" ? <LayoutHome children={children} /> : ""}
-      {pathname == "/dashboard/tasks" ? (
-        <LayoutTasks children={children} />
+    <>
+      {isDesktop ? (
+        <div className="flex">
+          <SideBar />
+          {pathname == "/dashboard" ? <LayoutHome /> : ""}
+          {pathname == "/dashboard/tasks" ? <LayoutTasks /> : ""}
+          {pathname == "/dashboard/project" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/project/board" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/project/timeline" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/project/meetings" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/project/files" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/project/config" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/notifications" ? <LayoutNotifications /> : ""}
+        </div>
       ) : (
-        ""
+        <div className="flex flex-col">
+          {isSidebarOpen && (
+            <div
+              className="fixed top-0 left-0 w-screen h-screen bg-black opacity-50 z-10"
+              onClick={closeSidebar}
+            ></div>
+          )}
+          <HeaderMobileWorkspace
+            isOpen={isSidebarOpen}
+            onToggle={toggleSidebar}
+          />
+          <MobileSideBar isOpen={isSidebarOpen} onClose={closeSidebar} />
+          {pathname == "/dashboard" ? <LayoutHome /> : ""}
+          {pathname == "/dashboard/tasks" ? <LayoutTasks /> : ""}
+          {pathname == "/dashboard/project" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/project/board" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/project/timeline" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/project/meetings" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/project/files" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/project/config" ? <LayoutProject /> : ""}
+          {pathname == "/dashboard/notifications" ? <LayoutNotifications /> : ""}
+        </div>
       )}
-      {pathname == "/dashboard/project" ? (
-        <LayoutProject children={children} />
-      ) : (
-        ""
-      )}
-      {pathname == "/dashboard/notifications" ? (
-        <LayoutNotifications children={children} />
-      ) : (
-        ""
-      )}
-    </div>
+    </>
   );
 };
