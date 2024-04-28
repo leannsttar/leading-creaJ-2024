@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { MdKeyboardArrowLeft } from "react-icons/md";
@@ -66,8 +66,21 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
 
 export const SideBar = () => {
   const [isDark, setIsDark] = useState(false);
+  const [isShrinked, setIsShrinked] = useState(window.innerWidth < 1280);
 
-  const [isShrinked, setIsShrinked] = useState(false);
+  // useEffect(() => {
+  //   const checkResolution = () => {
+  //     const screenWidth = window.innerWidth;
+  //     setIsShrinked(screenWidth < 1280);
+  //   };
+
+  //   checkResolution();
+  //   window.addEventListener('resize', checkResolution);
+
+  //   return () => {
+  //     window.removeEventListener('resize', checkResolution);
+  //   };
+  // }, []);
 
   const changeMode = () => {
     setIsDark(!isDark);
@@ -76,7 +89,7 @@ export const SideBar = () => {
   const changeView = () => {
     setIsShrinked(!isShrinked);
   };
-
+  
   return (
     <aside
       className={`w-[20rem] h-screen font-inter flex flex-col justify-between border-r-[1px] ${
@@ -218,8 +231,8 @@ export const SideBar = () => {
           </div>
         </button>
         <hr />
-        <div className="flex gap-3 items-center justify-between mb-5">
-          <div className="flex gap-3 items-center">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex gap-2 items-center justify-between">
             <img
               src="https://i.pinimg.com/564x/ab/33/a6/ab33a6e1ddfcff8e5b8d7daa262d1c1f.jpg"
               alt=""
@@ -236,7 +249,7 @@ export const SideBar = () => {
           <img
             src={threeDotsIcon}
             alt=""
-            className={`cursor-pointer ${
+            className={`cursor-pointer  ${
               isShrinked ? "opacity-0 absolute" : ""
             }`}
             style={{
