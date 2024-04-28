@@ -45,10 +45,10 @@ const ProjectCard = ({ title, date, members, category, progress }) => {
       <div className="flex flex-col justify-center items-center w-full text-center pt-1">
         <p className="text-2xl font-bold">{title}</p>
         <p className="text-lg text-gray-500">{category}</p>
-        <div>
+        <div className="w-full">
           <p className="text-left font-bold">Progress</p>
           <progress
-            className={`progress w-[18rem] bg-white ${
+            className={`progress w-full bg-white ${
               background === "bg-[#FEE4CB]"
                 ? "progress-warning"
                 : background === "bg-[#FFD3E2]"
@@ -86,10 +86,10 @@ export const DashboardScreen = () => {
   return (
     <div
       //Acá usualmente sería 5 rem de pt, por los 5 rem de h del header, pero pongo 6 para que no quede justo
-      className="w-full overflow-auto pt-[6rem] md:pt-0 mb-[4rem] flex justify-center"
+      className="w-full overflow-auto pt-[6rem] lg:pt-0 mb-[4rem] flex justify-center"
       style={{ height: "calc(100% - 10rem)" }}
     >
-      <div className="flex flex-col  w-[90%]">
+      <div className="flex flex-col w-[90%]">
         <div className="flex flex-col items-center w-full">
           <h1 className="text-[1.8rem] font-semibold text-center font-prompt">
             Bienvenido Edward

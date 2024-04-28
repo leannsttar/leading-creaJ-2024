@@ -32,7 +32,7 @@ const AvatarMember = ({ img, className }) => {
 
 export const LayoutHome = () => {
   return (
-    <div className="w-full md:max-h-screen md:overflow-y-hidden md:pt-[5rem] lg:pt-0">
+    <div className="w-full md:max-h-screen lg:overflow-y-hidden md:pt-[5rem] lg:pt-0">
       <div className="h-[10rem] px-10 w-full items-center hidden lg:flex">
         <div className="flex justify-between items-center w-full">
           <div>
