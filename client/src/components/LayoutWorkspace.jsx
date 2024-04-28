@@ -30,10 +30,10 @@ const AvatarMember = ({ img, className }) => {
   );
 };
 
-const LayoutHome = () => {
+export const LayoutHome = () => {
   return (
-    <div className="w-full max-h-screen overflow-y-hidden">
-      <div className="h-[10rem] px-10 w-full flex items-center">
+    <div className="w-full md:max-h-screen md:overflow-y-hidden md:pt-[5rem] lg:pt-0">
+      <div className="h-[10rem] px-10 w-full items-center hidden lg:flex">
         <div className="flex justify-between items-center w-full">
           <div>
             <p className="text-[2rem] font-semibold">Bienvenido Edward</p>
@@ -50,12 +50,12 @@ const LayoutHome = () => {
             </div>
             <div className="bg-black rounded-md text-white flex gap-3 items-center py-2 px-3 cursor-pointer">
               <img src={plusIcon} alt="" className="w-4" />
-              <p>Nuevo proyecto</p>
+              <p className="hidden xl:block">Nuevo proyecto</p>
             </div>
           </div>
         </div>
       </div>
-      <hr />
+      <hr className="hidden lg:block"/>
       <div className="h-full">
         <Outlet />
       </div>
@@ -223,21 +223,26 @@ export const LayoutWorkspace = () => {
   const location = useLocation();
   const { pathname } = location;
 
-  const [isDesktop, setIsDesktop] = useState(false);
-
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+    if (!isSidebarOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
   };
 
   const closeSidebar = () => {
     setIsSidebarOpen(false);
+    document.body.classList.remove("overflow-hidden");
   };
 
   useEffect(() => {
     const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 900);
+      setIsDesktop(window.innerWidth >= 1024);
     };
 
     // Se llama para que cuando cargue se ponga el valor inicial
@@ -252,26 +257,33 @@ export const LayoutWorkspace = () => {
     };
   }, []);
 
+  const renderComponentBasedOnPath = () => {
+    switch (true) {
+      case pathname.startsWith("/dashboard/project"):
+        return <LayoutProject />;
+      case pathname === "/dashboard":
+        return <LayoutHome />;
+      case pathname === "/dashboard/tasks":
+        return <LayoutTasks />;
+      case pathname === "/dashboard/notifications":
+        return <LayoutNotifications />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       {isDesktop ? (
         <div className="flex">
           <SideBar />
-          {pathname == "/dashboard" ? <LayoutHome /> : ""}
-          {pathname == "/dashboard/tasks" ? <LayoutTasks /> : ""}
-          {pathname == "/dashboard/project" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/project/board" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/project/timeline" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/project/meetings" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/project/files" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/project/config" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/notifications" ? <LayoutNotifications /> : ""}
+          {renderComponentBasedOnPath()}
         </div>
       ) : (
         <div className="flex flex-col">
           {isSidebarOpen && (
             <div
-              className="fixed top-0 left-0 w-screen h-screen bg-black opacity-50 z-10"
+              className="fixed top-0 left-0 w-screen h-screen bg-black opacity-50 z-[12]"
               onClick={closeSidebar}
             ></div>
           )}
@@ -280,15 +292,7 @@ export const LayoutWorkspace = () => {
             onToggle={toggleSidebar}
           />
           <MobileSideBar isOpen={isSidebarOpen} onClose={closeSidebar} />
-          {pathname == "/dashboard" ? <LayoutHome /> : ""}
-          {pathname == "/dashboard/tasks" ? <LayoutTasks /> : ""}
-          {pathname == "/dashboard/project" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/project/board" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/project/timeline" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/project/meetings" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/project/files" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/project/config" ? <LayoutProject /> : ""}
-          {pathname == "/dashboard/notifications" ? <LayoutNotifications /> : ""}
+          {renderComponentBasedOnPath()}
         </div>
       )}
     </>

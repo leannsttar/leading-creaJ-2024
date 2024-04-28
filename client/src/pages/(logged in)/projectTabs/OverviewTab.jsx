@@ -1,7 +1,61 @@
 export const OverviewTab = () => {
     return (
-      <div>
-        Vista general
+      <div className="w-full overflow-auto" style={{ height: 'calc(100% - 10rem)' }}>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>Vista general</p>
+        <p>sex</p>
       </div>
     );
   };

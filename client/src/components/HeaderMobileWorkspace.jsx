@@ -9,8 +9,8 @@ export const HeaderMobileWorkspace = ({ isOpen, onToggle }) => {
 
   return (
     <>
-      <div className="p-4">
-        <div className="flex justify-between">
+      <div className="p-4 h-[5rem] z-[11] fixed top-0 left-0 bg-white w-full shadow-sm">
+        <div className="flex justify-between w-full">
           <img
             src={threeLinesMenu}
             alt=""
