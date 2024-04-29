@@ -37,7 +37,7 @@ const ProjectCard = ({ title, date, members, category, progress }) => {
   const background = randomBackground(array);
 
   return (
-    <div className={`${background} px-6 py-4 rounded-3xl space-y-1`}>
+    <div className={`${background} px-6 py-4 rounded-3xl space-y-1 lg:w-[45%]`}>
       <div className="flex justify-between items-center">
         <p className="text-gray-500">{date}</p>
         <img src={threeDotsIcon} alt="" className="rotate-90" />
@@ -86,11 +86,11 @@ export const DashboardScreen = () => {
   return (
     <div
       //Acá usualmente sería 5 rem de pt, por los 5 rem de h del header, pero pongo 6 para que no quede justo
-      className="w-full overflow-auto pt-[6rem] lg:pt-0 mb-[4rem] flex justify-center"
+      className="w-full overflow-auto pt-[6rem] md:pt-[3rem] lg:pt-0 pb-[4rem] flex justify-center"
       style={{ height: "calc(100% - 10rem)" }}
     >
-      <div className="flex flex-col w-[90%]">
-        <div className="flex flex-col items-center w-full">
+      <div className="flex flex-col w-[90%] lg:w-full lg:flex-row-reverse">
+        <div className="flex flex-col items-center w-full lg:w-[40%]">
           <h1 className="text-[1.8rem] font-semibold text-center font-prompt">
             Bienvenido Edward
           </h1>
@@ -165,9 +165,9 @@ export const DashboardScreen = () => {
             </div>
           </div>
         </div>
-        <div className="mt-[4rem]">
+        <div className="mt-[4rem] lg:w-full">
           <TitleSection title={"Projectos recientes"} />
-          <div className="space-y-3 mt-7">
+          <div className="flex flex-col gap-3 mt-7 md:mt-0 lg:w-full lg:flex-row lg:flex-wrap lg:justify-center">
             <ProjectCard
               title={"Web Designing"}
               date={"December 20, 2021"}

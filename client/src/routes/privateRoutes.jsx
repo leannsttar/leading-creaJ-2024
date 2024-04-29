@@ -11,6 +11,9 @@ import { TimelineTab } from "../pages/(logged in)/projectTabs/TimelineTab.jsx";
 import { MeetingsTab } from "../pages/(logged in)/projectTabs/MeetingsTab.jsx";
 import { FilesTab } from "../pages/(logged in)/projectTabs/FilesTab.jsx";
 import { ConfigTab } from "../pages/(logged in)/projectTabs/ConfigTab.jsx";
+import { TasksBoardTab } from "../pages/(logged in)/tasksTabs/TasksBoardTab.jsx";
+import { TasksListTab } from "../pages/(logged in)/tasksTabs/TasksListTab.jsx";
+import { TasksCalendarTab } from "../pages/(logged in)/tasksTabs/TasksCalendarTab.jsx";
 
 const privateRoutes = [
   {
@@ -24,6 +27,20 @@ const privateRoutes = [
       {
         path: "tasks",
         element: <TasksScreen />,
+        children: [
+          {
+            path: "",
+            element: <TasksBoardTab />
+          },
+          {
+            path: "list",
+            element: <TasksListTab />
+          },
+          {
+            path: "calendar",
+            element: <TasksCalendarTab />
+          },
+        ]
       },
       {
         path: "messages",

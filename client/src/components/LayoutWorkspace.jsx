@@ -74,9 +74,9 @@ const LayoutTasks = () => {
             </div>
           </div>
           <div className="flex gap-6 text-[#7C7C7C] ">
-            <MiniTabLink title={"Tablero"} />
-            <MiniTabLink title={"Lista"} />
-            <MiniTabLink title={"Calendario"} />
+            <MiniTabLink title={"Tablero"} href={"/dashboard/tasks"}/>
+            <MiniTabLink title={"Lista"} href={"/dashboard/tasks/list"}/>
+            <MiniTabLink title={"Calendario"} href={"/dashboard/tasks/calendar"}/>
           </div>
         </div>
         <div className="flex gap-2">
@@ -263,7 +263,7 @@ export const LayoutWorkspace = () => {
         return <LayoutProject />;
       case pathname === "/dashboard":
         return <LayoutHome />;
-      case pathname === "/dashboard/tasks":
+      case pathname.startsWith("/dashboard/tasks"):
         return <LayoutTasks />;
       case pathname === "/dashboard/notifications":
         return <LayoutNotifications />;
