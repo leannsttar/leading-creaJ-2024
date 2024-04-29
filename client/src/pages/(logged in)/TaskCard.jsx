@@ -9,8 +9,8 @@ const TaskCard = ({ title, subtitle, imageSrc, date, team, comments }) => {
       <div className="flex justify-between items-center mb-6">
         <p className="text-xl font-bold">{title}</p>
         <div className="flex gap-2">
-          <CiCirclePlus size={24} />
-          <HiDotsHorizontal size={24} />
+          <CiCirclePlus size={24} className="cursor-pointer" />
+          <HiDotsHorizontal size={24} className="cursor-pointer" />
         </div>
       </div>
       <div className="flex flex-row gap-2 mb-4">
@@ -29,7 +29,7 @@ const TaskCard = ({ title, subtitle, imageSrc, date, team, comments }) => {
       </div>
       <div className="mb-4 flex justify-between">
         <div className="flex items-center">
-          <CiCalendarDate size={24} />
+          <CiCalendarDate size={24} className="cursor-pointer" />
           <p className="ml-2">{date}</p>
         </div>
         <p className="text-right font-medium">{team}</p>
@@ -37,7 +37,7 @@ const TaskCard = ({ title, subtitle, imageSrc, date, team, comments }) => {
       <div className="flex items-center">
         <img src="../../../public/test-boy.png" className="w-8 h-8 mr-2" alt="" />
         <div className="flex items-center">
-          <LiaCommentSolid size={24} />
+          <LiaCommentSolid size={24} className="cursor-pointer" />
           <p className="ml-1">
             <span>{comments} </span>Comentarios
           </p>

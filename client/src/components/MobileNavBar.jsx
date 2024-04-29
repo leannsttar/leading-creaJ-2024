@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
-  { title: "Home", href: "/" },
+  { title: "Inicio", href: "/" },
   { title: "Sobre nosotros", href: "/about" },
   { title: "Características", href: "/features" },
-  { title: "FAQs", href: "/faqs" },
-  { title: "Iniciar Sesión", href: "/login" },
+  { title: "Preguntas frecuentes", href: "/faqs" },
+  { title: "Iniciar sesión", href: "/login" },
+  { title: "Registrarse", href: "/signup" },
 ];
 
 export const MobileNavBar = () => {
