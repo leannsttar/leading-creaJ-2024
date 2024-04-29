@@ -13,6 +13,8 @@ import moonDarkMode from "../assets/moonDarkMode.svg";
 import threeDotsIcon from "../assets/threeDotsIcon.svg";
 import threeLinesMenu from "../assets/3linesMenu.svg";
 
+import avatar from "../assets/Avatar.jpg"
+
 const navLinks = [
   { title: "Dashboard", href: "/dashboard", img: dashboardIcon },
   { title: "Tareas", href: "/dashboard/tasks", img: tasksIcon },
@@ -234,7 +236,7 @@ export const SideBar = () => {
         <div className="flex items-center justify-between mb-5">
           <div className="flex gap-2 items-center justify-between">
             <img
-              src="https://i.pinimg.com/564x/ab/33/a6/ab33a6e1ddfcff8e5b8d7daa262d1c1f.jpg"
+              src={avatar}
               alt=""
               className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
             />
