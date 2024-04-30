@@ -13,7 +13,7 @@ import moonDarkMode from "../assets/moonDarkMode.svg";
 import threeDotsIcon from "../assets/threeDotsIcon.svg";
 import threeLinesMenu from "../assets/3linesMenu.svg";
 
-import avatar from "../assets/Avatar.jpg"
+import avatar from "../assets/Avatar.jpg";
 
 const navLinks = [
   { title: "Dashboard", href: "/dashboard", img: dashboardIcon },
@@ -69,20 +69,21 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
 export const SideBar = () => {
   const [isDark, setIsDark] = useState(false);
   const [isShrinked, setIsShrinked] = useState(window.innerWidth < 1280);
+  const [isLowRes, setIsLowRes] = useState(window.innerHeight < 730)
 
-  // useEffect(() => {
-  //   const checkResolution = () => {
-  //     const screenWidth = window.innerWidth;
-  //     setIsShrinked(screenWidth < 1280);
-  //   };
+  useEffect(() => {
+    const checkResolution = () => {
+      const screenHeight = window.innerHeight;
+      setIsLowRes(screenHeight < 1280);
+    };
 
-  //   checkResolution();
-  //   window.addEventListener('resize', checkResolution);
+    checkResolution();
+    window.addEventListener('resize', checkResolution);
 
-  //   return () => {
-  //     window.removeEventListener('resize', checkResolution);
-  //   };
-  // }, []);
+    return () => {
+      window.removeEventListener('resize', checkResolution);
+    };
+  }, []);
 
   const changeMode = () => {
     setIsDark(!isDark);
@@ -91,7 +92,7 @@ export const SideBar = () => {
   const changeView = () => {
     setIsShrinked(!isShrinked);
   };
-  
+
   return (
     <aside
       className={`w-[20rem] h-screen font-inter flex flex-col justify-between border-r-[1px] ${
@@ -158,7 +159,7 @@ export const SideBar = () => {
                   className={`cursor-pointer ${isShrinked && "h-[18px]"}`}
                 />
               </div>
-              <div className="mt-3 space-y-1">
+              <div className="mt-3 space-y-1 lg:h-[10rem] 2xl:h-auto lg:overflow-y-scroll lg:overflow-x-hidden 2xl:overflow-y-auto">
                 <SideBarLink
                   name={"Sao web project"}
                   img={
@@ -167,6 +168,15 @@ export const SideBar = () => {
                   isProject
                   isShrinked={isShrinked}
                   href={"/dashboard/project"}
+                />
+
+                <SideBarLink
+                  name={"Website Redesign"}
+                  img={
+                    "https://i.pinimg.com/564x/b9/6d/51/b96d515e1839a055244a8dea35703dcc.jpg"
+                  }
+                  isProject
+                  isShrinked={isShrinked}
                 />
                 <SideBarLink
                   name={"Website Redesign"}
@@ -197,43 +207,75 @@ export const SideBar = () => {
           </div>
         </div>
       </div>
-      <div className="p-4 flex flex-col gap-6">
-        <button
-          onClick={changeMode}
-          className={`flex bg-[#F5F5F5] rounded-full p-1.5 w-fit relative   ${
-            isShrinked ? "flex-col" : ""
-          } `}
-        >
-          <div
-            className={`bg-[#fff] rounded-full shadow-lg absolute ${
-              isShrinked ? "" : isDark ? " translate-x-[95%]" : ""
-            }`}
-            style={{
-              transition: "all 250ms ease",
-              transform: isShrinked && isDark && "translateY(50px)",
-            }}
+      <div className="p-4 flex flex-col gap-3 2xl:gap-6">
+        {!isLowRes ? (
+          <label className="swap swap-rotate">
+            {/* this hidden checkbox controls the state */}
+            <input
+              type="checkbox"
+              className="theme-controller"
+              value="synthwave"
+            />
+
+            {/* sun icon */}
+            <svg
+              className="swap-off fill-current w-8 h-8"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
+            </svg>
+
+            {/* moon icon */}
+            <svg
+              className="swap-on fill-current w-7 h-7"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
+            </svg>
+          </label>
+        ) : (
+          <button
+            onClick={changeMode}
+            className={`flex bg-[#F5F5F5] rounded-full p-1.5 w-fit relative   ${
+              isShrinked ? "flex-col" : ""
+            } `}
           >
-            <img
-              src={sunLightMode}
-              alt=""
-              className={`invisible ${isShrinked ? "px-2 py-4" : "py-2 px-4"} `}
-            />
-          </div>
-          <div className={`flex ${isShrinked ? "flex-col" : ""}`}>
-            <img
-              src={sunLightMode}
-              alt=""
-              className={`z-10 ${isShrinked ? "px-2 py-4" : "py-2 px-4"} `}
-            />
-            <img
-              src={moonDarkMode}
-              alt=""
-              className={` z-10 ${isShrinked ? "px-2 py-4" : "p-2 px-4"} `}
-            />
-          </div>
-        </button>
+            <div
+              className={`bg-[#fff] rounded-full shadow-lg absolute ${
+                isShrinked ? "" : isDark ? " translate-x-[95%]" : ""
+              }`}
+              style={{
+                transition: "all 250ms ease",
+                transform: isShrinked && isDark && "translateY(50px)",
+              }}
+            >
+              <img
+                src={sunLightMode}
+                alt=""
+                className={`invisible ${
+                  isShrinked ? "px-2 py-4" : "py-2 px-4"
+                } `}
+              />
+            </div>
+            <div className={`flex ${isShrinked ? "flex-col" : ""}`}>
+              <img
+                src={sunLightMode}
+                alt=""
+                className={`z-10 ${isShrinked ? "px-2 py-4" : "py-2 px-4"} `}
+              />
+              <img
+                src={moonDarkMode}
+                alt=""
+                className={` z-10 ${isShrinked ? "px-2 py-4" : "p-2 px-4"} `}
+              />
+            </div>
+          </button>
+        )}
+
         <hr />
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-1 2xl:mb-5">
           <div className="flex gap-2 items-center justify-between">
             <img
               src={avatar}
@@ -283,7 +325,11 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
       className={`fixed z-20 w-[20rem] font-inter flex flex-col justify-between border-r-[1px] bg-white ${
         isOpen ? "" : "-translate-x-[100vw]"
       }`}
-      style={{ minHeight: '-webkit-fill-available', transitionTimingFunction: "cubic-bezier(.3,.65,.36,.66)", transition: "all 500ms" }}
+      style={{
+        minHeight: "-webkit-fill-available",
+        transitionTimingFunction: "cubic-bezier(.3,.65,.36,.66)",
+        transition: "all 500ms",
+      }}
     >
       <div>
         <div
@@ -301,7 +347,11 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
             <p className="font-[600] text-[1.3rem]">Leading</p>
           </div>
           <div className="bg-[#ebebeb] p-2 rounded-full">
-            <MdKeyboardArrowLeft size={30} onClick={onClose} className="cursor-pointer"/>
+            <MdKeyboardArrowLeft
+              size={30}
+              onClick={onClose}
+              className="cursor-pointer"
+            />
           </div>
         </div>
         <hr className="w-[85%] m-auto" />
@@ -310,7 +360,11 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
             <div className="mt-1 space-y-[0.40rem] text-[#000000] pb-5 ">
               {navLinks.map((link, index) => {
                 return (
-                  <div key={index} className="overflow-hidden" onClick={onClose}>
+                  <div
+                    key={index}
+                    className="overflow-hidden"
+                    onClick={onClose}
+                  >
                     <SideBarLink
                       name={link.title}
                       img={link.img}
