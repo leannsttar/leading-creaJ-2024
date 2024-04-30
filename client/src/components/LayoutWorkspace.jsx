@@ -14,7 +14,7 @@ const MiniTabLink = ({ title, notification, href }) => {
   return (
     <Link to={href}>
       <p
-        className={`pb-2 px-6 hover:text-black cursor-pointer border-b-[2px] border-white hover:border-black ${
+        className={`pb-2 px-2 hover:text-black truncate cursor-pointer border-b-[2px] border-white hover:border-black md:px-6${
           notification ? "hover:border-[#625DF5] border-b-[3px]" : ""
         }`}
       >
@@ -112,15 +112,15 @@ const tabLinksProject = [
 
 const LayoutProject = () => {
   return (
-    <div className="w-full max-h-screen overflow-y-hidden">
-      <div className="h-[10rem] px-10 w-full flex items-center justify-between">
+    <div className="w-full max-h-screen overflow-hidden">
+      <div className="h-[6rem] px-5 w-full flex items-center justify-between mt-[4rem] lg:h-[10rem] lg:px-10 lg:mt-0 ">
         <div className="flex flex-col h-full justify-between">
-          <div className="flex flex-col gap-1 justify-center w-full mt-[1rem]">
-            <div className="flex gap-5">
+          <div className="flex flex-col gap-1 justify-center w-full lg:mt-[1rem]">
+            <div className="flex gap-5 items-center">
               <p className="text-[1.8rem] font-semibold">SAO web project</p>
-              <img src={editIcon} alt="" className="w-6 h-6 mt-3" />
+              <img src={editIcon} alt="" className="w-6 h-6" />
             </div>
-            <div className="flex items-center gap-3 mt-1">
+            <div className="hidden lg:flex items-center gap-3 mt-1">
               <img src={usersProjectIcon} alt="" />
               <p>Asignar al proyecto</p>
               <div className="flex">
@@ -150,7 +150,7 @@ const LayoutProject = () => {
               </button>
             </div>
           </div>
-          <div className="flex gap-6 text-[#7C7C7C] ">
+          <div className="flex gap-3 text-[#7C7C7C] overflow-x-scroll w-screen lg:w-auto lg:gap-6 lg:overflow-x-auto pr-3 lg:px-0" style={window.innerWidth > 768 ? {scrollbarColor: 'transparent transparent'} : null}>
             {tabLinksProject.map((link, index) => {
               return (
                 <div key={index}>
@@ -160,18 +160,7 @@ const LayoutProject = () => {
             })}
           </div>
         </div>
-        <div className="flex gap-2">
-          <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
-            <img src={configIcon} alt="" />
-          </div>
-          <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
-            <img src={threeDotsSmaller} alt="" />
-          </div>
-          <div className="bg-black rounded-md text-white flex gap-3 items-center py-2 px-3 cursor-pointer">
-            <img src={plusIcon} alt="" className="w-4" />
-            <p>Nueva tarea</p>
-          </div>
-        </div>
+        
       </div>
       <hr />
       <div className="h-full">

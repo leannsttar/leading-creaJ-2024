@@ -55,7 +55,7 @@ export const OverviewTab = () => {
         <p>Vista general</p>
         <p>Vista general</p>
         <p>Vista general</p>
-        <p>sex</p>
+        <p>Vista fasd</p>
       </div>
     );
   };

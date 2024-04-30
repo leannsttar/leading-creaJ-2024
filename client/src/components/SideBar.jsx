@@ -159,7 +159,7 @@ export const SideBar = () => {
                   className={`cursor-pointer ${isShrinked && "h-[18px]"}`}
                 />
               </div>
-              <div className="mt-3 space-y-1 lg:h-[10rem] 2xl:h-auto lg:overflow-y-scroll lg:overflow-x-hidden 2xl:overflow-y-auto">
+              <div className="mt-3 space-y-1 lg:h-[10rem] ">
                 <SideBarLink
                   name={"Sao web project"}
                   img={

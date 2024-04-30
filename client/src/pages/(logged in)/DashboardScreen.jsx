@@ -92,7 +92,7 @@ export const DashboardScreen = () => {
       style={{ height: "calc(100% - 10rem)" }}
     >
       <div className="flex flex-col w-[90%] lg:w-full lg:flex-row-reverse">
-        <div className="flex flex-col items-center w-full lg:w-[30rem] lg:bg-[#F7F7F7] lg:h-screen" >
+        <div className="flex flex-col items-center w-full lg:w-[30rem] lg:bg-[#F7F7F7] lg:h-screen lg:overflow-auto" >
           <h1 className="text-[1.8rem] font-semibold text-center font-prompt lg:hidden">
             Bienvenido Edward
           </h1>
