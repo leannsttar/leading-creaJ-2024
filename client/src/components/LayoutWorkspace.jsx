@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import { Link, useLocation, Outlet } from "react-router-dom";
 
 import configIcon from "../assets/configIcon.svg";
@@ -9,6 +10,16 @@ import editIcon from "../assets/editIcon.svg";
 
 import { MobileSideBar, SideBar } from "./SideBar.jsx";
 import { HeaderMobileWorkspace } from "./HeaderMobileWorkspace.jsx";
+
+let isMobile = window.innerWidth < 1024;
+
+const checkResolution = () => {
+  const screenWidth = window.innerWidth;
+  isMobile = screenWidth < 1024;
+};
+
+checkResolution();
+window.addEventListener("resize", checkResolution);
 
 const MiniTabLink = ({ title, notification, href }) => {
   return (
@@ -55,8 +66,13 @@ export const LayoutHome = () => {
           </div>
         </div>
       </div>
-      <hr className="hidden lg:block"/>
-      <div className="h-full">
+      <hr className="hidden lg:block" />
+      <div
+        className="w-full overflow-auto"
+        style={{
+          height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+        }}
+      >
         <Outlet />
       </div>
     </div>
@@ -74,9 +90,12 @@ const LayoutTasks = () => {
             </div>
           </div>
           <div className="flex gap-6 text-[#7C7C7C] ">
-            <MiniTabLink title={"Tablero"} href={"/dashboard/tasks"}/>
-            <MiniTabLink title={"Lista"} href={"/dashboard/tasks/list"}/>
-            <MiniTabLink title={"Calendario"} href={"/dashboard/tasks/calendar"}/>
+            <MiniTabLink title={"Tablero"} href={"/dashboard/tasks"} />
+            <MiniTabLink title={"Lista"} href={"/dashboard/tasks/list"} />
+            <MiniTabLink
+              title={"Calendario"}
+              href={"/dashboard/tasks/calendar"}
+            />
           </div>
         </div>
         <div className="flex gap-2">
@@ -93,8 +112,12 @@ const LayoutTasks = () => {
         </div>
       </div>
       <hr />
-      <div className="h-full">
-        {" "}
+      <div
+        className="w-full overflow-auto"
+        style={{
+          height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+        }}
+      >
         <Outlet />
       </div>
     </div>
@@ -113,7 +136,7 @@ const tabLinksProject = [
 const LayoutProject = () => {
   return (
     <div className="w-full max-h-screen overflow-hidden">
-      <div className="h-[6rem] px-5 w-full flex items-center justify-between mt-[4rem] lg:h-[10rem] lg:px-10 lg:mt-0 ">
+      <div className="h-[6rem] px-5 w-full flex items-center justify-between mt-[5rem] lg:h-[10rem] lg:px-10 lg:mt-0 ">
         <div className="flex flex-col h-full justify-between">
           <div className="flex flex-col gap-1 justify-center w-full lg:mt-[1rem]">
             <div className="flex gap-5 items-center">
@@ -150,7 +173,14 @@ const LayoutProject = () => {
               </button>
             </div>
           </div>
-          <div className="flex gap-3 text-[#7C7C7C] overflow-x-scroll w-screen lg:w-auto lg:gap-6 lg:overflow-x-auto pr-3 lg:px-0" style={window.innerWidth > 768 ? {scrollbarColor: 'transparent transparent'} : null}>
+          <div
+            className="flex gap-3 text-[#7C7C7C] overflow-x-scroll w-screen lg:w-auto lg:gap-6 lg:overflow-x-auto pr-7 lg:px-0"
+            style={
+              window.innerWidth > 768
+                ? { scrollbarColor: "transparent transparent" }
+                : null
+            }
+          >
             {tabLinksProject.map((link, index) => {
               return (
                 <div key={index}>
@@ -160,10 +190,14 @@ const LayoutProject = () => {
             })}
           </div>
         </div>
-        
       </div>
       <hr />
-      <div className="h-full">
+      <div
+        className="w-full overflow-auto"
+        style={{
+          height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+        }}
+      >
         <Outlet />
       </div>
     </div>
@@ -200,8 +234,12 @@ const LayoutNotifications = () => {
         </div>
       </div>
       <hr />
-      <div className="h-full">
-        {" "}
+      <div
+        className="w-full overflow-auto"
+        style={{
+          height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+        }}
+      >
         <Outlet />
       </div>
     </div>

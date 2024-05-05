@@ -15,6 +15,7 @@ import { TasksBoardTab } from "../pages/(logged in)/tasksTabs/TasksBoardTab.jsx"
 import { TasksListTab } from "../pages/(logged in)/tasksTabs/TasksListTab.jsx";
 import { TasksCalendarTab } from "../pages/(logged in)/tasksTabs/TasksCalendarTab.jsx";
 
+
 const privateRoutes = [
   {
     path: "/dashboard",

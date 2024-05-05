@@ -9,7 +9,7 @@ export const HeaderMobileWorkspace = ({ isOpen, onToggle }) => {
 
   return (
     <>
-    //shadow-sm
+      
       <div className="p-4 h-[5rem] z-[11] fixed top-0 left-0 bg-white w-full">
         <div className="flex justify-between w-full">
           <img
