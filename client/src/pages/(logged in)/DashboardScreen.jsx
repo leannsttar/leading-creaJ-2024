@@ -88,8 +88,8 @@ export const DashboardScreen = () => {
   return (
     <div
       //Acá usualmente sería 5 rem de pt, por los 5 rem de h del header, pero pongo 6 para que no quede justo
-      className="w-full overflow-hidden pt-[6rem] md:pt-[3rem] lg:pt-0 pb-[4rem] flex justify-center"
-      style={{ height: "calc(100% - 10rem)" }}
+      className="w-full h-full overflow-hidden pt-[6rem] md:pt-[3rem] lg:pt-0 pb-[4rem] flex justify-center"
+      
     >
       <div className="flex flex-col w-[90%] lg:w-full lg:flex-row-reverse">
         <div className="flex flex-col items-center w-full lg:w-[30rem] lg:bg-[#F7F7F7] lg:h-screen lg:overflow-auto" >

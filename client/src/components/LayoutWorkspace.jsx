@@ -70,7 +70,7 @@ export const LayoutHome = () => {
       <div
         className="w-full overflow-auto"
         style={{
-          height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+          height: isMobile ? "" : "calc(100vh - 10rem)",
         }}
       >
         <Outlet />

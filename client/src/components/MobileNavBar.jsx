@@ -6,7 +6,7 @@ const navLinks = [
   { title: "Inicio", href: "/" },
   { title: "Sobre nosotros", href: "/about" },
   { title: "Características", href: "/features" },
-  { title: "Preguntas frecuentes", href: "/faqs" },
+  { title: "FAQs", href: "/faqs" },
   { title: "Iniciar sesión", href: "/login" },
   { title: "Registrarse", href: "/signup" },
 ];

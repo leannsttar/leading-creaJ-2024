@@ -43,7 +43,6 @@ const TaskCard = ({ title, subtitle, imageSrc, date, team, comments }) => {
           </p>
         </div>
       </div>
-      <div className="w-full overflow-auto" style={{ height: "calc(100% - 10rem)" }}></div>
     </div>
   );
 };
