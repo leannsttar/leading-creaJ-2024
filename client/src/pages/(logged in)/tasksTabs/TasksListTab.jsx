@@ -5,7 +5,6 @@ export const TasksListTab = () => {
   return (
     <div className="flex flex-wrap justify-between h-full overflow-auto pt-[6rem] md:pt-[3rem] lg:pt-0 pb-[4rem] bg-[#F7F7F7] font-Poppins">
       {/* Columna "Por hacer" */}
-      
       <div className="w-full md:w-1/3 p-4">
         <div className="flex justify-between items-center mb-5">
           <p className="font-bold text-neutral-700">Por hacer</p>
@@ -23,19 +22,25 @@ export const TasksListTab = () => {
       <div className="w-full md:w-1/3 p-4">
         <div className="flex justify-between items-center mb-5">
           <p className="font-bold text-neutral-700">En proceso</p>
-          {/* Agregar iconos o acciones necesarias */}
+          <div className="flex gap-3">
+            <CiCirclePlus size={24} />
+            <HiDotsHorizontal size={24} />
+          </div>{" "}
         </div>
         {/* Contenido de la columna "En proceso" */}
         {/* Agregar tareas en proceso aquí si es necesario */}
       </div>
 
-      {/* Columna "Terminado" */}
+      {/* Columna "Terminada" */}
       <div className="w-full md:w-1/3 p-4">
         <div className="flex justify-between items-center mb-5">
           <p className="font-bold text-neutral-700">Terminado</p>
-          {/* Agregar iconos o acciones necesarias */}
+          <div className="flex gap-3">
+            <CiCirclePlus size={24} />
+            <HiDotsHorizontal size={24} />
+          </div>{" "}
         </div>
-        {/* Contenido de la columna "Terminado" */}
+        {/* Contenido de la columna "Terminada" */}
         {/* Agregar tareas terminadas aquí si es necesario */}
       </div>
     </div>

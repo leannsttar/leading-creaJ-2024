@@ -32,22 +32,6 @@ export const TasksBoardTab = () => {
           team="Team B"
           comments={11}
         />
-        <TaskCard
-          title="Terminadas"
-          subtitle="Improve cards readability"
-          imageSrc="../../../public/test-task.png"
-          date="Date 11/12/12"
-          team="Team B"
-          comments={11}
-        />
-        <TaskCard
-          title="Terminadas"
-          subtitle="Improve cards readability"
-          imageSrc="../../../public/test-task.png"
-          date="Date 11/12/12"
-          team="Team B"
-          comments={11}
-        />
       </div>
     </div>
   );
