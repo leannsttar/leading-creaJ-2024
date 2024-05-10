@@ -1,16 +1,34 @@
-import { useState } from "react";
-import { MobileSideBar } from "./SideBar";
-
+import React, { useState, useEffect, useRef } from "react";
 import threeLinesMenu from "../assets/3linesMenu.svg";
 import bellNotification from "../assets/bellNotification.svg";
 import avatar from "../assets/Avatar.jpg";
 
-export const HeaderMobileWorkspace = ({ isOpen, onToggle }) => {
+export const HeaderMobileWorkspace = ({ onToggle }) => {
+
+  const [prevScrollPos, setPrevScrollPos] = useState(window.scrollY);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollPos = window.scrollY;
+      const visible = prevScrollPos > currentScrollPos;
+      setVisible(visible);
+      setPrevScrollPos(currentScrollPos);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [prevScrollPos]);
 
   return (
     <>
-      
-      <div className="p-4 h-[5rem] z-[11] fixed top-0 left-0 bg-white w-full">
+      <div
+        className={`p-3 h-[4.5rem] z-[11] fixed top-0 left-0 bg-white w-full transition-all duration-300 ${
+          visible ? "" : "-translate-y-full"
+        }`}
+      >
         <div className="flex justify-between w-full">
           <img
             src={threeLinesMenu}

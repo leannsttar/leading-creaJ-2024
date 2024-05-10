@@ -84,7 +84,7 @@ export const HomePage = () => {
               Productividad Con Una Gestión De Equipo Sencilla
             </h1>
             <img
-              src="./hiFiveHo meBlack.svg"
+              src="./hiFiveHomeBlack.svg"
               alt=""
               className="w-[15.7em] md:hidden"
             />

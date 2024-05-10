@@ -25,7 +25,7 @@ const MiniTabLink = ({ title, notification, href }) => {
   return (
     <Link to={href}>
       <p
-        className={`pb-2 px-2 hover:text-black truncate cursor-pointer border-b-[2px] border-white hover:border-black md:px-6${
+        className={`pb-2 px-2 hover:text-black truncate cursor-pointer border-b-[3px] border-white hover:border-black md:px-6${
           notification ? "hover:border-[#625DF5] border-b-[3px]" : ""
         }`}
       >
@@ -135,72 +135,82 @@ const tabLinksProject = [
 
 const LayoutProject = () => {
   return (
-    <div className="w-full max-h-screen overflow-hidden">
-      <div className="h-[6rem] px-5 w-full flex items-center justify-between mt-[5rem] lg:h-[10rem] lg:px-10 lg:mt-0 ">
-        <div className="flex flex-col h-full justify-between">
-          <div className="flex flex-col gap-1 justify-center w-full lg:mt-[1rem]">
-            <div className="flex gap-5 items-center">
-              <p className="text-[1.8rem] font-semibold">SAO web project</p>
-              <img src={editIcon} alt="" className="w-6 h-6" />
-            </div>
-            <div className="hidden lg:flex items-center gap-3 mt-1">
-              <img src={usersProjectIcon} alt="" />
-              <p>Asignar al proyecto</p>
-              <div className="flex">
-                <AvatarMember
-                  img={
-                    "https://i.pinimg.com/564x/bb/47/80/bb4780347a759a484265b65cb91d481a.jpg"
-                  }
-                />
-                <AvatarMember
-                  img={
-                    "https://i.pinimg.com/564x/33/f1/45/33f14533966e1d68e90b8646e82bd291.jpg"
-                  }
-                  className={"relative right-2"}
-                />
-                <AvatarMember
-                  img={
-                    "https://i.pinimg.com/564x/e1/d0/4e/e1d04e0e45c1301b98e7028955a9dfb9.jpg"
-                  }
-                  className={"relative right-4"}
-                />
-                <div className="bg-[#D9D9D9] w-8 h-8 flex justify-center items-center rounded-full relative right-6 font-semibold">
-                  <p>4+</p>
-                </div>
+    <>
+      <div className="w-full max-h-screen overflow-hidden">
+        <div className="h-[6rem] px-5 w-full flex items-center justify-between mt-[5rem] lg:h-[10rem] lg:px-10 lg:mt-0 ">
+          <div className="flex flex-col h-full justify-between">
+            <div className="flex flex-col gap-1 justify-center w-full lg:mt-[1rem]">
+              <div className="flex gap-5 items-center">
+                <p className="text-[1.8rem] font-semibold">SAO web project</p>
+                <img src={editIcon} alt="" className="w-6 h-6" />
               </div>
-              <button className="px-4 py-2 bg-[#D6EAF5] text-[#0070D8] font-semibold rounded-3xl">
-                Añadir miembro
-              </button>
-            </div>
-          </div>
-          <div
-            className="flex gap-3 text-[#7C7C7C] overflow-x-scroll w-screen lg:w-auto lg:gap-6 lg:overflow-x-auto pr-7 lg:px-0"
-            style={
-              window.innerWidth > 768
-                ? { scrollbarColor: "transparent transparent" }
-                : null
-            }
-          >
-            {tabLinksProject.map((link, index) => {
-              return (
-                <div key={index}>
-                  <MiniTabLink title={link.title} href={link.href} />
+              <div className="hidden lg:flex items-center gap-3 mt-1">
+                <img src={usersProjectIcon} alt="" />
+                <p>Asignar al proyecto</p>
+                <div className="flex">
+                  <AvatarMember
+                    img={
+                      "https://i.pinimg.com/564x/bb/47/80/bb4780347a759a484265b65cb91d481a.jpg"
+                    }
+                  />
+                  <AvatarMember
+                    img={
+                      "https://i.pinimg.com/564x/33/f1/45/33f14533966e1d68e90b8646e82bd291.jpg"
+                    }
+                    className={"relative right-2"}
+                  />
+                  <AvatarMember
+                    img={
+                      "https://i.pinimg.com/564x/e1/d0/4e/e1d04e0e45c1301b98e7028955a9dfb9.jpg"
+                    }
+                    className={"relative right-4"}
+                  />
+                  <div className="bg-[#D9D9D9] w-8 h-8 flex justify-center items-center rounded-full relative right-6 font-semibold">
+                    <p>4+</p>
+                  </div>
                 </div>
-              );
-            })}
+                <button className="px-4 py-2 bg-[#D6EAF5] text-[#0070D8] font-semibold rounded-3xl">
+                  Añadir miembro
+                </button>
+              </div>
+            </div>
+            <div
+              className="flex gap-3 text-[#7C7C7C] overflow-x-scroll w-screen lg:w-auto lg:gap-6 lg:overflow-x-auto pr-7 lg:px-0"
+              style={
+                window.innerWidth > 768
+                  ? { scrollbarColor: "transparent transparent" }
+                  : null
+              }
+            >
+              {tabLinksProject.map((link, index) => {
+                return (
+                  <div key={index}>
+                    <MiniTabLink title={link.title} href={link.href} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
+        <hr />
+        <div
+          className="w-full overflow-auto hidden lg:block "
+          style={{
+            height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+          }}
+        >
+          <Outlet />
+        </div>
       </div>
-      <hr />
       <div
-        className="w-full overflow-auto"
+        className="w-full lg:hidden"
         style={{
           height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
         }}
       >
         <Outlet />
       </div>
-    </div>
+    </>
   );
 };
 
