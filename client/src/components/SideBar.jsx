@@ -26,6 +26,12 @@ const navLinks = [
   },
 ];
 
+const navLinksMobile = [
+  { title: "Dashboard", href: "/dashboard", img: dashboardIcon },
+  { title: "Tareas", href: "/dashboard/tasks", img: tasksIcon },
+  { title: "Mensajes", href: "/dashboard/messages", img: messagesIcon },
+];
+
 const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
   return isProject ? (
     <Link to={href}>
@@ -69,7 +75,7 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
 export const SideBar = () => {
   const [isDark, setIsDark] = useState(false);
   const [isShrinked, setIsShrinked] = useState(window.innerWidth < 1280);
-  const [isLowRes, setIsLowRes] = useState(window.innerHeight < 730)
+  const [isLowRes, setIsLowRes] = useState(window.innerHeight < 730);
 
   useEffect(() => {
     const checkResolution = () => {
@@ -78,10 +84,10 @@ export const SideBar = () => {
     };
 
     checkResolution();
-    window.addEventListener('resize', checkResolution);
+    window.addEventListener("resize", checkResolution);
 
     return () => {
-      window.removeEventListener('resize', checkResolution);
+      window.removeEventListener("resize", checkResolution);
     };
   }, []);
 
@@ -358,7 +364,7 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
         <div className="p-4">
           <div>
             <div className="mt-1 space-y-[0.40rem] text-[#000000] pb-5 ">
-              {navLinks.map((link, index) => {
+              {navLinksMobile.map((link, index) => {
                 return (
                   <div
                     key={index}

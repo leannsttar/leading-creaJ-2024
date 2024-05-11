@@ -176,10 +176,7 @@ const LayoutProject = () => {
             </div>
             <div
               className="flex gap-3 text-[#7C7C7C] overflow-x-scroll w-screen lg:w-auto lg:gap-6 lg:overflow-x-auto pr-7 lg:px-0"
-              style={
-                window.innerWidth > 768
-                  ? { scrollbarColor: "transparent transparent" }
-                  : null
+              style={{ scrollbarColor: "transparent transparent" }
               }
             >
               {tabLinksProject.map((link, index) => {
