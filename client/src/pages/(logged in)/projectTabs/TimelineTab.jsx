@@ -29,8 +29,8 @@ const ActionRecord = ({ type, user, userImage, action, date }) => {
   }
 
   return (
-    <div className="bg-[#F7F7F7] rounded-xl px-3 py-2 flex justify-between ">
-      <div className="flex gap-1.5 items-center">
+    <div className="bg-[#F7F7F7] rounded-xl px-3 py-2 lg:px-5 flex justify-between ">
+      <div className="flex gap-1.5 lg:gap-4 items-center">
         <img src={iconSrc} alt="" className={`min-w-[1.2rem] min-h-[1.2rem]`} />
         <img
           src={userImage}
