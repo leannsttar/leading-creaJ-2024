@@ -15,6 +15,8 @@ export const TasksListTab = () => {
         </div>
         {/* Contenido de la columna "Por hacer" */}
         <TaskItem title="Update tokens" feedback="Feedback" bug="Bug" />
+        <TaskItem title="Update tokens" feedback="Feedback" bug="Bug" />
+        <TaskItem title="Update tokens" feedback="Feedback" bug="Bug" />
         {/* Agregar más tareas aquí si es necesario */}
       </div>
 
@@ -28,6 +30,9 @@ export const TasksListTab = () => {
           </div>{" "}
         </div>
         {/* Contenido de la columna "En proceso" */}
+        <TaskItem title="Update tokens" feedback="Feedback" bug="Bug" />
+        <TaskItem title="Update tokens" feedback="Feedback" bug="Bug" />
+        <TaskItem title="Update tokens" feedback="Feedback" bug="Bug" />
         {/* Agregar tareas en proceso aquí si es necesario */}
       </div>
 
@@ -41,6 +46,9 @@ export const TasksListTab = () => {
           </div>{" "}
         </div>
         {/* Contenido de la columna "Terminada" */}
+        <TaskItem title="Update tokens" feedback="Feedback" bug="Bug" />
+        <TaskItem title="Update tokens" feedback="Feedback" bug="Bug" />
+        <TaskItem title="Update tokens" feedback="Feedback" bug="Bug" />
         {/* Agregar tareas terminadas aquí si es necesario */}
       </div>
     </div>

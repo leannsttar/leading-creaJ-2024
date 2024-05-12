@@ -35,11 +35,12 @@ const TaskCard = ({ title, subtitle, imageSrc, date, team, comments }) => {
         </div>
         <p className="font-medium whitespace-nowrap">{team}</p>
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center justify-between">
         <img src="/test-boy.png" className="w-8 h-8 mr-2 flex-shrink-0" alt="" />
-        <div className="flex items-center">
+        <div className="flex items-center space-x-1">
           <LiaCommentSolid size={24} className="cursor-pointer" />
-          <p className="ml-1">{comments} Comentarios</p>
+          <p>{comments}</p>
+          <p className="text-base">Comentarios</p>
         </div>
       </div>
     </div>
