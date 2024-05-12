@@ -16,7 +16,7 @@ import threeLinesMenu from "../assets/3linesMenu.svg";
 import avatar from "../assets/Avatar.jpg";
 
 const navLinks = [
-  { title: "Dashboard", href: "/dashboard", img: dashboardIcon },
+  { title: "Panel", href: "/dashboard", img: dashboardIcon },
   { title: "Tareas", href: "/dashboard/tasks", img: tasksIcon },
   { title: "Mensajes", href: "/dashboard/messages", img: messagesIcon },
   {
@@ -27,7 +27,7 @@ const navLinks = [
 ];
 
 const navLinksMobile = [
-  { title: "Dashboard", href: "/dashboard", img: dashboardIcon },
+  { title: "Panel de control", href: "/dashboard", img: dashboardIcon },
   { title: "Tareas", href: "/dashboard/tasks", img: tasksIcon },
   { title: "Mensajes", href: "/dashboard/messages", img: messagesIcon },
 ];

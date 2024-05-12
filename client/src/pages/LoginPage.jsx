@@ -1,4 +1,3 @@
-import { MobileNavBar } from '../components/MobileNavBar.jsx'
 import { Link } from 'react-router-dom'
 
 export const LoginPage = () => {
@@ -43,7 +42,7 @@ export const LoginPage = () => {
                     id="email"
                     className="w-full pl-4 rounded-md outline-none border border-gray h-12 text-lg"
                     placeholder="Ingresa tu contraseña"
-                    type="email"
+                    type="password"
                   />
                 </div>
                 <button className="w-full bg-black text-zinc-50 rounded-md text-xl h-12">Iniciar sesión</button>
