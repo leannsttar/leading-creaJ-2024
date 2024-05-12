@@ -12,10 +12,13 @@ export const TaskCardProject = ({
     subTasks,
     members,
     comments,
-    mobile
+    mobile,
+    upcoming,
+    inProcess,
+    done
   }) => {
     return (
-      <div className={`bg-[#F7F7F7] py-3 px-4 rounded-2xl  ${mobile ? 'min-w-[16rem] space-y-2' : 'w-full space-y-4 '}`}>
+      <div className={`${upcoming ? 'bg-[#FFD3E2]' : inProcess ? 'bg-[#FEE4CB]' : done ? 'bg-[#C8F7DC]' : ''} py-3 px-4 rounded-2xl  ${mobile ? 'min-w-[16rem] lg:w-[80%] space-y-2' : 'w-full space-y-4 '}`}>
         <div className="flex justify-between">
           <div className="flex gap-2">
             {tags.map((tag, index) => {

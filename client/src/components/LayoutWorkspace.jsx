@@ -22,10 +22,19 @@ checkResolution();
 window.addEventListener("resize", checkResolution);
 
 const MiniTabLink = ({ title, notification, href }) => {
+  const location = useLocation();
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    setIsActive(location.pathname === href);
+  }, [location.pathname, href]);
+
   return (
     <Link to={href}>
       <p
-        className={`pb-2 lg:pb-1 px-2 hover:text-black truncate cursor-pointer border-b-[3px] border-white hover:border-black md:px-6${
+        className={`${
+          isActive ? "text-black border-black border-b-[3px]" : ""
+        } pb-2 lg:pb-1 px-2 hover:text-black truncate cursor-pointer border-b-[3px] border-white hover:border-black md:px-6${
           notification ? "hover:border-[#625DF5] border-b-[3px]" : ""
         }`}
       >
@@ -176,8 +185,7 @@ const LayoutProject = () => {
             </div>
             <div
               className="flex gap-3 text-[#7C7C7C] overflow-x-scroll w-screen lg:w-auto lg:gap-6 lg:overflow-x-auto pr-7 lg:px-0"
-              style={{ scrollbarColor: "transparent transparent" }
-              }
+              style={{ scrollbarColor: "transparent transparent" }}
             >
               {tabLinksProject.map((link, index) => {
                 return (

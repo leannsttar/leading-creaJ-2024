@@ -9,7 +9,7 @@ import { IoSearchOutline } from "react-icons/io5";
 const ButtonConfig = ({ text, onClick, isActive, action }) => {
   return (
     <button
-      className={`hover:bg-[#e7e7e7] rounded-lg px-3 py-2 ${
+      className={`hover:bg-[#e7e7e7] rounded-lg px-3 py-2 text-left ${
         isActive ? "bg-[#e7e7e7]" : action ? "bg-[#e7e7e7]" : ""
       }`}
       onClick={onClick}
@@ -131,8 +131,16 @@ export const ConfigTab = () => {
   };
 
   return (
-    <div className="m-5 lg:m-14 pb-16">
-      <div className="flex gap-3 mb-1 lg:mb-10">
+    <div className="m-5 lg:my-9 lg:mx-14 xl:my-14 xl:mx-36 pb-16 lg:flex lg:p-4 lg:bg-[#F7F7F7] lg:gap-5 lg:rounded-xl">
+      <div className="flex gap-3 lg:gap-1 mb-1 lg:flex-col lg:min-w-[17rem] lg:max-w-[17rem] lg:h-[624px] lg:bg-[#ffffff] lg:p-2 lg:rounded-xl">
+        <div className="hidden lg:flex items-center gap-3 m-2">
+          <img
+            src={projectImage}
+            alt=""
+            className="rounded-md min-w-[2.5rem] min-h-[2.5rem] max-w-[2.5rem] max-h-[2.5rem]"
+          />
+          <p className="font-semibold">SAO web project</p>
+        </div>
         <ButtonConfig
           text={"Detalles"}
           onClick={() => setLayout("Detalles")}
@@ -146,73 +154,95 @@ export const ConfigTab = () => {
       </div>
       <hr className="mb-4 lg:hidden" />
       {layout === "Detalles" ? (
-        <div className="lg:mx-[10rem]">
-          <div className="space-y-5 mb-3 ">
-            <p className="text-2xl font-semibold">Detalles</p>
-            <div className="flex flex-col items-center gap-4">
-              <img
-                src={projectImage}
-                alt=""
-                className="w-[60%] rounded-lg lg:w-[14rem]"
-              />
-              <ButtonConfig text={"Cambiar imagen"} action />
+        <div className="lg:w-full lg:p-10 space-y-3 lg:space-y-5">
+          <p className="text-2xl font-semibold lg:text-3xl">Detalles</p>
+          <div className="flex justify-center">
+            <div className="lg:w-[95%] xl:w-[70%] lg:flex lg:flex-col lg:gap-7">
+              <div className="space-y-5 mb-3 ">
+                <div className="lg:flex lg:gap-[4rem]">
+                  <div className="flex flex-col items-center gap-4">
+                    <img
+                      src={projectImage}
+                      alt=""
+                      className="w-[60%] rounded-lg lg:w-[14rem]"
+                    />
+                    <ButtonConfig text={"Cambiar imagen"} action />
+                  </div>
+                  <div className="lg:flex flex-col gap-1 hidden lg:w-full">
+                    <label htmlFor="" className="font-semibold">
+                      Descripción
+                    </label>
+                    <textarea
+                      value={configInfo.descripcion}
+                      onChange={(e) =>
+                        handleChange("descripcion", e.target.value)
+                      }
+                      className="text-[#00000080] h-full w-full p-2 border-[1px] border-[#d8d8d8] rounded-lg resize-none	"
+                      name=""
+                      id=""
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-4 lg:space-y-6">
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="" className="font-semibold">
+                    Nombre
+                  </label>
+                  <input
+                    value={configInfo.nombre}
+                    onChange={(e) => handleChange("nombre", e.target.value)}
+                    className="py-3 px-4 text-[#00000080] border-[1px] border-[#d8d8d8] rounded-lg"
+                    type="text"
+                    name=""
+                    id=""
+                  />
+                </div>
+                <div className="flex flex-col gap-1 relative">
+                  <label htmlFor="" className="font-semibold">
+                    Líder del proyecto
+                  </label>
+                  <img
+                    src={configInfo.lider[0]}
+                    alt=""
+                    className="w-8 h-8 object-cover rounded-full absolute top-9 left-2.5"
+                  />
+                  <input
+                    value={configInfo.lider[1]}
+                    readOnly
+                    className="py-3 pl-12 pr-4 text-[#00000080] border-[1px] border-[#d8d8d8] rounded-lg"
+                    type="text"
+                    name=""
+                    id=""
+                  />
+                </div>
+                <div className="flex flex-col gap-1 lg:hidden">
+                  <label htmlFor="" className="font-semibold">
+                    Descripción
+                  </label>
+                  <textarea
+                    value={configInfo.descripcion}
+                    onChange={(e) =>
+                      handleChange("descripcion", e.target.value)
+                    }
+                    className="text-[#00000080] h-[9rem] p-2 border-[1px] border-[#d8d8d8] rounded-lg resize-none	"
+                    name=""
+                    id=""
+                  ></textarea>
+                </div>
+                <ButtonConfig
+                  text={"Guardar cambios"}
+                  className={"bg-[#f1f1f1]"}
+                  action
+                />
+              </div>
             </div>
-          </div>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-1">
-              <label htmlFor="" className="font-semibold">
-                Nombre
-              </label>
-              <input
-                value={configInfo.nombre}
-                onChange={(e) => handleChange("nombre", e.target.value)}
-                className="py-3 px-4 text-[#00000080] border-[1px] border-[#d8d8d8] rounded-lg"
-                type="text"
-                name=""
-                id=""
-              />
-            </div>
-            <div className="flex flex-col gap-1 relative">
-              <label htmlFor="" className="font-semibold">
-                Líder del proyecto
-              </label>
-              <img
-                src={configInfo.lider[0]}
-                alt=""
-                className="w-8 h-8 object-cover rounded-full absolute top-9 left-2.5"
-              />
-              <input
-                value={configInfo.lider[1]}
-                readOnly
-                className="py-3 pl-12 pr-4 text-[#00000080] border-[1px] border-[#d8d8d8] rounded-lg"
-                type="text"
-                name=""
-                id=""
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="" className="font-semibold">
-                Descripción
-              </label>
-              <textarea
-                value={configInfo.descripcion}
-                onChange={(e) => handleChange("descripcion", e.target.value)}
-                className="text-[#00000080] h-[9rem] p-2 border-[1px] border-[#d8d8d8] rounded-lg"
-                name=""
-                id=""
-              ></textarea>
-            </div>
-            <ButtonConfig
-              text={"Guardar cambios"}
-              className={"bg-[#f1f1f1]"}
-              action
-            />
           </div>
         </div>
       ) : (
-        <div className="lg:mx-[10rem]">
+        <div className="lg:w-full lg:p-10 space-y-3 lg:space-y-5">
+          <p className="text-2xl font-semibold lg:text-3xl">Acceso</p>
           <div className="space-y-5 mb-3">
-            <p className="text-2xl font-semibold">Acceso</p>
             <div className="relative">
               <IoSearchOutline
                 color="#B0BABF"
@@ -221,7 +251,7 @@ export const ConfigTab = () => {
               />
               <input
                 placeholder="Busca por nombre o correo"
-                className="py-3 pl-9 pr-4 text-[#00000080] border-[1px] border-[#d8d8d8] rounded-lg"
+                className="lg:w-[20rem] py-3 pl-9 pr-4 text-[#00000080] border-[1px] border-[#d8d8d8] rounded-lg"
                 type="text"
                 name=""
                 id=""

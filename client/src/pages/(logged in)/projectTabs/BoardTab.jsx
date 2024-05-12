@@ -4,7 +4,7 @@ import plusTasksIcon from "../../../assets/plusTasksIcon.svg";
 
 const HeaderTaskCards = ({ title, numCards }) => {
   return (
-    <div className="bg-[#F7F7F7] flex justify-between py-3 px-5 rounded-[1.5rem]">
+    <div className="bg-[#F7F7F7] flex justify-between py-3 px-5 rounded-[1.5rem] lg:w-[80%]">
       <div>
         <p className="text-xl font-semibold">{title}</p>
         <p className="text-[#959595]">{numCards} cards de tareas</p>
@@ -18,7 +18,7 @@ const ColTasks = ({ title, numCards, children }) => {
   return (
     <div className="space-y-3 lg:w-[30%] lg:space-y-8">
       <HeaderTaskCards title={title} numCards={numCards} />
-      <div className="flex gap-3 overflow-auto pb-2 lg:flex-col">
+      <div className="flex gap-3 overflow-auto pb-2 lg:flex-col lg:gap-6">
         {children}
       </div>
     </div>
@@ -27,7 +27,7 @@ const ColTasks = ({ title, numCards, children }) => {
 
 export const BoardTab = () => {
   return (
-    <div className="mx-5 my-9 space-y-10 lg:flex lg:space-y-0 lg:justify-around">
+    <div className="mx-5 my-9 lg:mx-11 lg:my-16 space-y-10 lg:flex lg:space-y-0 lg:justify-around">
       <ColTasks title={"Próximo"} numCards={12}>
         <TaskCardProject
           title={"Payment method via e-commerce"}
@@ -42,6 +42,7 @@ export const BoardTab = () => {
           ]}
           comments={0}
           mobile
+          upcoming
         />
         <TaskCardProject
           title={"Payment method via e-commerce"}
@@ -56,6 +57,7 @@ export const BoardTab = () => {
           ]}
           comments={0}
           mobile
+          upcoming
         />
         <TaskCardProject
           title={"Payment method via e-commerce"}
@@ -70,6 +72,7 @@ export const BoardTab = () => {
           ]}
           comments={0}
           mobile
+          upcoming
         />
       </ColTasks>
       <ColTasks title={"En proceso"} numCards={12}>
@@ -86,6 +89,7 @@ export const BoardTab = () => {
           ]}
           comments={0}
           mobile
+          inProcess
         />
         <TaskCardProject
           title={"Payment method via e-commerce"}
@@ -100,6 +104,7 @@ export const BoardTab = () => {
           ]}
           comments={0}
           mobile
+          inProcess
         />
         <TaskCardProject
           title={"Payment method via e-commerce"}
@@ -114,6 +119,7 @@ export const BoardTab = () => {
           ]}
           comments={0}
           mobile
+          inProcess
         />
       </ColTasks>
       <ColTasks title={"Terminadas"} numCards={12}>
@@ -130,6 +136,7 @@ export const BoardTab = () => {
           ]}
           comments={0}
           mobile
+          done
         />
         <TaskCardProject
           title={"Payment method via e-commerce"}
@@ -144,6 +151,7 @@ export const BoardTab = () => {
           ]}
           comments={0}
           mobile
+          done
         />
         <TaskCardProject
           title={"Payment method via e-commerce"}
@@ -158,6 +166,7 @@ export const BoardTab = () => {
           ]}
           comments={0}
           mobile
+          done
         />
       </ColTasks>
     </div>

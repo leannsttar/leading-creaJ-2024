@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import { MdKeyboardArrowLeft } from "react-icons/md";
 
@@ -33,10 +33,25 @@ const navLinksMobile = [
 ];
 
 const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
+  const location = useLocation();
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    if (href) {
+      if (href.startsWith("/dashboard/project")) {
+        setIsActive(location.pathname.startsWith(href));
+      } else {
+        setIsActive(location.pathname === href);
+      }
+    }
+  }, [location.pathname, href]);
+
   return isProject ? (
     <Link to={href}>
       <div
-        className={`flex items-center gap-4 py-[0.40rem] px-2 hover:bg-[#f1eefd] rounded-lg cursor-pointer relative`}
+        className={`flex items-center gap-4 py-[0.40rem] px-2 hover:bg-[#f1eefd] rounded-lg cursor-pointer relative ${
+          isActive ? "bg-[#f1eefd]" : ""
+        }`}
       >
         <img
           src={img}
@@ -56,7 +71,9 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
   ) : (
     <Link to={href}>
       <div
-        className={`flex gap-4 py-[0.60rem] px-3 hover:bg-[#EBF1FD] rounded-lg cursor-pointer `}
+        className={`flex gap-4 py-[0.60rem] px-3 hover:bg-[#EBF1FD] rounded-lg cursor-pointer ${
+          isActive ? "bg-[#EBF1FD]" : ""
+        }`}
       >
         <img src={img} alt={`${img}`} className="w-5" />
         <p
