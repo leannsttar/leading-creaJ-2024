@@ -317,12 +317,12 @@ export const LayoutWorkspace = () => {
   return (
     <>
       {isDesktop ? (
-        <div className="flex">
+        <div className="flex font-inter">
           <SideBar />
           {renderComponentBasedOnPath()}
         </div>
       ) : (
-        <div className="flex flex-col">
+        <div className="flex flex-col font-inter">
           {isSidebarOpen && (
             <div
               className="fixed top-0 left-0 w-screen h-screen bg-black opacity-50 z-[12]"

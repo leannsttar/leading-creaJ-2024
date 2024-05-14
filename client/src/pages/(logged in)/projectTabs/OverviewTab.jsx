@@ -1,7 +1,8 @@
-import { TaskCardProject } from "../../../components/(logged in)/TaskCardProject.jsx"
+import { useState } from "react";
+
+import { TaskCardProject } from "../../../components/(logged in)/TaskCardProject.jsx";
 
 import projectImage from "../../../assets/projectImage.jpg";
-
 
 const ActivityRecord = ({ img, message, date }) => {
   return (
@@ -47,7 +48,14 @@ const ReplyComponent = ({ img, messages, me }) => {
       <UserPictureMessage href={img} />
       <div className={`flex flex-col gap-1 ${me ? "items-end" : ""}`}>
         {messages.map((message, index) => {
-          return <MessageComponent key={index} message={message} index={index} me={me} />;
+          return (
+            <MessageComponent
+              key={index}
+              message={message}
+              index={index}
+              me={me}
+            />
+          );
         })}
       </div>
     </div>
@@ -58,6 +66,73 @@ export const OverviewTab = () => {
   let messages1 = ["just ideas for next time", "I'll be there in 2 mins ⏰"];
   let messages2 = ["woohoooo", "Haha oh man", "Haha that's terrifying 😂"];
   let messages3 = ["aww", "omg, this is amazing", "woohoooo 🔥"];
+
+  const [data, setData] = useState([
+    {
+      title: "Payment method via e-commerce",
+      tags: ["Research", "UX"],
+      description:
+        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
+      subTasks: [2, 10],
+      date: "Nov 16, 2022",
+      files: 3,
+      members: [
+        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
+        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
+        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
+      ],
+      comments: 0,
+      status: "inProgress",
+    },
+    {
+      title: "Payment method via e-commerce",
+      tags: ["Research", "UX"],
+      description:
+        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
+      subTasks: [2, 10],
+      date: "Nov 18",
+      files: 3,
+      members: [
+        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
+        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
+        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
+      ],
+      comments: 0,
+      status: "done",
+    },
+    {
+      title: "Paayment method via e-commerce",
+      tags: ["Research", "UX"],
+      description:
+        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
+      subTasks: [2, 10],
+      date: "Nov 17",
+      files: 3,
+      members: [
+        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
+        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
+        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
+      ],
+      comments: 0,
+      status: "upcoming",
+    },
+    {
+      title: "Paayment method via e-commerce",
+      tags: ["Research", "UX"],
+      description:
+        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
+      subTasks: [2, 10],
+      date: "Nov 17",
+      files: 3,
+      members: [
+        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
+        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
+        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
+      ],
+      comments: 0,
+      status: "upcoming",
+    },
+  ]);
 
   return (
     <div className="m-5 lg:flex lg:gap-8">
@@ -133,58 +208,13 @@ export const OverviewTab = () => {
             <div className="bg-[#5B5B5B] w-[6rem] h-[5px] rounded-full" />
           </div>
           <div className="flex flex-col gap-3 lg:grid lg:grid-cols-2 2xl:grid-cols-3">
-            <TaskCardProject
-              title={"Payment method via e-commerce"}
-              tags={["Research", "UX"]}
-              subTasks={[2, 10]}
-              date={"Nov 16"}
-              files={3}
-              members={[
-                "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-                "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-                "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-              ]}
-              comments={0}
-            />
-            <TaskCardProject
-              title={"Payment method via e-commerce"}
-              tags={["Research", "UX"]}
-              subTasks={[2, 10]}
-              date={"Nov 16"}
-              files={3}
-              members={[
-                "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-                "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-                "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-              ]}
-              comments={0}
-            />
-            <TaskCardProject
-              title={"Payment method via e-commerce"}
-              tags={["Research", "UX"]}
-              subTasks={[2, 10]}
-              date={"Nov 16"}
-              files={3}
-              members={[
-                "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-                "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-                "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-              ]}
-              comments={0}
-            />
-            <TaskCardProject
-              title={"Payment method via e-commerce"}
-              tags={["Research", "UX"]}
-              subTasks={[2, 10]}
-              date={"Nov 16"}
-              files={3}
-              members={[
-                "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-                "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-                "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-              ]}
-              comments={0}
-            />
+            {data.map((task, index) => (
+              <TaskCardProject
+                index={index}
+                taskData={task}
+                onClick={() => showDrawer(task)}
+              />
+            ))}
           </div>
         </div>
       </div>
