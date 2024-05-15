@@ -1,7 +1,17 @@
 import { useState, useRef, useEffect } from "react";
+import Link from "antd/es/typography/Link";
 import { FaPlus } from "react-icons/fa6";
 import { PlusOutlined } from "@ant-design/icons";
 import { TbEdit } from "react-icons/tb";
+import { PiListChecks } from "react-icons/pi";
+import { PiList } from "react-icons/pi";
+
+import { TaskCardProject } from "@/components/(logged in)/TaskCardProject";
+
+import plusTasksIcon from "../../../assets/plusTasksIcon.svg";
+import avatar from "../../../assets/Avatar.jpg";
+
+import Microlink from "@microlink/react";
 
 import {
   Button,
@@ -13,12 +23,73 @@ import {
   Row,
   Select,
   Space,
+  Flex,
+  Progress,
+  Checkbox,
 } from "antd";
 const { Option } = Select;
 
-import { TaskCardProject } from "@/components/(logged in)/TaskCardProject";
-
-import plusTasksIcon from "../../../assets/plusTasksIcon.svg";
+import { InboxOutlined, SendOutlined, UploadOutlined } from "@ant-design/icons";
+import { message, Upload } from "antd";
+const { Dragger } = Upload;
+const fileList = [
+  {
+    uid: "0",
+    name: "archivo1.png",
+    status: "done",
+    percent: 33,
+    url: "https://i.pinimg.com/564x/be/d9/c7/bed9c79272193572180299e91c800745.jpg",
+    thumbUrl:
+      "https://i.pinimg.com/564x/be/d9/c7/bed9c79272193572180299e91c800745.jpg",
+  },
+  {
+    uid: "-1",
+    name: "archivo2.png",
+    status: "done",
+    url: "https://i.pinimg.com/564x/be/d9/c7/bed9c79272193572180299e91c800745.jpg",
+    thumbUrl:
+      "https://i.pinimg.com/564x/be/d9/c7/bed9c79272193572180299e91c800745.jpg",
+  },
+  {
+    uid: "-2",
+    name: "archivo3.png",
+    status: "done",
+    url: "https://i.pinimg.com/564x/be/d9/c7/bed9c79272193572180299e91c800745.jpg",
+    thumbUrl:
+      "https://i.pinimg.com/564x/be/d9/c7/bed9c79272193572180299e91c800745.jpg",
+  },
+];
+const props = {
+  action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
+  onChange({ file, fileList }) {
+    if (file.status !== "uploading") {
+      console.log(file, fileList);
+    }
+  },
+  defaultFileList: [
+    {
+      uid: "1",
+      name: "archivo1.png",
+      status: "uploading",
+      url: "http://www.baidu.com/xxx.png",
+      percent: 33,
+    },
+    {
+      uid: "2",
+      name: "archivo2.png",
+      status: "done",
+      url: "http://www.baidu.com/yyy.png",
+    },
+    {
+      uid: "3",
+      name: "archivo3.png",
+      status: "error",
+      response: "Server Error 500",
+      // custom error message to show
+      url: "http://www.baidu.com/zzz.png",
+    },
+  ],
+};
 
 const HeaderTaskCards = ({ title, numCards }) => {
   const [open, setOpen] = useState(false);
@@ -211,11 +282,51 @@ const ColTasks = ({ title, numCards, children }) => {
   );
 };
 
+const SubTask = ({ name, index }) => {
+  const onChange = (e) => {
+    console.log(`checked = ${e.target.checked}`);
+  };
+
+  return (
+    <div key={index} className="flex items-center gap-2 w-full">
+      <PiList size={22} className="pb-2" />
+      <Checkbox
+        onChange={onChange}
+        className="text-[1rem] pb-2 border-b-[1px] border-gray-300 w-full mr-6"
+      >
+        {name}
+      </Checkbox>
+    </div>
+  );
+};
+
+const CommentComponent = ({ userName, userPicture, message, timeAgo }) => {
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center gap-3">
+        <img
+          src={userPicture}
+          alt=""
+          className="min-h-8 min-w-8 max-h-8 max-w-8 rounded-full object-cover"
+        />
+        <div className="flex items-center gap-1">
+          <p className="font-medium">{userName}</p>
+          <div className="rounded-full bg-gray-600 w-1 h-1"></div>
+          <p className="text-[.8rem] text-gray-500">{timeAgo}</p>
+        </div>
+      </div>
+      <p>{message}</p>
+      <hr />
+    </div>
+  );
+};
+
 export const BoardTab = () => {
   const [open, setOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [section, setSection] = useState("progreso");
   const timerRef = useRef();
 
   const clearTimer = () => {
@@ -237,6 +348,10 @@ export const BoardTab = () => {
     setOpen(false);
   };
 
+  const changeSection = (newSection) => {
+    setSection(newSection);
+  };
+
   useEffect(() => clearTimer, []);
 
   // const handleSubmit = (values) => {
@@ -246,11 +361,16 @@ export const BoardTab = () => {
 
   const [data, setData] = useState([
     {
-      title: "Payment method via e-commerce",
-      tags: ["Research", "UX"],
+      title: "Create component button web",
+      tags: ["Design System", "UI"],
       description:
         "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [2, 10],
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
       date: "Nov 16, 2022",
       files: 3,
       members: [
@@ -266,7 +386,12 @@ export const BoardTab = () => {
       tags: ["Research", "UX"],
       description:
         "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [2, 10],
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
       date: "Nov 18",
       files: 3,
       members: [
@@ -278,11 +403,16 @@ export const BoardTab = () => {
       status: "done",
     },
     {
-      title: "Paayment method via e-commerce",
-      tags: ["Research", "UX"],
+      title: "Create home ux writing content",
+      tags: ["UX Writer", "UX"],
       description:
         "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [2, 10],
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
       date: "Nov 17",
       files: 3,
       members: [
@@ -308,16 +438,32 @@ export const BoardTab = () => {
             : ""
         }
         width={700}
-        height={isMobile && 800}
-        placement={isMobile ? 'bottom' : 'right'}
+        height={isMobile && "85vh"}
+        placement={isMobile ? "bottom" : "right"}
         onClose={onClose}
         loading={loading}
         visible={open}
         bodyStyle={{ padding: "2rem", fontFamily: "Inter" }}
         footer={
-          <Space>
-            <Button onClick={onClose}>Cerrar</Button>
-          </Space>
+          <div
+            className={`${
+              section === "progreso" && "hidden"
+            } m-2 flex items-center gap-3 relative`}
+          >
+            <img
+              src={avatar}
+              alt=""
+              className="min-w-10 min-h-10 max-w-10 max-h-10 rounded-full object-cover"
+            />
+            <input
+              className="rounded-2xl bg-[#f7f7f7] px-3 py-2 outline-none w-full mr-4"
+              type="text"
+              placeholder="Copia el link aquí ..."
+              name=""
+              id=""
+            />
+            <SendOutlined className="absolute right-8" />
+          </div>
         }
       >
         {selectedTask && (
@@ -356,7 +502,7 @@ export const BoardTab = () => {
                           />
                         );
                       })}
-                      <div className="flex items-center justify-center rounded-full w-[2rem] h-[2rem] bg-[#e6e6e6] relative right-3">
+                      <div className="flex items-center justify-center rounded-full w-[2rem] h-[2rem] bg-[#e6e6e6] relative right-3 cursor-pointer">
                         <FaPlus />
                       </div>
                     </div>
@@ -371,7 +517,7 @@ export const BoardTab = () => {
                 <tr>
                   <td className="text-[#9b9b9b] font-medium py-2">Etiquetas</td>
                   <td className="font-medium py-2">
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                       {selectedTask.tags.map((tag, index) => {
                         return (
                           <p
@@ -382,8 +528,8 @@ export const BoardTab = () => {
                           </p>
                         );
                       })}
-                      <p className="border-[1px] flex items-center gap-1 text-[#000] px-2 py-1 rounded-2xl">
-                        Añadir etiqueta{" "}
+                      <p className="border-[1px] flex items-center gap-1 text-[#000] px-2 py-1 rounded-2xl cursor-pointer">
+                        {isMobile ? "Añadir" : "Añadir etiqueta"}
                         <span>
                           <FaPlus />
                         </span>
@@ -396,10 +542,123 @@ export const BoardTab = () => {
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <p className="text-2xl font-semibold">Descripción</p>
-                <TbEdit size={23} opacity={.4}/>
+                <TbEdit size={23} opacity={0.4} className="cursor-pointer" />
               </div>
-              <p className="text-[#5c5c5c]">On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too</p>
-              
+              <p className="text-[#5c5c5c]">{selectedTask.description}</p>
+            </div>
+            <div className="mt-10">
+              <div className="flex text-[1.05rem] gap-2 lg:gap-5">
+                <p
+                  onClick={() => {
+                    changeSection("progreso");
+                  }}
+                  className={`${
+                    section === "progreso"
+                      ? "border-blue-500 font-medium"
+                      : "border-white"
+                  } px-2 lg:px-4 pb-1 border-b-[3px]  hover:border-blue-500 cursor-pointer`}
+                >
+                  Progreso
+                </p>
+                <p
+                  onClick={() => {
+                    changeSection("archivos");
+                  }}
+                  className={`${
+                    section === "archivos"
+                      ? "border-blue-500 font-medium"
+                      : "border-white"
+                  } px-2 lg:px-4 pb-1 border-b-[3px] border-white hover:border-blue-500 cursor-pointer`}
+                >
+                  Archivos
+                </p>
+                <div
+                  onClick={() => {
+                    changeSection("comentarios");
+                  }}
+                  className={`${
+                    section === "comentarios"
+                      ? "border-blue-500 font-medium"
+                      : "border-white"
+                  } flex items-center gap-1 px-2 lg:px-4 pb-1 border-b-[3px] border-white hover:border-blue-500 cursor-pointer`}
+                >
+                  <p className="">Comentarios</p>
+                  <div className="w-6 h-6 grid place-content-center text-white text-[.75rem] bg-blue-500 rounded-full">
+                    5
+                  </div>
+                </div>
+              </div>
+              <hr />
+              <div>
+                {section === "progreso" ? (
+                  <div className="m-4">
+                    <div className="flex justify-between items-center">
+                      <p className="text-lg font-medium">Lista de progreso</p>
+                      <div className="flex items-center gap-2">
+                        <PiListChecks size={20} />
+                        <p>3/4</p>
+                      </div>
+                    </div>
+                    <Flex gap="small" vertical>
+                      <Progress percent={75} showInfo={false} />
+                    </Flex>
+                    <div className="mt-6 space-y-3">
+                      {selectedTask.subTasks.map((task, index) => {
+                        return <SubTask name={task} index={index} />;
+                      })}
+                    </div>
+                  </div>
+                ) : section === "archivos" ? (
+                  <div className="m-4">
+                    <p className="text-lg font-medium mb-1">Subir archivos</p>
+                    {/* <Dragger {...props} defaultFileList={[...fileList]}>
+                      <p className="ant-upload-drag-icon">
+                        <InboxOutlined />
+                      </p>
+                      <p className="ant-upload-text">
+                        Haz clic o arrastra el archivo a esta área para subirlo
+                      </p>
+                      <p className="ant-upload-hint">
+                        Soporte para subida individual o en masa. Está
+                        estrictamente prohibido subir datos de la empresa u
+                        otros archivos prohibidos.
+                      </p>
+                    </Dragger> */}
+                    <Upload {...props}>
+                      <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                    </Upload>
+                    <p className="text-lg font-medium mt-6">Adjuntar links</p>
+                    <div className="mt-1 space-y-1">
+                      <Microlink url="https://www.figma.com/design/MQs0tlEU38XBzoq4COQa6I/Creaj?node-id=25%3A623&t=ZbGb0NlJWaQJdxUR-1" />
+                      <Microlink url="https://mockapi.io/projects/6643d55c6c6a656587087600" />
+                    </div>
+                  </div>
+                ) : section === "comentarios" ? (
+                  <div className="mt-4">
+                    <p className="text-lg font-medium mt-6">Comentar</p>
+                    <div className="space-y-5 mt-3">
+                      <CommentComponent
+                        userPicture={'https://i.pinimg.com/564x/68/45/5d/68455dc2b7f16699bc422ac3ce3f684f.jpg'}
+                        userName={"Ji Chang-wook"}
+                        timeAgo={"2m ago"}
+                        message={
+                          "Hi @Liz! I checked the results, there are some comments in figma, can you check it now, thanks."
+                        }
+                      />
+                       <CommentComponent
+                        userPicture={'https://i.pinimg.com/564x/68/45/5d/68455dc2b7f16699bc422ac3ce3f684f.jpg'}
+                        userName={"Ji Chang-wook"}
+                        timeAgo={"2m ago"}
+                        message={
+                          "Hi @Liz! I checked the results, there are some comments in figma, can you check it now, thanks."
+                        }
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
             </div>
           </>
         )}

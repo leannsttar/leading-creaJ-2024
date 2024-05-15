@@ -32,11 +32,9 @@ const MiniTabLink = ({ title, notification, href }) => {
   return (
     <Link to={href}>
       <p
-        className={`${
-          isActive ? "text-black border-black border-b-[3px]" : ""
-        } pb-2 lg:pb-1 px-2 hover:text-black truncate cursor-pointer border-b-[3px] border-white hover:border-black md:px-6${
-          notification ? "hover:border-[#625DF5] border-b-[3px]" : ""
-        }`}
+        className={` pb-2 lg:pb-1 px-2 hover:text-black truncate cursor-pointer border-b-[3px] border-white hover:border-black md:px-6 ${
+          isActive ? "text-black border-b-black" : ""
+        } ${notification ? "hover:border-[#625DF5] border-b-[3px]" : ""}`}
       >
         {title}
       </p>

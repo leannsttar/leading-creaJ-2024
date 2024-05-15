@@ -89,7 +89,12 @@ export const OverviewTab = () => {
       tags: ["Research", "UX"],
       description:
         "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [2, 10],
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
       date: "Nov 18",
       files: 3,
       members: [
@@ -105,7 +110,12 @@ export const OverviewTab = () => {
       tags: ["Research", "UX"],
       description:
         "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [2, 10],
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
       date: "Nov 17",
       files: 3,
       members: [
@@ -121,7 +131,12 @@ export const OverviewTab = () => {
       tags: ["Research", "UX"],
       description:
         "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [2, 10],
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
       date: "Nov 17",
       files: 3,
       members: [

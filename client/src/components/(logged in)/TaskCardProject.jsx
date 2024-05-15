@@ -41,7 +41,7 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
           <div className="flex items-center gap-4">
             <img src={linesTaskIcon} alt="Icon" className="w-6" />
             <p>
-              {taskData.subTasks[0]}/{taskData.subTasks[1]}
+              {0}/{taskData.subTasks.length}
             </p>
           </div>
         </div>

@@ -9,8 +9,8 @@ import { IoSearchOutline } from "react-icons/io5";
 const ButtonConfig = ({ text, onClick, isActive, action }) => {
   return (
     <button
-      className={`hover:bg-[#e7e7e7] rounded-lg px-3 py-2 text-left ${
-        isActive ? "bg-[#e7e7e7]" : action ? "bg-[#e7e7e7]" : ""
+      className={`hover:bg-[#f0f0f0] rounded-lg px-3 py-2 text-left ${
+        isActive ? "bg-[#f0f0f0]" : action ? "bg-[#f0f0f0]" : ""
       }`}
       onClick={onClick}
     >

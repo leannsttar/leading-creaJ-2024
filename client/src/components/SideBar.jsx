@@ -182,7 +182,7 @@ export const SideBar = () => {
                   className={`cursor-pointer ${isShrinked && "h-[18px]"}`}
                 />
               </div>
-              <div className="mt-3 space-y-1 lg:h-[10rem] ">
+              <div className="mt-3 flex flex-col gap-1 lg:h-[10rem] ">
                 <SideBarLink
                   name={"Sao web project"}
                   img={
@@ -191,15 +191,6 @@ export const SideBar = () => {
                   isProject
                   isShrinked={isShrinked}
                   href={"/dashboard/project"}
-                />
-
-                <SideBarLink
-                  name={"Website Redesign"}
-                  img={
-                    "https://i.pinimg.com/564x/b9/6d/51/b96d515e1839a055244a8dea35703dcc.jpg"
-                  }
-                  isProject
-                  isShrinked={isShrinked}
                 />
                 <SideBarLink
                   name={"Website Redesign"}

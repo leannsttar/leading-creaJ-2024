@@ -33,7 +33,7 @@ const TableFileRecord = ({ fileName, task, fileSize, dateUpload }) => {
 export const FilesTab = () => {
   return (
     <div className="m-5 lg:m-10 xl:m-20">
-      <div className="bg-[#f5f5f5] rounded-2xl">
+      <div className="bg-[#f8f8f8] rounded-2xl">
         <div className="overflow-x-auto ">
           <table className="table">
             {/* head */}
