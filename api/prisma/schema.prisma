@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id                Int                  @id @default(autoincrement())
+  email             String               @unique
+  password          String
+  name              String
+  lastname          String
+  tasks             Tasks[]
+  comments          Comments[]
+  files             Files[]
+  links             Links[]
+  teams             TeamProject[]
+  notifications     Notifications[]
+  messages          Messages[]
+  timeline          Timeline[]
+  meetings          Meetings[]
+  meetingAttendance MeetingsAttendance[]
+}
+
+model Projects {
+  id          Int           @id @default(autoincrement())
+  name        String
+  percentage  Float
+  description String
+  createdAt   DateTime      @default(now())
+  tasks       Tasks[]
+  team        TeamProject[]
+  messages    Messages[]
+  meetings    Meetings[]
+}
+
+model TeamProject {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      Users    @relation(fields: [userId], references: [id])
+  role      String
+  projectId Int
+  project   Projects @relation(fields: [projectId], references: [id])
+}
+
+model Tasks {
+  id            Int             @id @default(autoincrement())
+  name          String
+  status        String
+  description   String
+  due_date      DateTime
+  projectId     Int
+  project       Projects        @relation(fields: [projectId], references: [id])
+  authorId      Int
+  creator       Users           @relation(fields: [authorId], references: [id])
+  subTasks      SubTasks[]
+  comments      Comments[]
+  files         Files[]
+  links         Links[]
+  labels        TaskLabels[]
+  notifications Notifications[]
+  timeline      Timeline[]
+}
+
+model SubTasks {
+  id     Int    @id @default(autoincrement())
+  name   String
+  taskId Int
+  task   Tasks  @relation(fields: [taskId], references: [id])
+}
+
+model Comments {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  taskId    Int
+  task      Tasks    @relation(fields: [taskId], references: [id])
+  authorId  Int
+  author    Users    @relation(fields: [authorId], references: [id])
+}
+
+model Files {
+  id       Int    @id @default(autoincrement())
+  fileName String
+  fileType String
+  fileSize Float
+  url      String
+  taskId   Int
+  task     Tasks  @relation(fields: [taskId], references: [id])
+  authorId Int
+  author   Users  @relation(fields: [authorId], references: [id])
+}
+
+model Links {
+  id       Int    @id @default(autoincrement())
+  url      String
+  taskId   Int
+  task     Tasks  @relation(fields: [taskId], references: [id])
+  authorId Int
+  author   Users  @relation(fields: [authorId], references: [id])
+}
+
+model Labels {
+  id         Int          @id @default(autoincrement())
+  name       String
+  taskLabels TaskLabels[]
+}
+
+model TaskLabels {
+  id      Int    @id @default(autoincrement())
+  labelId Int
+  label   Labels @relation(fields: [labelId], references: [id])
+  taskId  Int
+  task    Tasks  @relation(fields: [taskId], references: [id])
+}
+
+model Notifications {
+  id         Int      @id @default(autoincrement())
+  content    String
+  type       String
+  taskId     Int
+  task       Tasks    @relation(fields: [taskId], references: [id])
+  userId     Int
+  user       Users    @relation(fields: [userId], references: [id])
+  event_time DateTime @default(now())
+}
+
+model Messages {
+  id        Int      @id @default(autoincrement())
+  content   String
+  senderId  Int
+  sender    Users    @relation(fields: [senderId], references: [id])
+  projectId Int
+  project   Projects @relation(fields: [projectId], references: [id])
+  sentAt    DateTime @default(now())
+}
+
+model Timeline {
+  id          Int      @id @default(autoincrement())
+  description String
+  event_time  DateTime @default(now())
+  event_type  String
+  table_name  String
+  taskId      Int
+  task        Tasks    @relation(fields: [taskId], references: [id])
+  userId      Int
+  user        Users    @relation(fields: [userId], references: [id])
+}
+
+model Meetings {
+  id         String               @unique
+  event_time DateTime
+  projectId  Int
+  project    Projects             @relation(fields: [projectId], references: [id])
+  authorId   Int
+  author     Users                @relation(fields: [authorId], references: [id])
+  attendance MeetingsAttendance[]
+}
+
+model MeetingsAttendance {
+  id        Int      @id @default(autoincrement())
+  meetingId String
+  meeting   Meetings @relation(fields: [meetingId], references: [id])
+  userId    Int
+  user      Users    @relation(fields: [userId], references: [id])
+}

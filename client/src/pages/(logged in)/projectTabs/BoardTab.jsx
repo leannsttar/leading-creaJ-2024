@@ -458,7 +458,7 @@ export const BoardTab = () => {
             <input
               className="rounded-2xl bg-[#f7f7f7] px-3 py-2 outline-none w-full mr-4"
               type="text"
-              placeholder="Copia el link aquí ..."
+              placeholder={section === "archivos" ? "Copia el link aquí ..." : section === "comentarios" ? 'Comenta aquí ...' : ''}
               name=""
               id=""
             />
@@ -625,7 +625,7 @@ export const BoardTab = () => {
                       </p>
                     </Dragger> */}
                     <Upload {...props}>
-                      <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                      <Button icon={<UploadOutlined />}>Click para subir</Button>
                     </Upload>
                     <p className="text-lg font-medium mt-6">Adjuntar links</p>
                     <div className="mt-1 space-y-1">
@@ -638,15 +638,19 @@ export const BoardTab = () => {
                     <p className="text-lg font-medium mt-6">Comentar</p>
                     <div className="space-y-5 mt-3">
                       <CommentComponent
-                        userPicture={'https://i.pinimg.com/564x/68/45/5d/68455dc2b7f16699bc422ac3ce3f684f.jpg'}
+                        userPicture={
+                          "https://i.pinimg.com/564x/68/45/5d/68455dc2b7f16699bc422ac3ce3f684f.jpg"
+                        }
                         userName={"Ji Chang-wook"}
                         timeAgo={"2m ago"}
                         message={
                           "Hi @Liz! I checked the results, there are some comments in figma, can you check it now, thanks."
                         }
                       />
-                       <CommentComponent
-                        userPicture={'https://i.pinimg.com/564x/68/45/5d/68455dc2b7f16699bc422ac3ce3f684f.jpg'}
+                      <CommentComponent
+                        userPicture={
+                          "https://i.pinimg.com/564x/68/45/5d/68455dc2b7f16699bc422ac3ce3f684f.jpg"
+                        }
                         userName={"Ji Chang-wook"}
                         timeAgo={"2m ago"}
                         message={
