@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const prisma = require('../config/prisma');
+import jwt from 'jsonwebtoken'
+import {prisma} from '../config/prisma.js'
 
 export const auth = async (req, res, next) => {
 
@@ -10,18 +10,11 @@ export const auth = async (req, res, next) => {
         const token = autorizacion.split(" ")[1];
         const credenciales = jwt.verify(token, "tu_secreto");
         console.log(credenciales);
-        let usuarioEncontrado = await prisma.cliente.findFirst({
+        let usuarioEncontrado = await prisma.users.findFirst({
           where: {
             id: credenciales.userId,
           },
         });
-        if (!usuarioEncontrado) {
-          usuarioEncontrado = await prisma.administradores.findFirst({
-            where: {
-                id: credenciales.userId,
-            },
-          });
-        }
         if (!usuarioEncontrado.id) {
           return res.status(400).json({
             message: "Usuario o contraseña no son los correctos",

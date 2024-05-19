@@ -1,7 +1,7 @@
 import express from "express";
-import userRoutes from "../src/routes/register-route";
+import userRoutes from "./src/routes/register-route.js";
 import cors from "cors";
-import { auth } from "./middleware/auth";
+import { auth } from "./middleware/auth.js";
 
 const app = express();
 app.use(cors());

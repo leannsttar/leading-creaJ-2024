@@ -10,7 +10,7 @@ export const signup = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: {
         name,
         email,
@@ -20,5 +20,6 @@ export const signup = async (req, res) => {
     res.status(201).json({ message: 'Usuario creado' });
   } catch (error) {
     res.status(400).json({ error: 'Algo pasó' });
+    console.log(error)
   }
 };
