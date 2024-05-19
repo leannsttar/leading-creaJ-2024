@@ -1,23 +1,29 @@
-// import express from 'express'
+import express from "express";
+import userRoutes from "../src/routes/register-route";
+import cors from "cors";
+import { auth } from "./middleware/auth";
 
-// const app = express()
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-// app.listen(3000)
-// console.log(`server on port ${3000}`)
+// la ruta de los usuarios en cuestión (solo el registro)
+app.use("/api/users", userRoutes);
 
-import { PrismaClient } from "@prisma/client"
+app.listen(5000, () => {
+  console.log(`Servidor funcionando en el puerto ${5000}`);
+});
 
-const prisma = new PrismaClient()
+// const prisma = new PrismaClient()
 
-async function main() {
-    const newUser = await prisma.users.delete({
-        where: {
-            email: "tick@brawl.com",
+// async function main() {
+//     const newUser = await prisma.users.delete({
+//         where: {
+//             email: "tick@brawl.com",
 
-            
-        }
-    })
-    console.log(newUser)
-}
+//         }
+//     })
+//     console.log(newUser)
+// }
 
-main()
+// main()
