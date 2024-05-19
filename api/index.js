@@ -1,5 +1,6 @@
 import express from "express";
 import userRoutes from "./src/routes/register-route.js";
+import loginRoutes from "./src/routes/login-route.js";  
 import cors from "cors";
 import { auth } from "./middleware/auth.js";
 
@@ -9,6 +10,10 @@ app.use(express.json());
 
 // la ruta de los usuarios en cuestión (solo el registro)
 app.use("/api/users", userRoutes);
+
+//ruta del login
+app.use("/api/auth", loginRoutes);  
+
 
 app.listen(5000, () => {
   console.log(`Servidor funcionando en el puerto ${5000}`);
