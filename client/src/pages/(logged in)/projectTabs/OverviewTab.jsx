@@ -150,7 +150,7 @@ export const OverviewTab = () => {
   ]);
 
   return (
-    <div className="m-5 lg:flex lg:gap-8">
+    <div className="m-5 lg:m-12 lg:flex lg:gap-8">
       <div className="space-y-5 lg:w-[65%] 2xl:w-[70%]">
         <div className="bg-[#f7f7f7] px-4 py-3 rounded-xl flex items-start lg:items-center">
           <div className="space-y-3">
@@ -163,7 +163,7 @@ export const OverviewTab = () => {
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <p className="text-2xl font-semibold">SAO web project</p>
-                  <p className="text-3xl text-[#A692DF] font-normal">84%</p>
+                  {/* <p className="text-3xl text-[#A692DF] font-normal">84%</p> */}
                 </div>
                 <p className="text-justify">
                   El proyecto <span className="font-bold">"SAO web"</span> es

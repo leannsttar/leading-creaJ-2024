@@ -271,9 +271,9 @@ const HeaderTaskCards = ({ title, numCards }) => {
   );
 };
 
-const ColTasks = ({ title, numCards, children }) => {
+const ColTasks = ({ title, numCards, children, index }) => {
   return (
-    <div className="space-y-3 lg:w-[30%] lg:space-y-8">
+    <div key={index} className="space-y-3 lg:w-[30%] lg:space-y-8">
       <HeaderTaskCards title={title} numCards={numCards} />
       <div className="flex gap-3 overflow-auto pb-2 lg:flex-col lg:gap-6">
         {children}
@@ -361,6 +361,7 @@ export const BoardTab = () => {
 
   const [data, setData] = useState([
     {
+      id:1,
       title: "Create component button web",
       tags: ["Design System", "UI"],
       description:
@@ -382,6 +383,7 @@ export const BoardTab = () => {
       status: "inProgress",
     },
     {
+      id: 2,
       title: "Payment method via e-commerce",
       tags: ["Research", "UX"],
       description:
@@ -403,6 +405,145 @@ export const BoardTab = () => {
       status: "done",
     },
     {
+      id: 3,
+      title: "Create home ux writing content",
+      tags: ["UX Writer", "UX"],
+      description:
+        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
+      date: "Nov 17",
+      files: 3,
+      members: [
+        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
+        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
+        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
+      ],
+      comments: 0,
+      status: "upcoming",
+    },
+  ]);
+
+  const [data2, setData2] = useState([
+    {
+      id:4,
+      title: "Create component button web",
+      tags: ["Design System", "UI"],
+      description:
+        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
+      date: "Nov 16, 2022",
+      files: 3,
+      members: [
+        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
+        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
+        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
+      ],
+      comments: 0,
+      status: "inProgress",
+    },
+    {
+      id: 5,
+      title: "Payment method via e-commerce",
+      tags: ["Research", "UX"],
+      description:
+        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
+      date: "Nov 18",
+      files: 3,
+      members: [
+        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
+        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
+        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
+      ],
+      comments: 0,
+      status: "done",
+    },
+    {
+      id: 6,
+      title: "Create home ux writing content",
+      tags: ["UX Writer", "UX"],
+      description:
+        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
+      date: "Nov 17",
+      files: 3,
+      members: [
+        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
+        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
+        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
+      ],
+      comments: 0,
+      status: "upcoming",
+    },
+  ]);
+
+  const [data3, setData3] = useState([
+    {
+      id:7,
+      title: "Create component button web",
+      tags: ["Design System", "UI"],
+      description:
+        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
+      date: "Nov 16, 2022",
+      files: 3,
+      members: [
+        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
+        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
+        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
+      ],
+      comments: 0,
+      status: "inProgress",
+    },
+    {
+      id: 8,
+      title: "Payment method via e-commerce",
+      tags: ["Research", "UX"],
+      description:
+        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
+      subTasks: [
+        "Medium button",
+        "Small button",
+        "Hover button",
+        "Ghost button",
+      ],
+      date: "Nov 18",
+      files: 3,
+      members: [
+        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
+        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
+        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
+      ],
+      comments: 0,
+      status: "done",
+    },
+    {
+      id: 9,
       title: "Create home ux writing content",
       tags: ["UX Writer", "UX"],
       description:
@@ -442,8 +583,8 @@ export const BoardTab = () => {
         placement={isMobile ? "bottom" : "right"}
         onClose={onClose}
         loading={loading}
-        visible={open}
-        bodyStyle={{ padding: "2rem", fontFamily: "Inter" }}
+        open={open}
+        styles={{ body: { padding: "2rem", fontFamily: "Inter" } }}
         footer={
           <div
             className={`${
@@ -668,30 +809,30 @@ export const BoardTab = () => {
         )}
       </Drawer>
       <div className="mx-5 my-9 lg:mx-11 lg:my-16 space-y-10 lg:flex lg:space-y-0 lg:justify-around">
-        <ColTasks title={"Próximo"} numCards={12}>
+        <ColTasks title={"Próximo"} numCards={12} index={1}>
           {data.map((task, index) => (
             <TaskCardProject
-              index={index}
+              index={task.id}
               taskData={task}
               onClick={() => showDrawer(task)}
               mobile
             />
           ))}
         </ColTasks>
-        <ColTasks title={"En proceso"} numCards={12}>
-          {data.map((task, index) => (
+        <ColTasks title={"En proceso"} numCards={12} index={2}>
+          {data2.map((task, index) => (
             <TaskCardProject
-              index={index}
+              index={task.id}
               taskData={task}
               onClick={() => showDrawer(task)}
               mobile
             />
           ))}
         </ColTasks>
-        <ColTasks title={"Terminadas"} numCards={12}>
-          {data.map((task, index) => (
+        <ColTasks title={"Terminadas"} numCards={12} index={3}>
+          {data3.map((task, index) => (
             <TaskCardProject
-              index={index}
+              index={task.id}
               taskData={task}
               onClick={() => showDrawer(task)}
               mobile

@@ -88,46 +88,59 @@ export const LayoutHome = () => {
 
 const LayoutTasks = () => {
   return (
-    <div className="w-full max-h-screen overflow-y-hidden">
-      <div className="h-[10rem] px-10 w-full flex items-center justify-between">
-        <div className="flex flex-col h-full justify-between">
-          <div className="flex items-center w-full mt-[3rem]">
-            <div>
-              <p className="text-[2rem] font-semibold">Mis Tareas</p>
+    <>
+      <div className="w-full max-h-screen overflow-y-hidden">
+        <div className="h-[6rem] px-5 w-full flex items-center justify-between mt-[5rem] lg:h-[10rem] lg:px-10 lg:mt-0 ">
+          <div className="flex flex-col h-full justify-between w-full lg:w-auto">
+            <div className="flex flex-col gap-1 justify-center lg:justify-normal lg:gap-0 lg:flex-row lg:items-center w-full lg:mt-[3rem]">
+              <div className="flex justify-between">
+                <p className="text-[2rem] font-semibold">Mis Tareas</p>
+                <div className="bg-black rounded-md text-white flex gap-3 items-center p-3 h-fit cursor-pointer lg:hidden">
+                  <img src={plusIcon} alt="" className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-6 text-[#7C7C7C] ">
+              <MiniTabLink title={"Tablero"} href={"/dashboard/tasks"} />
+              <MiniTabLink title={"Lista"} href={"/dashboard/tasks/list"} />
+              <MiniTabLink
+                title={"Calendario"}
+                href={"/dashboard/tasks/calendar"}
+              />
             </div>
           </div>
-          <div className="flex gap-6 text-[#7C7C7C] ">
-            <MiniTabLink title={"Tablero"} href={"/dashboard/tasks"} />
-            <MiniTabLink title={"Lista"} href={"/dashboard/tasks/list"} />
-            <MiniTabLink
-              title={"Calendario"}
-              href={"/dashboard/tasks/calendar"}
-            />
+          <div className="flex gap-2">
+            <div className="hidden border-[1px] rounded-md h-[2.7rem] w-[2.7rem] lg:grid place-items-center cursor-pointer">
+              <img src={configIcon} alt="" />
+            </div>
+            <div className=" hidden border-[1px] rounded-md h-[2.7rem] w-[2.7rem] lg:grid place-items-center cursor-pointer">
+              <img src={threeDotsSmaller} alt="" />
+            </div>
+            <div className="hidden bg-black rounded-md text-white lg:flex gap-3 items-center py-2 px-3 cursor-pointer">
+              <img src={plusIcon} alt="" className="w-4" />
+              <p>Nueva tarea</p>
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
-            <img src={configIcon} alt="" />
-          </div>
-          <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
-            <img src={threeDotsSmaller} alt="" />
-          </div>
-          <div className="bg-black rounded-md text-white flex gap-3 items-center py-2 px-3 cursor-pointer">
-            <img src={plusIcon} alt="" className="w-4" />
-            <p>Nueva tarea</p>
-          </div>
+        <hr />
+        <div
+          className="w-full overflow-auto hidden lg:block"
+          style={{
+            height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+          }}
+        >
+          <Outlet />
         </div>
       </div>
-      <hr />
       <div
-        className="w-full overflow-auto"
+        className="w-full lg:hidden"
         style={{
           height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
         }}
       >
         <Outlet />
       </div>
-    </div>
+    </>
   );
 };
 
@@ -183,7 +196,7 @@ const LayoutProject = () => {
             </div>
             <div
               className="flex gap-3 text-[#7C7C7C] overflow-x-scroll w-screen lg:w-auto lg:gap-6 lg:overflow-x-auto pr-7 lg:px-0"
-              style={{ scrollbarColor: "transparent transparent" }}
+              
             >
               {tabLinksProject.map((link, index) => {
                 return (
@@ -219,43 +232,53 @@ const LayoutProject = () => {
 
 const LayoutNotifications = () => {
   return (
-    <div className="w-full max-h-screen overflow-y-hidden">
-      <div className="h-[10rem] px-10 w-full flex items-center justify-between">
-        <div className="flex flex-col h-full justify-between">
-          <div className="flex items-center w-full mt-[3rem]">
-            <div>
-              <p className="text-[2rem] font-semibold">Notificaciones</p>
+    <>
+      <div className="w-full max-h-screen overflow-y-hidden">
+        <div className="h-[6rem] px-5 w-full flex items-center justify-between mt-[5rem] lg:h-[10rem] lg:px-10 lg:mt-0">
+          <div className="flex flex-col h-full justify-between w-full lg:w-auto">
+            <div className="flex flex-col gap-1 justify-center lg:justify-normal lg:gap-0 lg:flex-row lg:items-center w-full lg:mt-[3rem]">
+              <div>
+                <p className="text-[2rem] font-semibold">Notificaciones</p>
+              </div>
+            </div>
+            <div className="flex gap-6 text-[#7C7C7C] overflow-x-scroll lg:overflow-x-auto ">
+              <MiniTabLink title={"Vista General"}  />
+              <MiniTabLink title={"Invitaciones"}  />
+              <MiniTabLink title={"Comentarios"}  />
             </div>
           </div>
-          <div className="flex gap-6 text-[#7C7C7C] ">
-            <MiniTabLink title={"Vista General"} notification />
-            <MiniTabLink title={"Invitaciones"} notification />
-            <MiniTabLink title={"Comentarios"} notification />
+          <div className=" gap-2 hidden">
+            <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
+              <img src={configIcon} alt="" />
+            </div>
+            <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
+              <img src={threeDotsSmaller} alt="" />
+            </div>
+            <div className="bg-black rounded-md text-white flex gap-3 items-center py-2 px-3 cursor-pointer">
+              <img src={plusIcon} alt="" className="w-4" />
+              <p>Nueva tarea</p>
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
-            <img src={configIcon} alt="" />
-          </div>
-          <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
-            <img src={threeDotsSmaller} alt="" />
-          </div>
-          <div className="bg-black rounded-md text-white flex gap-3 items-center py-2 px-3 cursor-pointer">
-            <img src={plusIcon} alt="" className="w-4" />
-            <p>Nueva tarea</p>
-          </div>
+        <hr />
+        <div
+          className="w-full overflow-auto hidden lg:block"
+          style={{
+            height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+          }}
+        >
+          <Outlet />
         </div>
       </div>
-      <hr />
       <div
-        className="w-full overflow-auto"
+        className="w-full lg:hidden"
         style={{
           height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
         }}
       >
         <Outlet />
       </div>
-    </div>
+    </>
   );
 };
 
