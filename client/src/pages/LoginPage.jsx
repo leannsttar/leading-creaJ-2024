@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const navigate = useNavigate(); 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -20,8 +20,9 @@ export const LoginPage = () => {
     console.log(data);
 
     if (data.token) {
-      localStorage.setItem('token', data.token); 
+      localStorage.setItem('token', data.token);
       alert('Inicio de sesión exitoso');
+      navigate('/dashboard'); 
     } else {
       alert(data.error);
     }
