@@ -11,31 +11,13 @@ import addProjectIcon from "../assets/addProjectIcon.svg";
 import sunLightMode from "../assets/sunLightMode.svg";
 import moonDarkMode from "../assets/moonDarkMode.svg";
 import threeDotsIcon from "../assets/threeDotsIcon.svg";
-import threeDots from "../assets/threeDotsSmaller.svg"
+import threeDots from "../assets/threeDotsSmaller.svg";
 import threeLinesMenu from "../assets/3linesMenu.svg";
 
 import avatar from "../assets/Avatar.jpg";
 
-import { Button, Dropdown, Space } from 'antd';
-const items = [
-  {
-    key: '1',
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
-        Editar perfil
-      </a>
-    ),
-  },
-  {
-    key: '2',
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-        Cerrar sesión
-      </a>
-    ),
-  },
+import { Button, Dropdown, Space, Modal } from "antd";
 
-];
 
 const navLinks = [
   { title: "Panel", href: "/dashboard", img: dashboardIcon },
@@ -71,8 +53,9 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
   return isProject ? (
     <Link to={href}>
       <div
-        className={`flex items-center gap-4 py-[0.40rem] px-2 hover:bg-[#f1eefd] rounded-lg cursor-pointer relative ${isActive ? "bg-[#f1eefd]" : ""
-          }`}
+        className={`flex items-center gap-4 py-[0.40rem] px-2 hover:bg-[#f1eefd] rounded-lg cursor-pointer relative ${
+          isActive ? "bg-[#f1eefd]" : ""
+        }`}
       >
         <img
           src={img}
@@ -80,8 +63,9 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
           className="rounded-full min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem] object-cover"
         />
         <p
-          className={`text-[1rem] ${isShrinked ? "opacity-0 pointer-events-none	" : ""
-            }`}
+          className={`text-[1rem] ${
+            isShrinked ? "opacity-0 pointer-events-none	" : ""
+          }`}
           style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
         >
           {name}
@@ -91,13 +75,15 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
   ) : (
     <Link to={href}>
       <div
-        className={`flex gap-4 py-[0.60rem] px-3 hover:bg-[#EBF1FD] rounded-lg cursor-pointer ${isActive ? "bg-[#EBF1FD]" : ""
-          }`}
+        className={`flex gap-4 py-[0.60rem] px-3 hover:bg-[#EBF1FD] rounded-lg cursor-pointer ${
+          isActive ? "bg-[#EBF1FD]" : ""
+        }`}
       >
         <img src={img} alt={`${img}`} className="w-5" />
         <p
-          className={`text-[1rem] ${isShrinked ? "opacity-0 pointer-events-none	" : ""
-            }`}
+          className={`text-[1rem] ${
+            isShrinked ? "opacity-0 pointer-events-none	" : ""
+          }`}
           style={{ transition: "all 350ms ease" }}
         >
           {name}
@@ -111,6 +97,8 @@ export const SideBar = () => {
   const [isDark, setIsDark] = useState(false);
   const [isShrinked, setIsShrinked] = useState(window.innerWidth < 1280);
   const [isLowRes, setIsLowRes] = useState(window.innerHeight < 730);
+
+  const [modal1Open, setModal1Open] = useState(false);
 
   useEffect(() => {
     const checkResolution = () => {
@@ -134,20 +122,55 @@ export const SideBar = () => {
     setIsShrinked(!isShrinked);
   };
 
+  const items = [
+    {
+      key: "1",
+      label: (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.antgroup.com"
+        >
+          Editar perfil
+        </a>
+      ),
+    },
+    {
+      key: "2",
+      label: (
+        <a
+          onClick={() => setModal1Open(true)}
+        >
+          Cerrar sesión
+        </a>
+      ),
+    },
+  ];
+
+  // const showWarningModal = () => {
+  //   Modal.warning({
+  //     title: 'Cerrar sesión',
+  //     content: 'Are you sure you want to delete this item? This action cannot be undone.',
+  //   });
+  // };
+
   return (
     <aside
-      className={`w-[20rem] h-screen font-inter flex flex-col justify-between border-r-[1px] ${isShrinked ? "w-[5rem]" : ""
-        }`}
+      className={`w-[20rem] h-screen font-inter flex flex-col justify-between border-r-[1px] ${
+        isShrinked ? "w-[5rem]" : ""
+      }`}
       style={{ transition: "width 500ms ease" }}
     >
       <div>
         <div
-          className={`flex items-center gap-3 px-6 h-[5rem] relative justify-end ${isShrinked ? "!px-1 !mx-5" : ""
-            }`}
+          className={`flex items-center gap-3 px-6 h-[5rem] relative justify-end ${
+            isShrinked ? "!px-1 !mx-5" : ""
+          }`}
         >
           <div
-            className={`flex items-center gap-3 ${isShrinked ? "opacity-0 absolute left-0 -z-10" : ""
-              }`}
+            className={`flex items-center gap-3 ${
+              isShrinked ? "opacity-0 absolute left-0 -z-10" : ""
+            }`}
             style={{ transition: "opacity 300ms ease" }}
           >
             <img src="/logoTemporalBlack.svg" alt="Logo" className="w-[2rem]" />
@@ -181,8 +204,9 @@ export const SideBar = () => {
             <div className="mt-7">
               <div className="flex justify-end px-4">
                 <p
-                  className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${isShrinked ? "opacity-0 absolute left-0" : ""
-                    }`}
+                  className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${
+                    isShrinked ? "opacity-0 absolute left-0" : ""
+                  }`}
                   style={{
                     whiteSpace: "nowrap",
                     transition: "opacity 300ms ease",
@@ -266,12 +290,14 @@ export const SideBar = () => {
         ) : (
           <button
             onClick={changeMode}
-            className={`flex bg-[#F5F5F5] rounded-full p-1.5 w-fit relative   ${isShrinked ? "flex-col" : ""
-              } `}
+            className={`flex bg-[#F5F5F5] rounded-full p-1.5 w-fit relative   ${
+              isShrinked ? "flex-col" : ""
+            } `}
           >
             <div
-              className={`bg-[#fff] rounded-full shadow-lg absolute ${isShrinked ? "" : isDark ? " translate-x-[95%]" : ""
-                }`}
+              className={`bg-[#fff] rounded-full shadow-lg absolute ${
+                isShrinked ? "" : isDark ? " translate-x-[95%]" : ""
+              }`}
               style={{
                 transition: "all 250ms ease",
                 transform: isShrinked && isDark && "translateY(50px)",
@@ -280,8 +306,9 @@ export const SideBar = () => {
               <img
                 src={sunLightMode}
                 alt=""
-                className={`invisible ${isShrinked ? "px-2 py-4" : "py-2 px-4"
-                  } `}
+                className={`invisible ${
+                  isShrinked ? "px-2 py-4" : "py-2 px-4"
+                } `}
               />
             </div>
             <div className={`flex ${isShrinked ? "flex-col" : ""}`}>
@@ -321,18 +348,37 @@ export const SideBar = () => {
             }}
             placement="top"
           >
-            <Button className="px-2 py-3"><img
-              src={threeDots}
-              alt=""
-              className={`cursor-pointer  ${isShrinked ? "opacity-0 absolute" : ""
+            <Button
+              className={`px-2 py-4 flex items-center ${
+                isShrinked ? "opacity-0 absolute" : ""
+              } `}
+            >
+              <img
+                src={threeDots}
+                alt=""
+                className={`cursor-pointer  ${
+                  isShrinked ? "opacity-0 absolute" : ""
                 }`}
-              style={{
-                transition: "opacity 150ms ease",
-                transition: "position 300ms ease",
-              }}
-            /></Button>
+                style={{
+                  transition: "opacity 150ms ease",
+                  transition: "position 300ms ease",
+                }}
+              />
+            </Button>
           </Dropdown>
-
+          <Modal
+            title="Cerrar sesión"
+            okButtonProps={{ style: { backgroundColor: 'red' } }}
+            okText="Cerrar sesión"
+            centered
+            open={modal1Open}
+            onOk={() => setModal1Open(false)}
+            onCancel={() => setModal1Open(false)}
+            
+          >
+            <p>Estás seguro que quieres cerrar sesión? Una vez que cierras sesión tendrás que logearte de nuevo</p>
+           
+          </Modal>
         </div>
       </div>
     </aside>
@@ -354,8 +400,9 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
 
   return (
     <aside
-      className={`fixed z-20 w-[20rem] font-inter flex flex-col justify-between border-r-[1px] bg-white ${isOpen ? "" : "-translate-x-[100vw]"
-        }`}
+      className={`fixed z-20 w-[20rem] font-inter flex flex-col justify-between border-r-[1px] bg-white ${
+        isOpen ? "" : "-translate-x-[100vw]"
+      }`}
       style={{
         minHeight: "-webkit-fill-available",
         transitionTimingFunction: "cubic-bezier(.3,.65,.36,.66)",
@@ -364,12 +411,14 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
     >
       <div>
         <div
-          className={`flex items-center gap-3 px-6 h-[5rem] justify-between ${isShrinked ? "!px-1 !mx-5" : ""
-            }`}
+          className={`flex items-center gap-3 px-6 h-[5rem] justify-between ${
+            isShrinked ? "!px-1 !mx-5" : ""
+          }`}
         >
           <div
-            className={`flex items-center gap-3 ${isShrinked ? "opacity-0 absolute left-0 -z-10" : ""
-              }`}
+            className={`flex items-center gap-3 ${
+              isShrinked ? "opacity-0 absolute left-0 -z-10" : ""
+            }`}
             style={{ transition: "opacity 300ms ease" }}
           >
             <img src="/logoTemporalBlack.svg" alt="Logo" className="w-[2rem]" />
@@ -408,8 +457,9 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
             <div className="mt-7">
               <div className="flex justify-end px-4">
                 <p
-                  className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${isShrinked ? "opacity-0 absolute left-0" : ""
-                    }`}
+                  className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${
+                    isShrinked ? "opacity-0 absolute left-0" : ""
+                  }`}
                   style={{
                     whiteSpace: "nowrap",
                     transition: "opacity 300ms ease",
@@ -482,8 +532,9 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
           <img
             src={threeDotsIcon}
             alt=""
-            className={`cursor-pointer ${isShrinked ? "opacity-0 absolute" : ""
-              }`}
+            className={`cursor-pointer ${
+              isShrinked ? "opacity-0 absolute" : ""
+            }`}
             style={{
               transition: "opacity 150ms ease",
               transition: "position 300ms ease",
