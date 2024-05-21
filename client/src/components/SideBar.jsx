@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-
 import { MdKeyboardArrowLeft } from "react-icons/md";
-
 import dashboardIcon from "../assets/dashboardIcon.svg";
 import tasksIcon from "../assets/tasksIcon.svg";
 import messagesIcon from "../assets/messagesIcon.svg";
@@ -14,10 +12,17 @@ import threeDotsIcon from "../assets/threeDotsIcon.svg";
 import threeDots from "../assets/threeDotsSmaller.svg";
 import threeLinesMenu from "../assets/3linesMenu.svg";
 
+//sesión
+// import axios from 'axios';
+// import { clienteAxios } from "../config/clienteAxios";
+// import { useSession } from "../config/useSession.jsx";
+// import { headers } from '../config/helpers'
+
 import avatar from "../assets/Avatar.jpg";
 
 import { Button, Dropdown, Space, Modal } from "antd";
 
+// const { logout, usuario } = useSession(); //datos del usuario y función para el login y cerrar sesión
 
 const navLinks = [
   { title: "Panel", href: "/dashboard", img: dashboardIcon },
@@ -338,7 +343,7 @@ export const SideBar = () => {
               className={`${isShrinked ? "opacity-0" : ""}`}
               style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
             >
-              <p className="font-semibold">Doyne</p>
+              <p className="font-semibold">Nombre</p>
               <p className="text-[.8rem] text-[#667085]">collins@brees.com</p>
             </div>
           </div>
@@ -374,9 +379,8 @@ export const SideBar = () => {
             open={modal1Open}
             onOk={() => setModal1Open(false)}
             onCancel={() => setModal1Open(false)}
-            
           >
-            <p>Estás seguro que quieres cerrar sesión? Una vez que cierras sesión tendrás que logearte de nuevo</p>
+            <p>¿Estás seguro que quieres cerrar sesión? Una vez que cierras sesión tendrás que iniciar sesión de nuevo</p>
            
           </Modal>
         </div>
