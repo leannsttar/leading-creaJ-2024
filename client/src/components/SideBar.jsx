@@ -13,16 +13,13 @@ import threeDots from "../assets/threeDotsSmaller.svg";
 import threeLinesMenu from "../assets/3linesMenu.svg";
 
 //sesión
-// import axios from 'axios';
-// import { clienteAxios } from "../config/clienteAxios";
-// import { useSession } from "../config/useSession.jsx";
-// import { headers } from '../config/helpers'
+import { clienteAxios } from "@/config/clienteAxios";
+import { useSession } from "@/config/useSession";
 
 import avatar from "../assets/Avatar.jpg";
 
 import { Button, Dropdown, Space, Modal } from "antd";
 
-// const { logout, usuario } = useSession(); //datos del usuario y función para el login y cerrar sesión
 
 const navLinks = [
   { title: "Panel", href: "/dashboard", img: dashboardIcon },
@@ -36,7 +33,7 @@ const navLinks = [
 ];
 
 const navLinksMobile = [
-  { title: "Panel de control", href: "/dashboard", img: dashboardIcon },
+  { title: "Panel", href: "/dashboard", img: dashboardIcon },
   { title: "Tareas", href: "/dashboard/tasks", img: tasksIcon },
   { title: "Mensajes", href: "/dashboard/messages", img: messagesIcon },
 ];
@@ -54,6 +51,8 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
       }
     }
   }, [location.pathname, href]);
+
+
 
   return isProject ? (
     <Link to={href}>
@@ -99,6 +98,8 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
 };
 
 export const SideBar = () => {
+  const { logout, usuario } = useSession(); //datos del usuario y función para el login y cerrar sesión
+
   const [isDark, setIsDark] = useState(false);
   const [isShrinked, setIsShrinked] = useState(window.innerWidth < 1280);
   const [isLowRes, setIsLowRes] = useState(window.innerHeight < 730);
@@ -343,8 +344,8 @@ export const SideBar = () => {
               className={`${isShrinked ? "opacity-0" : ""}`}
               style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
             >
-              <p className="font-semibold">Nombre</p>
-              <p className="text-[.8rem] text-[#667085]">collins@brees.com</p>
+              <p className="font-semibold">{usuario.name}</p>
+              <p className="text-[.7rem] text-[#667085]">{usuario.email}</p>
             </div>
           </div>
           <Dropdown
@@ -377,7 +378,7 @@ export const SideBar = () => {
             okText="Cerrar sesión"
             centered
             open={modal1Open}
-            onOk={() => setModal1Open(false)}
+            onOk={logout}
             onCancel={() => setModal1Open(false)}
           >
             <p>¿Estás seguro que quieres cerrar sesión? Una vez que cierras sesión tendrás que iniciar sesión de nuevo</p>

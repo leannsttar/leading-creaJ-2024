@@ -10,6 +10,7 @@ import editIcon from "../assets/editIcon.svg";
 
 import { MobileSideBar, SideBar } from "./SideBar.jsx";
 import { HeaderMobileWorkspace } from "./HeaderMobileWorkspace.jsx";
+import { useSession } from "@/config/useSession";
 
 let isMobile = window.innerWidth < 1024;
 
@@ -49,12 +50,14 @@ const AvatarMember = ({ img, className }) => {
 };
 
 export const LayoutHome = () => {
+  const { logout, usuario } = useSession(); //datos del usuario y función para el login y cerrar sesión
+
   return (
     <div className="w-full md:max-h-screen lg:overflow-y-hidden md:pt-[5rem] lg:pt-0">
       <div className="h-[10rem] px-10 w-full items-center hidden lg:flex">
         <div className="flex justify-between items-center w-full">
           <div>
-            <p className="text-[2rem] font-semibold">Bienvenido Edward</p>
+            <p className="text-[2rem] font-semibold">Bienvenido {usuario.name}</p>
             <p className="text-[1.1rem]">
               Comienza a trabajar en equipo y organizar proyectos juntos!
             </p>

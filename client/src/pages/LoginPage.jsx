@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSession } from '@/config/useSession';
 
 export const LoginPage = () => {
+  const {login} = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate(); 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
 
     const response = await fetch('http://localhost:5000/api/auth/login', {
       method: 'POST',
@@ -20,6 +23,7 @@ export const LoginPage = () => {
     console.log(data);
 
     if (data.token) {
+      await login(data)
       localStorage.setItem('token', data.token);
       alert('Inicio de sesión exitoso');
       navigate('/dashboard'); 

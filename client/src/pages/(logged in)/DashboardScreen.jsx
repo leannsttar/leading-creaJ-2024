@@ -5,6 +5,7 @@ import mailIcon from "../../assets/mailIcon.svg";
 import threeDotsIcon from "../../assets/threeDotsSmaller.svg";
 import threeDotsProfile from "../../assets/threeDotsProfile.svg"
 import { TitleSection } from "../../components/ui/TitleSection";
+import { useSession } from "@/config/useSession";
 
 const MessageComponent = ({ img, name, message }) => {
   return (
@@ -85,6 +86,8 @@ const ProjectCard = ({ title, date, members, category, progress }) => {
 };
 
 export const DashboardScreen = () => {
+  const { logout, usuario } = useSession(); //datos del usuario y función para el login y cerrar sesión
+
   return (
     <div
       //Acá usualmente sería 5 rem de pt, por los 5 rem de h del header, pero pongo 6 para que no quede justo
@@ -94,7 +97,7 @@ export const DashboardScreen = () => {
       <div className="flex flex-col w-[90%] lg:w-full lg:flex-row-reverse">
         <div className="flex flex-col items-center w-full lg:w-[30rem] lg:bg-[#F7F7F7] lg:h-screen lg:overflow-auto" >
           <h1 className="text-[1.8rem] font-semibold text-center font-prompt lg:hidden">
-            Bienvenido Edward
+            Bienvenido {usuario.name}
           </h1>
           <div className="flex w-full justify-between px-5 pt-3">
             <TitleSection title={"Mi perfil"} className={'hidden lg:block '} />
@@ -108,8 +111,7 @@ export const DashboardScreen = () => {
             />
           </div>
           <div className="mt-4 text-center text-[1.2rem]">
-            <p className="font-inter font-semibold ">Edward Elric</p>
-            <p className="font-inter">Backend Developer</p>
+            <p className="font-inter font-semibold ">{usuario.name}</p>
           </div>
           <div className="bg-[#F7F7F7] rounded-xl w-full py-3 px-4 font-inter mt-4 lg:px-6">
             <div className="flex justify-between">

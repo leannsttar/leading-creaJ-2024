@@ -9,7 +9,7 @@ const obtenerPerfil = async (token) => {
         Authorization: `Bearer ${token}`,
       },
     };
-    const data = await axios.get("http://localhost:5000/users", configHeaders);
+    const data = await axios.get("http://localhost:5000/api/users", configHeaders);
     return data;
   } catch (error) {
     return error;
@@ -32,9 +32,9 @@ const SessionProvider = ({ children }) => {
     }
   };
 
-  const login = (usuario) => {
+  const login = async (usuario) => {
     localStorage.setItem("token", usuario.token);
-    perfil();
+    await perfil();
   };
   const logout = () => {
     setUsuario({});

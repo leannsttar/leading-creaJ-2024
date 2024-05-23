@@ -8,7 +8,7 @@ export const auth = async (req, res, next) => {
       if (autorizacion && autorizacion.startsWith("Bearer ")) {
 
         const token = autorizacion.split(" ")[1];
-        const credenciales = jwt.verify(token, "tu_secreto");
+        const credenciales = jwt.verify(token, "secret-key");
         console.log(credenciales);
         let usuarioEncontrado = await prisma.users.findFirst({
           where: {
@@ -25,15 +25,18 @@ export const auth = async (req, res, next) => {
         next();
       } else {
         return res.status(403).json({
-          message: "No estas autenticado",
+          message: "No estás autenticado",
         });
       }
     } catch (error) {
       console.log(error);
 
       return res.status(403).json({
-        message: "No estas autenticado",
+        message: "No estás autenticado",
       });
     }
 };
 
+export const perfil = async(req,res)=>{
+  return res.status(200).json(req.usuario);
+}
