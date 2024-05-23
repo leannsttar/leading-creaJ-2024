@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "antd/es/typography/Link";
 import { FaPlus } from "react-icons/fa6";
-import { PlusOutlined } from "@ant-design/icons";
 import { TbEdit } from "react-icons/tb";
 import { PiListChecks } from "react-icons/pi";
 import { PiList } from "react-icons/pi";
@@ -26,10 +25,11 @@ import {
   Flex,
   Progress,
   Checkbox,
+  TreeSelect,
 } from "antd";
 const { Option } = Select;
 
-import { InboxOutlined, SendOutlined, UploadOutlined } from "@ant-design/icons";
+import { InboxOutlined, MinusCircleOutlined, PlusOutlined,  SendOutlined, UploadOutlined } from "@ant-design/icons";
 import { message, Upload } from "antd";
 const { Dragger } = Upload;
 const fileList = [
@@ -91,8 +91,99 @@ const props = {
   ],
 };
 
-const HeaderTaskCards = ({ title, numCards }) => {
+const treeDataTags = [
+  {
+    value: "research",
+    title: "Research",
+  },
+  {
+    value: "ux",
+    title: "UX",
+  },
+  {
+    value: "ui",
+    title: "UI",
+  },
+  {
+    value: "design system",
+    title: "Design System",
+  },
+];
+
+const treeDataMembers = [
+  {
+    value: "member1",
+    title: (
+      <div className="flex items-center gap-1">
+        <img src="https://i.pinimg.com/564x/1d/74/78/1d7478575d3660265b0163630aff82ff.jpg" className="w-4 h-4 rounded-full object-cover"/>
+        <p>miembro 1</p>
+      </div>
+    ),
+  },
+  {
+    value: "member2",
+    title: (
+      <div className="flex items-center gap-1">
+        <img src="https://i.pinimg.com/564x/bf/1b/15/bf1b150ed20b1071a77c192a7d6a98ef.jpg" className="w-4 h-4 rounded-full object-cover"/>
+        <p>miembro 2</p>
+      </div>
+    ),
+  },
+  {
+    value: "member3",
+    title: (
+      <div className="flex items-center gap-1">
+        <img src="https://i.pinimg.com/564x/bd/3c/61/bd3c61b844be21ce958a5d5413c991a9.jpg" className="w-4 h-4 rounded-full object-cover"/>
+        <p>miembro 3</p>
+      </div>
+    ),
+  },
+  {
+    value: "member4",
+    title: (
+      <div className="flex items-center gap-1">
+        <img src="https://i.pinimg.com/564x/d4/9c/ff/d49cffc63e34c2ecb55a31a01067aa7c.jpg" className="w-4 h-4 rounded-full object-cover"/>
+        <p>miembro 4</p>
+      </div>
+    ),
+  },
+];
+
+const formItemLayout = {
+  labelCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 4,
+    },
+  },
+  wrapperCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 20,
+    },
+  },
+};
+const formItemLayoutWithOutLabel = {
+  wrapperCol: {
+    xs: {
+      span: 24,
+      offset: 0,
+    },
+    sm: {
+      span: 20,
+      offset: 4,
+    },
+  },
+};
+
+const HeaderTaskCards = ({ title, numCards, hidden }) => {
   const [open, setOpen] = useState(false);
+  const [value, setValue] = useState();
+  const [subtasks, setSubtasks] = useState([]); 
 
   const showDrawer = () => {
     setOpen(true);
@@ -101,10 +192,30 @@ const HeaderTaskCards = ({ title, numCards }) => {
     setOpen(false);
   };
 
+  const onChange = (newValue) => {
+    setValue(newValue);
+  };
+
+  const handleAddSubtask = () => {
+    setSubtasks([...subtasks, { name: '', completed: false }]); // Add empty subtask
+  };
+
+  const handleRemoveSubtask = (index) => {
+    const updatedSubtasks = [...subtasks]; // Create a copy to avoid mutation
+    updatedSubtasks.splice(index, 1); // Remove subtask at the specified index
+    setSubtasks(updatedSubtasks);
+  };
+
+  const handleSubtaskChange = (event, index) => {
+    const updatedSubtasks = [...subtasks]; // Create a copy to avoid mutation
+    updatedSubtasks[index].name = event.target.value; // Update the name of the subtask
+    setSubtasks(updatedSubtasks);
+  };
+
   return (
     <>
       <Drawer
-        title="Create a new account"
+        title="Crea una nueva tarea"
         width={720}
         onClose={onClose}
         open={open}
@@ -115,9 +226,9 @@ const HeaderTaskCards = ({ title, numCards }) => {
         }}
         extra={
           <Space>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={onClose} type="primary">
-              Submit
+            <Button onClick={onClose}>Cancelar</Button>
+            <Button onClick={onClose} className="bg-black text-white">
+              Enviar
             </Button>
           </Space>
         }
@@ -126,19 +237,19 @@ const HeaderTaskCards = ({ title, numCards }) => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="name"
-                label="Name"
+                name="title"
+                label="Título"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter user name",
+                    message: "El título es obligatorio",
                   },
                 ]}
               >
-                <Input placeholder="Please enter user name" />
+                <Input placeholder="Ingresa el título" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            {/* <Col span={12}>
               <Form.Item
                 name="url"
                 label="Url"
@@ -158,45 +269,91 @@ const HeaderTaskCards = ({ title, numCards }) => {
                   placeholder="Please enter url"
                 />
               </Form.Item>
+            </Col> */}
+            <Col span={12}>
+              <Form.Item
+                name="dateTime"
+                label="Fecha de entrega"
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor elige una fecha",
+                  },
+                ]}
+              >
+                <DatePicker
+                  style={{
+                    width: "100%",
+                  }}
+                  getPopupContainer={(trigger) => trigger.parentElement}
+                />
+              </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="owner"
-                label="Owner"
+                name="members"
+                label="Asignar a"
                 rules={[
                   {
                     required: true,
-                    message: "Please select an owner",
+                    message: "Seleccione al menos a 1 miembro",
                   },
                 ]}
               >
-                <Select placeholder="Please select an owner">
-                  <Option value="xiao">Xiaoxiao Fu</Option>
-                  <Option value="mao">Maomao Zhou</Option>
-                </Select>
+                <TreeSelect
+                  showSearch
+                  style={{
+                    width: "100%",
+                    
+                  }}
+                  value={value}
+                  dropdownStyle={{
+                    maxHeight: 400,
+                    overflow: "auto",
+                  }}
+                  placeholder="Seleccione a los miembros"
+                  allowClear
+                  multiple
+                  treeDefaultExpandAll
+                  onChange={onChange}
+                  treeData={treeDataMembers}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                name="type"
-                label="Type"
+                name="tags"
+                label="Etiquetas"
                 rules={[
                   {
                     required: true,
-                    message: "Please choose the type",
+                    message: "Por favor elija al menos 1 etiqueta",
                   },
                 ]}
               >
-                <Select placeholder="Please choose the type">
-                  <Option value="private">Private</Option>
-                  <Option value="public">Public</Option>
-                </Select>
+                <TreeSelect
+                  showSearch
+                  style={{
+                    width: "100%",
+                  }}
+                  value={value}
+                  dropdownStyle={{
+                    maxHeight: 400,
+                    overflow: "auto",
+                  }}
+                  placeholder="Seleccione las etiquetas"
+                  allowClear
+                  multiple
+                  treeDefaultExpandAll
+                  onChange={onChange}
+                  treeData={treeDataTags}
+                />
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
+          {/* <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="approver"
@@ -217,15 +374,15 @@ const HeaderTaskCards = ({ title, numCards }) => {
             <Col span={12}>
               <Form.Item
                 name="dateTime"
-                label="DateTime"
+                label="Fecha de entrega"
                 rules={[
                   {
                     required: true,
-                    message: "Please choose the dateTime",
+                    message: "Por favor elige una fecha",
                   },
                 ]}
               >
-                <DatePicker.RangePicker
+                <DatePicker
                   style={{
                     width: "100%",
                   }}
@@ -233,23 +390,46 @@ const HeaderTaskCards = ({ title, numCards }) => {
                 />
               </Form.Item>
             </Col>
-          </Row>
+          </Row> */}
           <Row gutter={16}>
             <Col span={24}>
               <Form.Item
                 name="description"
-                label="Description"
+                label="Descripción"
                 rules={[
                   {
                     required: true,
-                    message: "please enter url description",
+                    message: "Escribe una descripción de la tarea",
                   },
                 ]}
               >
                 <Input.TextArea
                   rows={4}
-                  placeholder="please enter url description"
+                  placeholder="Escribe una descripción de la tarea"
                 />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item label="Subtareas">
+                {subtasks.map((subtask, index) => (
+                  <div key={index} className="flex items-center justify-between mb-2">
+                    <Input
+                      value={subtask.name}
+                      onChange={(event) => handleSubtaskChange(event, index)}
+                      placeholder="Ingresa el nombre de la subtarea"
+                      style={{ width: '90%' }}
+                    />
+                    <MinusCircleOutlined
+                      className="cursor-pointer ml-2"
+                      onClick={() => handleRemoveSubtask(index)}
+                    />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={handleAddSubtask} icon={<PlusOutlined />}>
+                  Agregar subtarea
+                </Button>
               </Form.Item>
             </Col>
           </Row>
@@ -260,12 +440,12 @@ const HeaderTaskCards = ({ title, numCards }) => {
           <p className="text-xl font-semibold">{title}</p>
           <p className="text-[#959595]">{numCards} cards de tareas</p>
         </div>
-        <img
+        {hidden ?? <img
           src={plusTasksIcon}
           alt="add icon"
           className="w-8 cursor-pointer"
           onClick={showDrawer}
-        />
+        />}
       </div>
     </>
   );
@@ -274,7 +454,8 @@ const HeaderTaskCards = ({ title, numCards }) => {
 const ColTasks = ({ title, numCards, children, index }) => {
   return (
     <div key={index} className="space-y-3 lg:w-[30%] lg:space-y-8">
-      <HeaderTaskCards title={title} numCards={numCards} />
+      {title === "Próximo" ? <HeaderTaskCards title={title} numCards={numCards} /> : <HeaderTaskCards title={title} numCards={numCards} hidden/> }
+      
       <div className="flex gap-3 overflow-auto pb-2 lg:flex-col lg:gap-6">
         {children}
       </div>
@@ -361,7 +542,7 @@ export const BoardTab = () => {
 
   const [data, setData] = useState([
     {
-      id:1,
+      id: 1,
       title: "Create component button web",
       tags: ["Design System", "UI"],
       description:
@@ -430,7 +611,7 @@ export const BoardTab = () => {
 
   const [data2, setData2] = useState([
     {
-      id:4,
+      id: 4,
       title: "Create component button web",
       tags: ["Design System", "UI"],
       description:
@@ -499,7 +680,7 @@ export const BoardTab = () => {
 
   const [data3, setData3] = useState([
     {
-      id:7,
+      id: 7,
       title: "Create component button web",
       tags: ["Design System", "UI"],
       description:
@@ -599,7 +780,13 @@ export const BoardTab = () => {
             <input
               className="rounded-2xl bg-[#f7f7f7] px-3 py-2 outline-none w-full mr-4"
               type="text"
-              placeholder={section === "archivos" ? "Copia el link aquí ..." : section === "comentarios" ? 'Comenta aquí ...' : ''}
+              placeholder={
+                section === "archivos"
+                  ? "Copia el link aquí ..."
+                  : section === "comentarios"
+                  ? "Comenta aquí ..."
+                  : ""
+              }
               name=""
               id=""
             />
@@ -766,7 +953,9 @@ export const BoardTab = () => {
                       </p>
                     </Dragger> */}
                     <Upload {...props}>
-                      <Button icon={<UploadOutlined />}>Click para subir</Button>
+                      <Button icon={<UploadOutlined />}>
+                        Click para subir
+                      </Button>
                     </Upload>
                     <p className="text-lg font-medium mt-6">Adjuntar links</p>
                     <div className="mt-1 space-y-1">
