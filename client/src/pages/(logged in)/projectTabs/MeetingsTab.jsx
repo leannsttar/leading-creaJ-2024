@@ -1,6 +1,14 @@
+import { useState } from "react";
+
 import allMeetingsIcon from "../../../assets/allMeetingsIcon.svg";
 import upcomingMeetingsIcon from "../../../assets/UpcomingMeetingsIcon.svg";
 import pastMeetingsIcon from "../../../assets/pastMeetingsIcon.svg";
+
+import { Modal, DatePicker, TimePicker, Input, Form, Button } from "antd";
+import dayjs from "dayjs";
+const format = "HH:mm";
+
+const { TextArea } = Input;
 
 const MeetingsSection = ({ icon, title, numMeetings }) => {
   return (
@@ -78,6 +86,48 @@ const MeetingCard = ({
 };
 
 export const MeetingsTab = () => {
+  const [modal1Open, setModal1Open] = useState(false);
+
+  const [formData, setFormData] = useState({
+    date: null,
+    time: null,
+    meetLink: "",
+    description: "",
+  });
+
+  const onDateChange = (date) => {
+    setFormData({
+      ...formData,
+      date,
+    });
+  };
+
+  const onTimeChange = (time) => {
+    setFormData({
+      ...formData,
+      time,
+    });
+  };
+
+  const onLinkChange = (event) => {
+    setFormData({
+      ...formData,
+      meetLink: event.target.value,
+    });
+  };
+
+  const onDescriptionChange = (event) => {
+    setFormData({
+      ...formData,
+      description: event.target.value,
+    });
+  };
+
+  const handleSubmit = () => {
+    // Submit the form data to your server or perform other actions
+    console.log("Submitting form data:", formData);
+  };
+
   return (
     <div className="m-5 lg:m-16">
       <div className="bg-[#f5f5f5] lg:w-fit p-8 rounded-2xl space-y-5  lg:flex lg:space-y-0 lg:gap-5">
@@ -106,6 +156,87 @@ export const MeetingsTab = () => {
           />
         </div>
       </div>
+      <button
+        onClick={() => setModal1Open(true)}
+        className="px-4 py-2 bg-gray-100 mt-10 rounded-lg"
+      >
+        Crear una nueva reunión
+      </button>
+      <Modal
+        title="Crear nueva reunión"
+        okButtonProps={{ style: { backgroundColor: "black", color: "white" } }}
+        okText="Crear reunión"
+        centered
+        open={modal1Open}
+        onOk={() => setModal1Open(false)}
+        onCancel={() => setModal1Open(false)}
+      >
+        <div className="">
+          <Form
+            layout="vertical"
+            onFinish={handleSubmit}
+            style={{ width: 400, margin: "20px" }}
+          >
+            <Form.Item
+              label="Fecha de la reunión"
+              name="date"
+              rules={[
+                {
+                  required: true,
+                  message: "Por favor, seleccione una fecha",
+                },
+              ]}
+            >
+              <DatePicker onChange={onDateChange} placeholder="Fecha"/>
+            </Form.Item >
+
+            <Form.Item
+              label="Hora de la reunión"
+              name="time"
+              rules={[
+                {
+                  required: true,
+                  message: "Por favor, seleccione una hora",
+                },
+              ]}
+            >
+              <TimePicker format="HH:mm" onChange={onTimeChange} placeholder="Hora"/>
+            </Form.Item>
+
+            <Form.Item
+              label="Enlace de la reunión"
+              name="meetLink"
+              rules={[
+                {
+                  required: true,
+                  message: "Por favor, ingrese el enlace de la reunión",
+                },
+              ]}
+            >
+              <Input placeholder="Enlace del meet" onChange={onLinkChange} />
+            </Form.Item>
+
+            <Form.Item
+              label="Descripción de la reunión"
+              name="description"
+              rules={[
+                {
+                  required: true,
+                  message: "Por favor, ingrese una descripción de la reunión",
+                },
+              ]}
+            >
+              <TextArea
+                rows={4}
+                placeholder="Descripción de la reunión"
+                onChange={onDescriptionChange}
+              />
+            </Form.Item>
+
+
+          </Form>
+        </div>
+      </Modal>
       <div className="mt-14">
         <p className="text-[1.5rem] font-semibold">Reuniones próximas</p>
         <div className="bg-[#5B5B5B] w-[6rem] h-[5px] rounded-full" />

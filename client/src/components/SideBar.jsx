@@ -18,8 +18,18 @@ import { useSession } from "@/config/useSession";
 
 import avatar from "../assets/Avatar.jpg";
 
-import { Button, Dropdown, Space, Modal } from "antd";
-
+import {
+  Button,
+  Dropdown,
+  Space,
+  Modal,
+  Checkbox,
+  Form,
+  Input,
+  Upload,
+} from "antd";
+import TextArea from "antd/es/input/TextArea";
+import ImgCrop from "antd-img-crop";
 
 const navLinks = [
   { title: "Panel", href: "/dashboard", img: dashboardIcon },
@@ -51,8 +61,6 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
       }
     }
   }, [location.pathname, href]);
-
-
 
   return isProject ? (
     <Link to={href}>
@@ -105,6 +113,61 @@ export const SideBar = () => {
   const [isLowRes, setIsLowRes] = useState(window.innerHeight < 730);
 
   const [modal1Open, setModal1Open] = useState(false);
+  const [modal2Open, setModal2Open] = useState(false);
+
+  
+
+  const onFinish = (values) => {
+    // Esta función se llama cuando se envía el formulario
+    console.log("Success:", values);name
+
+    // Aquí puedes enviar los datos al backend
+    const formData = new FormData();
+    formData.append("imagen", values.imagen[0].originFileObj);
+    formData.append("nombre", values.nombre);
+    formData.append("descripcion", values.descripcion);
+
+    axios.post("/ruta-al-backend", formData)
+      .then(response => {
+        console.log("Respuesta del backend:", response.data);
+        setModal2Open(false); // Cerrar el modal después de enviar los datos
+      })
+      .catch(error => {
+        console.error("Error al enviar los datos al backend:", error);
+      });
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
+
+  const onChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+
+  const onPreview = async (file) => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result);
+      });
+    }
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(image.outerHTML);
+  };
+
+  const [fileList, setFileList] = useState([
+    {
+      uid: "-1",
+      name: "image.png",
+      status: "done",
+      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+    },
+  ]);
 
   useEffect(() => {
     const checkResolution = () => {
@@ -143,13 +206,7 @@ export const SideBar = () => {
     },
     {
       key: "2",
-      label: (
-        <a
-          onClick={() => setModal1Open(true)}
-        >
-          Cerrar sesión
-        </a>
-      ),
+      label: <a onClick={() => setModal1Open(true)}>Cerrar sesión</a>,
     },
   ];
 
@@ -221,6 +278,7 @@ export const SideBar = () => {
                   MIS PROYECTOS
                 </p>
                 <img
+                  onClick={() => setModal2Open(true)}
                   src={addProjectIcon}
                   alt="Icono añadir proyecto"
                   className={`cursor-pointer ${isShrinked && "h-[18px]"}`}
@@ -374,15 +432,86 @@ export const SideBar = () => {
           </Dropdown>
           <Modal
             title="Cerrar sesión"
-            okButtonProps={{ style: { backgroundColor: 'red' } }}
+            okButtonProps={{ style: { backgroundColor: "red" } }}
             okText="Cerrar sesión"
             centered
             open={modal1Open}
             onOk={logout}
             onCancel={() => setModal1Open(false)}
           >
-            <p>¿Estás seguro que quieres cerrar sesión? Una vez que cierras sesión tendrás que iniciar sesión de nuevo</p>
-           
+            <p>
+              ¿Estás seguro que quieres cerrar sesión? Una vez que cierras
+              sesión tendrás que iniciar sesión de nuevo
+            </p>
+          </Modal>
+          <Modal
+            title="Crear un nuevo proyecto"
+            okButtonProps={{
+              style: { backgroundColor: "black", color: "white" },
+            }}
+            okText="Crear proyecto"
+            centered
+            open={modal2Open}
+            onOk={() => setModal2Open(false)}
+            onCancel={() => setModal2Open(false)}
+          >
+            <Form
+              name="basic"
+              initialValues={{
+                remember: true,
+              }}
+              onFinish={onFinish} // Cambiado aquí
+              onFinishFailed={onFinishFailed}
+              autoComplete="off"
+            >
+              <Form.Item
+                name="imagen"
+                rules={[
+                  {
+                    required: false,
+                    message: "Ingrese un nombre!",
+                  },
+                ]}
+              >
+                <ImgCrop
+                  rotationSlider
+                  okButtonProps={{
+                    style: { backgroundColor: "black", color: "white" },
+                  }}
+                >
+                  <Upload
+                    listType="picture-card"
+                    onChange={onChange}
+                    onPreview={onPreview}
+                    maxCount={1}
+                  >
+                    {"+ Upload"}
+                  </Upload>
+                </ImgCrop>
+              </Form.Item>
+              <Form.Item
+                name="nombre"
+                rules={[
+                  {
+                    required: true,
+                    message: "Ingrese un nombre!",
+                  },
+                ]}
+              >
+                <Input placeholder="Ingrese el nombre del proyecto" />
+              </Form.Item>
+              <Form.Item
+                name="descripcion"
+                rules={[
+                  {
+                    required: false,
+                    message: "Please input your password!",
+                  },
+                ]}
+              >
+                <TextArea placeholder="Ingrese una descripción" />
+              </Form.Item>
+            </Form>
           </Modal>
         </div>
       </div>
