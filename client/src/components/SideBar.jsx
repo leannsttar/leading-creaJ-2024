@@ -465,11 +465,11 @@ export const SideBar = () => {
               autoComplete="off"
             >
               <Form.Item
-                name="imagen"
+                name="projectImage"
                 rules={[
                   {
                     required: false,
-                    message: "Ingrese un nombre!",
+                    message: "Suba una iamgen!",
                   },
                 ]}
               >

@@ -27,7 +27,7 @@ model Users {
 model Projects {
   id          Int           @id @default(autoincrement())
   name        String
-  percentage  Float
+  percentage  Float         @default(0)
   description String
   createdAt   DateTime      @default(now())
   meetings    Meetings[]
