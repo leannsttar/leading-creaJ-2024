@@ -20,7 +20,7 @@ const ChatComponent = ({
   return (
     <div
       onClick={onClick}
-      className="flex px-6 justify-between p-2 hover:bg-[#f6f6fe] rounded-lg cursor-pointer"
+      className="flex px-6 justify-between py-4 hover:bg-[#f6f6fe] rounded-lg cursor-pointer"
     >
       <div className="flex gap-2 items-center">
         <img
@@ -93,7 +93,7 @@ export const MessagesScreen = () => {
             />
           </div>
           <div
-            className="space-y-3 overflow-auto"
+            className="overflow-auto"
             style={{
               height: isMobile ? "h-full" : "calc(100vh - 10rem)",
             }}

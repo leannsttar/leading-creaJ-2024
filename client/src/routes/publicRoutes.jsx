@@ -55,7 +55,7 @@ const publicRoutes = [
     path: "/login",
     element: (
       <>
-        <Header />
+        {/* <Header /> */}
         <LoginPage />
       </>
     ),
@@ -64,7 +64,7 @@ const publicRoutes = [
     path: "/signup",
     element: (
       <>
-        <Header />
+        {/* <Header /> */}
         <SignUpPage />
       </>
     ),
