@@ -8,6 +8,7 @@ import plusIcon from "../assets/plusIcon.svg";
 import usersProjectIcon from "../assets/usersProjectIcon.svg";
 import editIcon from "../assets/editIcon.svg";
 
+
 import { MobileSideBar, SideBar } from "./SideBar.jsx";
 import { HeaderMobileWorkspace } from "./HeaderMobileWorkspace.jsx";
 import { useSession } from "@/config/useSession";
@@ -57,7 +58,9 @@ export const LayoutHome = () => {
       <div className="h-[10rem] px-10 w-full items-center hidden lg:flex">
         <div className="flex justify-between items-center w-full">
           <div>
-            <p className="text-[2rem] font-semibold">Bienvenido {usuario.name}</p>
+            <p className="text-[2rem] font-semibold">
+              Bienvenido {usuario.name}
+            </p>
             <p className="text-[1.1rem]">
               Comienza a trabajar en equipo y organizar proyectos juntos!
             </p>
@@ -197,10 +200,7 @@ const LayoutProject = () => {
                 </button>
               </div>
             </div>
-            <div
-              className="flex gap-3 text-[#7C7C7C] overflow-x-scroll w-screen lg:w-auto lg:gap-6 lg:overflow-x-auto pr-7 lg:px-0"
-              
-            >
+            <div className="flex gap-3 text-[#7C7C7C] overflow-x-scroll w-screen lg:w-auto lg:gap-6 lg:overflow-x-auto pr-7 lg:px-0">
               {tabLinksProject.map((link, index) => {
                 return (
                   <div key={index}>
@@ -245,9 +245,9 @@ const LayoutNotifications = () => {
               </div>
             </div>
             <div className="flex gap-6 text-[#7C7C7C] overflow-x-scroll lg:overflow-x-auto ">
-              <MiniTabLink title={"Vista General"}  />
-              <MiniTabLink title={"Invitaciones"}  />
-              <MiniTabLink title={"Comentarios"}  />
+              <MiniTabLink title={"Vista General"} />
+              <MiniTabLink title={"Invitaciones"} />
+              <MiniTabLink title={"Comentarios"} />
             </div>
           </div>
           <div className=" gap-2 hidden">
@@ -282,6 +282,19 @@ const LayoutNotifications = () => {
         <Outlet />
       </div>
     </>
+  );
+};
+
+const LayoutMessages = () => {
+  return (
+    <div
+        className="w-full"
+        style={{
+          height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+        }}
+      >
+        <Outlet />
+      </div>
   );
 };
 
@@ -333,6 +346,8 @@ export const LayoutWorkspace = () => {
         return <LayoutTasks />;
       case pathname === "/dashboard/notifications":
         return <LayoutNotifications />;
+      case pathname === "/dashboard/messages":
+        return <LayoutMessages />;
       default:
         return null;
     }

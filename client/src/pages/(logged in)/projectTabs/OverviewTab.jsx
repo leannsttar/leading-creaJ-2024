@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { TaskCardProject } from "../../../components/(logged in)/TaskCardProject.jsx";
+import { ReplyComponent } from "@/components/(logged in)/messages/ReplyComponent.jsx";
 
 import projectImage from "../../../assets/projectImage.jpg";
 
@@ -15,48 +16,6 @@ const ActivityRecord = ({ img, message, date }) => {
       <div>
         <p className="font-semibold">{message}</p>
         <p className="text-[#707070] font-light">{date}</p>
-      </div>
-    </div>
-  );
-};
-
-const MessageComponent = ({ message, me, index }) => {
-  return (
-    <div
-      key={index}
-      className={`${
-        me ? "bg-black text-white" : "bg-[#F1F1F1]"
-      }  rounded-xl px-3 py-2 w-fit text-[.9rem]`}
-    >
-      <p>{message}</p>
-    </div>
-  );
-};
-
-const UserPictureMessage = ({ href }) => {
-  return (
-    <img
-      src={href}
-      className="min-h-[2.5rem] min-w-[2.5rem] max-h-[2.5rem] max-w-[2.5rem] rounded-xl object-cover"
-    />
-  );
-};
-
-const ReplyComponent = ({ img, messages, me }) => {
-  return (
-    <div className={`flex gap-2 ${me ? "flex-row-reverse" : ""}`}>
-      <UserPictureMessage href={img} />
-      <div className={`flex flex-col gap-1 ${me ? "items-end" : ""}`}>
-        {messages.map((message, index) => {
-          return (
-            <MessageComponent
-              key={index}
-              message={message}
-              index={index}
-              me={me}
-            />
-          );
-        })}
       </div>
     </div>
   );
