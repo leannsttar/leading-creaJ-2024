@@ -1,6 +1,6 @@
 import express from 'express';
 import { createProject, getAllProjects } from '../controllers/project-controller.js';
-import { addTeamMember, createMeeting, createProject } from '../controllers/project-controller.js';
+import { addTeamMember, createMeeting } from '../controllers/project-controller.js';
 import { auth } from '../../middleware/auth.js';
 import multer from 'multer'; 
 
