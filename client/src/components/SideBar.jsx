@@ -12,7 +12,7 @@ import threeDotsIcon from "../assets/threeDotsIcon.svg";
 import threeDots from "../assets/threeDotsSmaller.svg";
 import threeLinesMenu from "../assets/3linesMenu.svg";
 
-//sesión
+// Sesión
 import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
 
@@ -30,6 +30,7 @@ import {
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import ImgCrop from "antd-img-crop";
+import axios from 'axios'; 
 
 const navLinks = [
   { title: "Panel", href: "/dashboard", img: dashboardIcon },
@@ -106,39 +107,56 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
 };
 
 export const SideBar = () => {
-  const { logout, usuario } = useSession(); //datos del usuario y función para el login y cerrar sesión
+  const { logout, usuario, userToken } = useSession();
+
+  const [fileList, setFileList] = useState([
+    {
+      uid: "-1",
+      name: "image.png",
+      status: "done",
+      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+    },
+  ]);
 
   const [isDark, setIsDark] = useState(false);
   const [isShrinked, setIsShrinked] = useState(window.innerWidth < 1280);
   const [isLowRes, setIsLowRes] = useState(window.innerHeight < 730);
 
+  const [createProjectName, setCreateProjectName] = useState();
+  const [createProjectDescription, setCreateProjectDescription] = useState();
+  const [createProjectFile, setCreateProjectFile] = useState();
+
   const [modal1Open, setModal1Open] = useState(false);
   const [modal2Open, setModal2Open] = useState(false);
 
-  
+  const onFinish = async () => {
+    try {
+      const fileImg = fileList.map(file => file.originFileObj)[0]
+      
+      console.log(createProjectDescription);
+      
+      const formData = new FormData();
+      
+      formData.append("imagen", fileImg);
+      formData.append("nombre", createProjectName);
+      formData.append("descripcion", createProjectDescription);
 
-  const onFinish = (values) => {
-    // Esta función se llama cuando se envía el formulario
-    console.log("Success:", values);name
 
-    // Aquí puedes enviar los datos al backend
-    const formData = new FormData();
-    formData.append("imagen", values.imagen[0].originFileObj);
-    formData.append("nombre", values.nombre);
-    formData.append("descripcion", values.descripcion);
-
-    axios.post("/ruta-al-backend", formData)
-      .then(response => {
-        console.log("Respuesta del backend:", response.data);
-        setModal2Open(false); // Cerrar el modal después de enviar los datos
-      })
-      .catch(error => {
-        console.error("Error al enviar los datos al backend:", error);
+      const response = await clienteAxios.postForm("/api/projects", formData, {
+        headers: {
+          Authorization: 'Bearer '+userToken
+        }
       });
+
+      console.log("Respuesta del backend:", response.data);
+      // setModal2Open(false); 
+    } catch (error) {
+      console.error("Error al enviar los datos", error);
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    console.log("Fallo:", errorInfo);
   };
 
   const onChange = ({ fileList: newFileList }) => {
@@ -160,14 +178,6 @@ export const SideBar = () => {
     imgWindow?.document.write(image.outerHTML);
   };
 
-  const [fileList, setFileList] = useState([
-    {
-      uid: "-1",
-      name: "image.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-  ]);
 
   useEffect(() => {
     const checkResolution = () => {
@@ -209,13 +219,6 @@ export const SideBar = () => {
       label: <a onClick={() => setModal1Open(true)}>Cerrar sesión</a>,
     },
   ];
-
-  // const showWarningModal = () => {
-  //   Modal.warning({
-  //     title: 'Cerrar sesión',
-  //     content: 'Are you sure you want to delete this item? This action cannot be undone.',
-  //   });
-  // };
 
   return (
     <aside
@@ -452,7 +455,7 @@ export const SideBar = () => {
             okText="Crear proyecto"
             centered
             open={modal2Open}
-            onOk={() => setModal2Open(false)}
+            onOk={onFinish}
             onCancel={() => setModal2Open(false)}
           >
             <Form
@@ -460,7 +463,7 @@ export const SideBar = () => {
               initialValues={{
                 remember: true,
               }}
-              onFinish={onFinish} // Cambiado aquí
+              
               onFinishFailed={onFinishFailed}
               autoComplete="off"
             >
@@ -494,11 +497,11 @@ export const SideBar = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Ingrese un nombre!",
+                    message: "Ingresa un nombre!",
                   },
                 ]}
               >
-                <Input placeholder="Ingrese el nombre del proyecto" />
+                <Input onChange={e => setCreateProjectName(e.target.value)} placeholder="Ingresa el nombre del proyecto" />
               </Form.Item>
               <Form.Item
                 name="descripcion"
@@ -508,8 +511,9 @@ export const SideBar = () => {
                     message: "Please input your password!",
                   },
                 ]}
+                
               >
-                <TextArea placeholder="Ingrese una descripción" />
+                <TextArea onChange={e => setCreateProjectDescription(e.target.value)} placeholder="Ingrese una descripción" />
               </Form.Item>
             </Form>
           </Modal>
