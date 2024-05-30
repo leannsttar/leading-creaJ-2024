@@ -2,16 +2,19 @@ import { useState, useEffect } from "react";
 
 import { Link, useLocation, Outlet } from "react-router-dom";
 
+import { clienteAxios } from "@/config/clienteAxios";
+import { useSession } from "@/config/useSession";
+
 import configIcon from "../assets/configIcon.svg";
 import threeDotsSmaller from "../assets/threeDotsSmaller.svg";
 import plusIcon from "../assets/plusIcon.svg";
 import usersProjectIcon from "../assets/usersProjectIcon.svg";
 import editIcon from "../assets/editIcon.svg";
 
+import { Modal, Form, Input } from "antd";
 
 import { MobileSideBar, SideBar } from "./SideBar.jsx";
 import { HeaderMobileWorkspace } from "./HeaderMobileWorkspace.jsx";
-import { useSession } from "@/config/useSession";
 
 let isMobile = window.innerWidth < 1024;
 
@@ -79,6 +82,7 @@ export const LayoutHome = () => {
           </div>
         </div>
       </div>
+
       <hr className="hidden lg:block" />
       <div
         className="w-full overflow-auto"
@@ -160,6 +164,40 @@ const tabLinksProject = [
 ];
 
 const LayoutProject = () => {
+  const { logout, usuario, userToken } = useSession();
+
+  const [modal1Open, setModal1Open] = useState(false);
+
+  const [newMemberEmail, setNewMemberEmail] = useState();
+
+  const onFinish = async () => {
+    try {
+      const formData = new FormData();
+
+      formData.append("correo", newMemberEmail);
+      formData.append("proyectoId", 3);
+
+      const response = await clienteAxios.postForm(
+        "/api/projects/addMember",
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
+
+      console.log("Respuesta del backend:", response.data);
+      // setModal2Open(false);
+    } catch (error) {
+      console.error("Error al enviar los datos", error);
+    }
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Fallo:", errorInfo);
+  };
+
   return (
     <>
       <div className="w-full max-h-screen overflow-hidden">
@@ -195,7 +233,10 @@ const LayoutProject = () => {
                     <p>4+</p>
                   </div>
                 </div>
-                <button className="px-4 py-2 bg-[#D6EAF5] text-[#0070D8] font-semibold rounded-3xl">
+                <button
+                  onClick={() => setModal1Open(true)}
+                  className="px-4 py-2 bg-[#D6EAF5] text-[#0070D8] font-semibold rounded-3xl"
+                >
                   Añadir miembro
                 </button>
               </div>
@@ -211,6 +252,53 @@ const LayoutProject = () => {
             </div>
           </div>
         </div>
+        <Modal
+          title="Añadir miembro"
+          okButtonProps={{
+            style: { backgroundColor: "black", color: "white" },
+          }}
+          okText="Añadir"
+          centered
+          open={modal1Open}
+          onOk={onFinish}
+          onCancel={() => setModal1Open(false)}
+        >
+          {/* <div className="flex flex-col gap-1">
+            <label htmlFor="">Escriba el correo del usuario</label>
+            <input
+              onChange={(e) => setNewMemberEmail(e.target.value)}
+              className="bg-[#f5f5f5] px-3 py-2 rounded-lg outline-none"
+              type="text"
+              placeholder="correo@gmail.com"
+            />
+          </div> */}
+          <Form
+            name="basic"
+            initialValues={{
+              remember: true,
+            }}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+          >
+            <Form.Item
+              name="correo"
+              rules={[
+                {
+                  required: true,
+                  message: "Ingresa un correo",
+                },
+              ]}
+            >
+              <div className="space-y-1">
+                <p>Escriba el correo del usuario</p>
+                <Input
+                  onChange={(e) => setNewMemberEmail(e.target.value)}
+                  placeholder="correo@gmail.com"
+                />
+              </div>
+            </Form.Item>
+          </Form>
+        </Modal>
         <hr />
         <div
           className="w-full overflow-auto hidden lg:block "
@@ -288,17 +376,19 @@ const LayoutNotifications = () => {
 const LayoutMessages = () => {
   return (
     <div
-        className="w-full"
-        style={{
-          height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
-        }}
-      >
-        <Outlet />
-      </div>
+      className="w-full"
+      style={{
+        height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+      }}
+    >
+      <Outlet />
+    </div>
   );
 };
 
 export const LayoutWorkspace = () => {
+  
+
   const location = useLocation();
   const { pathname } = location;
 

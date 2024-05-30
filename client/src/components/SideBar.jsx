@@ -109,6 +109,8 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
 export const SideBar = () => {
   const { logout, usuario, userToken } = useSession();
 
+  
+
   const [fileList, setFileList] = useState([
     {
       uid: "-1",
@@ -147,24 +149,25 @@ export const SideBar = () => {
 
   const onFinish = async () => {
     try {
-      const fileImg = fileList.map((file) => file.originFileObj)[0];
-
+      const fileImg = fileList.map(file => file.originFileObj)[0]
+      
       console.log(createProjectDescription);
-
+      
       const formData = new FormData();
-
+      
       formData.append("imagen", fileImg);
       formData.append("nombre", createProjectName);
       formData.append("descripcion", createProjectDescription);
 
+
       const response = await clienteAxios.postForm("/api/projects", formData, {
         headers: {
-          Authorization: "Bearer " + userToken,
-        },
+          Authorization: 'Bearer '+userToken
+        }
       });
 
       console.log("Respuesta del backend:", response.data);
-      // setModal2Open(false);
+      // setModal2Open(false); 
     } catch (error) {
       console.error("Error al enviar los datos", error);
     }

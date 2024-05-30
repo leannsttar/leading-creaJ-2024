@@ -21,6 +21,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static('src/uploads'));
@@ -29,6 +30,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", loginRoutes);  
 
 app.use("/api/projects", projectRoutes);
+
+
 
 app.listen(5000, () => {
   console.log(`Servidor funcionando en el puerto ${5000}`);

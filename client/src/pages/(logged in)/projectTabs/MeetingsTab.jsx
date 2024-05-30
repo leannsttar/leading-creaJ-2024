@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+import { clienteAxios } from "@/config/clienteAxios";
+import { useSession } from "@/config/useSession";
+
 import allMeetingsIcon from "../../../assets/allMeetingsIcon.svg";
 import upcomingMeetingsIcon from "../../../assets/UpcomingMeetingsIcon.svg";
 import pastMeetingsIcon from "../../../assets/pastMeetingsIcon.svg";
@@ -86,48 +89,83 @@ const MeetingCard = ({
 };
 
 export const MeetingsTab = () => {
+  const { logout, usuario, userToken } = useSession();
+
+  const [meetingDate, setMeetingDate] = useState();
+  const [meetingLink, setMeetingLink] = useState();
+
   const [modal1Open, setModal1Open] = useState(false);
 
-  const [formData, setFormData] = useState({
-    date: null,
-    time: null,
-    meetLink: "",
-    description: "",
-  });
+  const onFinish = async () => {
+    try {
+      const formData = new FormData();
 
-  const onDateChange = (date) => {
-    setFormData({
-      ...formData,
-      date,
-    });
+      formData.append("fecha", meetingDate);
+      formData.append("enlace", meetingLink);
+      formData.append("proyectoId", 13)
+      formData.append("usuarioId", usuario.id)
+
+      const response = await clienteAxios.postForm(
+        "/api/projects/createMeeting",
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
+
+      console.log("Respuesta del backend:", response.data);
+      // setModal2Open(false);
+    } catch (error) {
+      console.error("Error al enviar los datos", error);
+    }
   };
 
-  const onTimeChange = (time) => {
-    setFormData({
-      ...formData,
-      time,
-    });
+  const onFinishFailed = (errorInfo) => {
+    console.log("Fallo:", errorInfo);
   };
+  
+  
+  // const [formData, setFormData] = useState({
+  //   date: null,
+  //   time: null,
+  //   meetLink: "",
+  //   description: "",
+  // });
 
-  const onLinkChange = (event) => {
-    setFormData({
-      ...formData,
-      meetLink: event.target.value,
-    });
-  };
+  // const onDateChange = (date) => {
+  //   setFormData({
+  //     ...formData,
+  //     date,
+  //   });
+  // };
 
-  const onDescriptionChange = (event) => {
-    setFormData({
-      ...formData,
-      description: event.target.value,
-    });
-  };
+  // const onTimeChange = (time) => {
+  //   setFormData({
+  //     ...formData,
+  //     time,
+  //   });
+  // };
 
-  const handleSubmit = () => {
-    // Submit the form data to your server or perform other actions
-    console.log("Submitting form data:", formData);
-  };
+  // const onLinkChange = (event) => {
+  //   setFormData({
+  //     ...formData,
+  //     meetLink: event.target.value,
+  //   });
+  // };
 
+  // const onDescriptionChange = (event) => {
+  //   setFormData({
+  //     ...formData,
+  //     description: event.target.value,
+  //   });
+  // };
+
+  // const handleSubmit = () => {
+  //   // Submit the form data to your server or perform other actions
+  //   console.log("Submitting form data:", formData);
+  // };
   return (
     <div className="m-5 lg:m-16">
       <div className="bg-[#f5f5f5] lg:w-fit p-8 rounded-2xl space-y-5  lg:flex lg:space-y-0 lg:gap-5">
@@ -168,14 +206,15 @@ export const MeetingsTab = () => {
         okText="Crear reunión"
         centered
         open={modal1Open}
-        onOk={() => setModal1Open(false)}
+        onOk={onFinish}
         onCancel={() => setModal1Open(false)}
       >
         <div className="">
           <Form
             layout="vertical"
-            onFinish={handleSubmit}
+            
             style={{ width: 400, margin: "20px" }}
+            onFinishFailed={onFinishFailed}
           >
             <Form.Item
               label="Fecha de la reunión"
@@ -187,10 +226,10 @@ export const MeetingsTab = () => {
                 },
               ]}
             >
-              <DatePicker onChange={onDateChange} placeholder="Fecha"/>
+              <DatePicker onChange={(date) => setMeetingDate(date)} placeholder="Fecha"/>
             </Form.Item >
 
-            <Form.Item
+            {/* <Form.Item
               label="Hora de la reunión"
               name="time"
               rules={[
@@ -201,7 +240,7 @@ export const MeetingsTab = () => {
               ]}
             >
               <TimePicker format="HH:mm" onChange={onTimeChange} placeholder="Hora"/>
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
               label="Enlace de la reunión"
@@ -213,10 +252,10 @@ export const MeetingsTab = () => {
                 },
               ]}
             >
-              <Input placeholder="Enlace del meet" onChange={onLinkChange} />
+              <Input onChange={(e) => setMeetingLink(e.target.value)}  placeholder="Enlace del meet" />
             </Form.Item>
 
-            <Form.Item
+            {/* <Form.Item
               label="Descripción de la reunión"
               name="description"
               rules={[
@@ -231,7 +270,7 @@ export const MeetingsTab = () => {
                 placeholder="Descripción de la reunión"
                 onChange={onDescriptionChange}
               />
-            </Form.Item>
+            </Form.Item> */}
 
 
           </Form>
