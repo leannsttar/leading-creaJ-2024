@@ -1,5 +1,5 @@
 import express from 'express';
-import { createProject } from '../controllers/project-controller.js';
+import { addTeamMember, createMeeting, createProject } from '../controllers/project-controller.js';
 import { auth } from '../../middleware/auth.js';
 import multer from 'multer'; 
 
@@ -17,5 +17,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 router.post('/', auth, upload.single('imagen'), createProject);
+
+router.post('/addMember', upload.single(), addTeamMember)
+router.post('/createMeeting', upload.single(), createMeeting)
 
 export default router;
