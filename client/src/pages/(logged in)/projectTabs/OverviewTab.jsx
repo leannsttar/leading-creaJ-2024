@@ -23,6 +23,8 @@ const ActivityRecord = ({ img, message, date }) => {
 };
 
 export const OverviewTab = () => {
+
+
   let messages1 = ["just ideas for next time", "I'll be there in 2 mins ⏰"];
   let messages2 = ["woohoooo", "Haha oh man", "Haha that's terrifying 😂"];
   let messages3 = ["aww", "omg, this is amazing", "woohoooo 🔥"];
@@ -109,23 +111,24 @@ export const OverviewTab = () => {
     },
   ]);
 
-  const { projectId } = useParams();
-
-  const [project, setProject] = useState(null);
+  const params = useParams();
+  const [project, setProject] = useState("loading");
 
   useEffect(() => {
-    const obtenerProyecto = async () => {
+    (async()=>{
       try {
-        const response = await clienteAxios.get(`/api/projects/${projectId}`);
-        console.log(response.data);
-        setProject(response.data);
+        const response = await clienteAxios.get(`/api/projects/getProject/${params.id}`);
+        // console.log(response.data);
+        setProject(response.data)
       } catch (error) {
         console.log("Error al obtener el proyecto:", error);
       }
-    };
+  
+    })()
+    // console.log(project)
+  }, [params.id]);
 
-    obtenerProyecto();
-  }, [projectId]);
+  if(project == "loading") return <p>Cargando Proyecto...</p>
 
   return (
     <div className="m-5 lg:m-12 lg:flex lg:gap-8">
@@ -134,7 +137,7 @@ export const OverviewTab = () => {
           <div className="space-y-3">
             <div className="">
               <img
-                src={projectImage}
+                src={`http://localhost:5000/${project.imagen}`}
                 alt="Imagen proyecto"
                 className="rounded-xl object-cover w-[8rem] h-[8rem] float-left mr-3 flex-shrink-0"
               />

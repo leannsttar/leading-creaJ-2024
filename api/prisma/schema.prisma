@@ -29,7 +29,7 @@ model Projects {
   name        String
   percentage  Float         @default(0)
   description String
-  img         String
+  imagen      String
   createdAt   DateTime      @default(now())
   meetings    Meetings[]
   messages    Messages[]
@@ -39,8 +39,8 @@ model Projects {
 
 model TeamProject {
   id        Int      @id @default(autoincrement())
-  userId    Int
   role      String
+  userId    Int
   projectId Int
   project   Projects @relation(fields: [projectId], references: [id])
   user      Users    @relation(fields: [userId], references: [id])

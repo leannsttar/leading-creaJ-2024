@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 
-import { Link, useLocation, Outlet } from "react-router-dom";
+import { Link, useLocation, Outlet, useParams } from "react-router-dom";
 
 import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
+
+
 
 import configIcon from "../assets/configIcon.svg";
 import threeDotsSmaller from "../assets/threeDotsSmaller.svg";
@@ -154,28 +156,33 @@ const LayoutTasks = () => {
   );
 };
 
-const tabLinksProject = [
-  { title: "Vista general", href: "/dashboard/project" },
-  { title: "Tablero", href: "/dashboard/project/board" },
-  { title: "Timeline", href: "/dashboard/project/timeline" },
-  { title: "Reuniones", href: "/dashboard/project/meetings" },
-  { title: "Archivos", href: "/dashboard/project/files" },
-  { title: "Configuración", href: "/dashboard/project/config" },
-];
+
 
 const LayoutProject = () => {
+  const { id } = useParams();
+  console.log(useParams())
+
   const { logout, usuario, userToken } = useSession();
 
   const [modal1Open, setModal1Open] = useState(false);
 
   const [newMemberEmail, setNewMemberEmail] = useState();
 
+  const tabLinksProject = [
+    { title: "Vista general", href: `/dashboard/project/${id}` },
+    { title: "Tablero", href: `/dashboard/project/${id}/board` },
+    { title: "Timeline", href: `/dashboard/project/${id}/timeline` },
+    { title: "Reuniones", href: `/dashboard/project/${id}/meetings` },
+    { title: "Archivos", href: `/dashboard/project/${id}/files` },
+    { title: "Configuración", href: `/dashboard/project/${id}/config` },
+  ];
+
   const onFinish = async () => {
     try {
       const formData = new FormData();
 
       formData.append("correo", newMemberEmail);
-      formData.append("proyectoId", 3);
+      formData.append("proyectoId", id);
 
       const response = await clienteAxios.postForm(
         "/api/projects/addMember",
@@ -186,8 +193,9 @@ const LayoutProject = () => {
           },
         }
       );
-
+      setModal1Open(false)
       console.log("Respuesta del backend:", response.data);
+      
       // setModal2Open(false);
     } catch (error) {
       console.error("Error al enviar los datos", error);

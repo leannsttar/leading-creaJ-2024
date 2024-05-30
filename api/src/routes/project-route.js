@@ -1,5 +1,5 @@
 import express from 'express';
-import { createProject, getAllProjects } from '../controllers/project-controller.js';
+import { createProject, getAllProjects, getProject } from '../controllers/project-controller.js';
 import { addTeamMember, createMeeting } from '../controllers/project-controller.js';
 import { auth } from '../../middleware/auth.js';
 import multer from 'multer'; 
@@ -22,5 +22,7 @@ router.get('/', getAllProjects);
 
 router.post('/addMember', upload.single(), addTeamMember)
 router.post('/createMeeting', upload.single(), createMeeting)
+
+router.get('/getProject/:id', getProject);
 
 export default router;

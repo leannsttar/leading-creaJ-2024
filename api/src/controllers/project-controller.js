@@ -1,10 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
-
+import { prisma } from "../../config/prisma.js";
 export const createProject = async (req, res) => {
-  const { nombre, descripcion, usuarioId } = req.body;
-
+  const { nombre, descripcion } = req.body;
+  const usuarioId = req.usuario.id
   if (!req.file || !nombre || !descripcion) {
     return res.status(400).json({ error: "Faltan campos" });
   }
@@ -16,9 +14,11 @@ export const createProject = async (req, res) => {
       data: {
         name: nombre,
         description: descripcion,
-        img: imagePath,
+        imagen: imagePath
       },
     });
+
+  
 
     const newMember = await prisma.teamProject.create({
       data: {
@@ -28,12 +28,16 @@ export const createProject = async (req, res) => {
       },
     });
 
+
+
     res.status(200).json(newProject);
   } catch (error) {
     console.error("Error al crear el proyecto:", error);
     res.status(500).json({ error: "Error al crear el proyecto" });
   }
 };
+
+
 
 export const addTeamMember = async (req, res) => {
   const { correo, proyectoId } = req.body;
@@ -114,10 +118,27 @@ export const createMeeting = async (req, res) => {
 
 export const getAllProjects = async (req, res) => {
   try {
-    const projects = await prisma.projects.findMany();
+    const projects = await prisma.projects.findMany()
     res.status(200).json(projects);
   } catch (error) {
     console.error("Error al obtener los proyectos:", error);
     res.status(500).json({ error: "Error al obtener los proyectos" });
   }
 };
+
+export const getProject = async (req, res) => {
+
+  const { id } = req.params
+
+  try {
+    const project = await prisma.projects.findFirst({
+      where: {
+        id: +id
+      }
+    })
+    res.status(200).json(project);
+  } catch (error) {
+    console.error("Error al obtener el proyecto:", error);
+    res.status(500).json({ error: "Error al obtener el proyecto" });
+  }
+}

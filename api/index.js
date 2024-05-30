@@ -6,6 +6,7 @@ import loginRoutes from "./src/routes/login-route.js";
 import projectRoutes from "./src/routes/project-route.js";
 import { auth } from "./middleware/auth.js";
 import { getAllProjects } from "./src/controllers/project-controller.js";
+import path from "path"
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -24,7 +25,10 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('src/uploads'));
+
+// app.use("/public",express.static('./public'));
+app.use("/uploads",express.static('./uploads'));
+
 
 app.use("/api/users", userRoutes);
 app.use("/api/auth", loginRoutes);  

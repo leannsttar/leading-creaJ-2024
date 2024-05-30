@@ -311,7 +311,7 @@ export const SideBar = () => {
                       <SideBarLink
                       key={proyecto.id}
                       name={proyecto.name}
-                      img={`http://localhost:5000${proyecto.img}`}
+                      img={`http://localhost:5000/${proyecto.imagen}`}
                       isProject
                       isShrinked={isShrinked}
                       href={`/dashboard/project/${proyecto.id}`}/>
