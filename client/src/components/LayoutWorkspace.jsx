@@ -8,6 +8,7 @@ import plusIcon from "../assets/plusIcon.svg";
 import usersProjectIcon from "../assets/usersProjectIcon.svg";
 import editIcon from "../assets/editIcon.svg";
 
+import { Modal } from "antd";
 
 import { MobileSideBar, SideBar } from "./SideBar.jsx";
 import { HeaderMobileWorkspace } from "./HeaderMobileWorkspace.jsx";
@@ -79,6 +80,7 @@ export const LayoutHome = () => {
           </div>
         </div>
       </div>
+
       <hr className="hidden lg:block" />
       <div
         className="w-full overflow-auto"
@@ -160,6 +162,8 @@ const tabLinksProject = [
 ];
 
 const LayoutProject = () => {
+  const [modal1Open, setModal1Open] = useState(false);
+
   return (
     <>
       <div className="w-full max-h-screen overflow-hidden">
@@ -211,6 +215,20 @@ const LayoutProject = () => {
             </div>
           </div>
         </div>
+        <Modal
+          title="Cerrar sesión"
+          okButtonProps={{ style: { backgroundColor: "red" } }}
+          okText="Cerrar sesión"
+          centered
+          open={modal1Open}
+          onOk={logout}
+          onCancel={() => setModal1Open(false)}
+        >
+          <p>
+            ¿Estás seguro que quieres cerrar sesión? Una vez que cierras sesión
+            tendrás que iniciar sesión de nuevo
+          </p>
+        </Modal>
         <hr />
         <div
           className="w-full overflow-auto hidden lg:block "
@@ -288,13 +306,13 @@ const LayoutNotifications = () => {
 const LayoutMessages = () => {
   return (
     <div
-        className="w-full"
-        style={{
-          height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
-        }}
-      >
-        <Outlet />
-      </div>
+      className="w-full"
+      style={{
+        height: isMobile ? "calc(100vh - 11rem)" : "calc(100vh - 10rem)",
+      }}
+    >
+      <Outlet />
+    </div>
   );
 };
 
