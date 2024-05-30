@@ -29,6 +29,7 @@ model Projects {
   name        String
   percentage  Float         @default(0)
   description String
+  img         String
   createdAt   DateTime      @default(now())
   meetings    Meetings[]
   messages    Messages[]
