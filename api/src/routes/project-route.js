@@ -1,5 +1,5 @@
 import express from 'express';
-import { createProject } from '../controllers/project-controller.js';
+import { createProject, getAllProjects } from '../controllers/project-controller.js';
 import { auth } from '../../middleware/auth.js';
 import multer from 'multer'; 
 
@@ -17,5 +17,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 router.post('/', auth, upload.single('imagen'), createProject);
+router.get('/', getAllProjects);
 
 export default router;

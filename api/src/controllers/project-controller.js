@@ -26,3 +26,15 @@ export const createProject = async (req, res) => {
     res.status(500).json({ error: 'Error al crear el proyecto' });
   }
 };
+
+
+
+export const getAllProjects = async (req, res) => {
+  try {
+    const projects = await prisma.projects.findMany();
+    res.status(200).json(projects);
+  } catch (error) {
+    console.error('Error al obtener los proyectos:', error);
+    res.status(500).json({ error: 'Error al obtener los proyectos' });
+  }
+};

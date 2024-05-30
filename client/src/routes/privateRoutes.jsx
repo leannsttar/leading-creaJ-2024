@@ -52,7 +52,7 @@ const privateRoutes = [
         element: <NotificationsScreen />,
       },
       {
-        path: "project",
+        path: "project/:id",
         element: <ProjectScreen />,
         children: [
           {

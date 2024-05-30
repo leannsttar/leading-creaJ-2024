@@ -1,7 +1,8 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { clienteAxios } from "@/config/clienteAxios";
 import { TaskCardProject } from "../../../components/(logged in)/TaskCardProject.jsx";
 import { ReplyComponent } from "@/components/(logged in)/messages/ReplyComponent.jsx";
+import { useParams } from "react-router-dom";
 
 import projectImage from "../../../assets/projectImage.jpg";
 
@@ -108,6 +109,24 @@ export const OverviewTab = () => {
     },
   ]);
 
+  const { projectId } = useParams();
+
+  const [project, setProject] = useState(null);
+
+  useEffect(() => {
+    const obtenerProyecto = async () => {
+      try {
+        const response = await clienteAxios.get(`/api/projects/${projectId}`);
+        console.log(response.data);
+        setProject(response.data);
+      } catch (error) {
+        console.log("Error al obtener el proyecto:", error);
+      }
+    };
+
+    obtenerProyecto();
+  }, [projectId]);
+
   return (
     <div className="m-5 lg:m-12 lg:flex lg:gap-8">
       <div className="space-y-5 lg:w-[65%] 2xl:w-[70%]">
@@ -121,17 +140,16 @@ export const OverviewTab = () => {
               />
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <p className="text-2xl font-semibold">SAO web project</p>
+                  <p className="text-2xl font-semibold"></p>
                   {/* <p className="text-3xl text-[#A692DF] font-normal">84%</p> */}
                 </div>
                 <p className="text-justify">
-                  El proyecto <span className="font-bold">"SAO web"</span> es
-                  una plataforma en línea que combina tecnología de realidad
-                  virtual y experiencias inmersivas, ofreciendo una fusión única
-                  de juegos de rol, narrativa y socialización en un entorno
-                  virtual colaborativo. Su objetivo es proporcionar a los
-                  usuarios una experiencia envolvente y emocionante en mundos
-                  digitales interactivos.
+                  El proyecto es una plataforma en línea que combina tecnología
+                  de realidad virtual y experiencias inmersivas, ofreciendo una
+                  fusión única de juegos de rol, narrativa y socialización en un
+                  entorno virtual colaborativo. Su objetivo es proporcionar a
+                  los usuarios una experiencia envolvente y emocionante en
+                  mundos digitales interactivos.
                 </p>
               </div>
             </div>

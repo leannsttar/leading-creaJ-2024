@@ -30,7 +30,7 @@ import {
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import ImgCrop from "antd-img-crop";
-import axios from 'axios'; 
+import axios from "axios";
 
 const navLinks = [
   { title: "Panel", href: "/dashboard", img: dashboardIcon },
@@ -118,6 +118,22 @@ export const SideBar = () => {
     },
   ]);
 
+  const [proyectos, setProyectos] = useState([]);
+
+  useEffect(() => {
+    const obtenerProyectos = async () => {
+      try {
+        const response = await clienteAxios.get("/api/projects");
+        console.log(response.data);
+        setProyectos(response.data);
+      } catch (error) {
+        console.log("Error al obtener los proyectos:", error);
+      }
+    };
+
+    obtenerProyectos();
+  }, []);
+
   const [isDark, setIsDark] = useState(false);
   const [isShrinked, setIsShrinked] = useState(window.innerWidth < 1280);
   const [isLowRes, setIsLowRes] = useState(window.innerHeight < 730);
@@ -131,25 +147,24 @@ export const SideBar = () => {
 
   const onFinish = async () => {
     try {
-      const fileImg = fileList.map(file => file.originFileObj)[0]
-      
+      const fileImg = fileList.map((file) => file.originFileObj)[0];
+
       console.log(createProjectDescription);
-      
+
       const formData = new FormData();
-      
+
       formData.append("imagen", fileImg);
       formData.append("nombre", createProjectName);
       formData.append("descripcion", createProjectDescription);
 
-
       const response = await clienteAxios.postForm("/api/projects", formData, {
         headers: {
-          Authorization: 'Bearer '+userToken
-        }
+          Authorization: "Bearer " + userToken,
+        },
       });
 
       console.log("Respuesta del backend:", response.data);
-      // setModal2Open(false); 
+      // setModal2Open(false);
     } catch (error) {
       console.error("Error al enviar los datos", error);
     }
@@ -177,7 +192,6 @@ export const SideBar = () => {
     const imgWindow = window.open(src);
     imgWindow?.document.write(image.outerHTML);
   };
-
 
   useEffect(() => {
     const checkResolution = () => {
@@ -288,39 +302,18 @@ export const SideBar = () => {
                 />
               </div>
               <div className="mt-3 flex flex-col gap-1 lg:h-[10rem] ">
-                <SideBarLink
-                  name={"Sao web project"}
-                  img={
-                    "https://i.pinimg.com/564x/e0/fc/a8/e0fca85a942e80d6cbb40787d59a3de1.jpg"
-                  }
-                  isProject
-                  isShrinked={isShrinked}
-                  href={"/dashboard/project"}
-                />
-                <SideBarLink
-                  name={"Website Redesign"}
-                  img={
-                    "https://i.pinimg.com/564x/b9/6d/51/b96d515e1839a055244a8dea35703dcc.jpg"
-                  }
-                  isProject
-                  isShrinked={isShrinked}
-                />
-                <SideBarLink
-                  name={"Design System"}
-                  img={
-                    "https://i.pinimg.com/564x/08/be/63/08be63fcc6d8f35377afb9c1ded05094.jpg"
-                  }
-                  isProject
-                  isShrinked={isShrinked}
-                />
-                <SideBarLink
-                  name={"Wireframes"}
-                  img={
-                    "https://i.pinimg.com/564x/e2/41/ad/e241ad2db149b457d44b45121b92bdab.jpg"
-                  }
-                  isProject
-                  isShrinked={isShrinked}
-                />
+                {proyectos &&
+                  proyectos.map((proyecto) => 
+                    {return (
+                      <SideBarLink
+                      key={proyecto.id}
+                      name={proyecto.name}
+                      img={`http://localhost:5000${proyecto.img}`}
+                      isProject
+                      isShrinked={isShrinked}
+                      href={`/dashboard/project/${proyecto.id}`}/>
+                    )}
+                  )}
               </div>
             </div>
           </div>
@@ -463,7 +456,6 @@ export const SideBar = () => {
               initialValues={{
                 remember: true,
               }}
-              
               onFinishFailed={onFinishFailed}
               autoComplete="off"
             >
@@ -497,11 +489,14 @@ export const SideBar = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Ingresa un nombre!",
+                    message: "Ingresa un nombre",
                   },
                 ]}
               >
-                <Input onChange={e => setCreateProjectName(e.target.value)} placeholder="Ingresa el nombre del proyecto" />
+                <Input
+                  onChange={(e) => setCreateProjectName(e.target.value)}
+                  placeholder="Ingresa el nombre del proyecto"
+                />
               </Form.Item>
               <Form.Item
                 name="descripcion"
@@ -511,9 +506,11 @@ export const SideBar = () => {
                     message: "Please input your password!",
                   },
                 ]}
-                
               >
-                <TextArea onChange={e => setCreateProjectDescription(e.target.value)} placeholder="Ingrese una descripción" />
+                <TextArea
+                  onChange={(e) => setCreateProjectDescription(e.target.value)}
+                  placeholder="Ingrese una descripción"
+                />
               </Form.Item>
             </Form>
           </Modal>

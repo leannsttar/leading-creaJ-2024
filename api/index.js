@@ -5,6 +5,7 @@ import userRoutes from "./src/routes/register-route.js";
 import loginRoutes from "./src/routes/login-route.js";  
 import projectRoutes from "./src/routes/project-route.js";
 import { auth } from "./middleware/auth.js";
+import { getAllProjects } from "./src/controllers/project-controller.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
