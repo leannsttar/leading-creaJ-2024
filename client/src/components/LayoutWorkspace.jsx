@@ -159,44 +159,46 @@ const LayoutTasks = () => {
 
 
 const LayoutProject = () => {
-  const { id } = useParams();
-  console.log(useParams())
 
   const { logout, usuario, userToken } = useSession();
-
+  const params = useParams();
+  const [project, setProject] = useState("loading");
   const [modal1Open, setModal1Open] = useState(false);
+  const [newMemberEmail, setNewMemberEmail] = useState("");
 
-  const [newMemberEmail, setNewMemberEmail] = useState();
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const response = await clienteAxios.get(`/api/projects/getProject/${params.id}`);
+        setProject(response.data);
+      } catch (error) {
+        console.log("Error al obtener el proyecto:", error);
+      }
+    };
+    fetchProject();
+  }, [params.id]);
 
   const tabLinksProject = [
-    { title: "Vista general", href: `/dashboard/project/${id}` },
-    { title: "Tablero", href: `/dashboard/project/${id}/board` },
-    { title: "Timeline", href: `/dashboard/project/${id}/timeline` },
-    { title: "Reuniones", href: `/dashboard/project/${id}/meetings` },
-    { title: "Archivos", href: `/dashboard/project/${id}/files` },
-    { title: "Configuración", href: `/dashboard/project/${id}/config` },
+    { title: "Vista general", href: `/dashboard/project/${params.id}` },
+    { title: "Tablero", href: `/dashboard/project/${params.id}/board` },
+    { title: "Timeline", href: `/dashboard/project/${params.id}/timeline` },
+    { title: "Reuniones", href: `/dashboard/project/${params.id}/meetings` },
+    { title: "Archivos", href: `/dashboard/project/${params.id}/files` },
+    { title: "Configuración", href: `/dashboard/project/${params.id}/config` },
   ];
 
   const onFinish = async () => {
     try {
       const formData = new FormData();
-
       formData.append("correo", newMemberEmail);
-      formData.append("proyectoId", id);
-
-      const response = await clienteAxios.postForm(
-        "/api/projects/addMember",
-        formData,
-        {
-          headers: {
-            Authorization: "Bearer " + userToken,
-          },
-        }
-      );
-      setModal1Open(false)
+      formData.append("proyectoId", params.id); // Use params.id instead of params
+      const response = await clienteAxios.postForm("/api/projects/addMember", formData, {
+        headers: {
+          Authorization: "Bearer " + userToken,
+        },
+      });
+      setModal1Open(false);
       console.log("Respuesta del backend:", response.data);
-      
-      // setModal2Open(false);
     } catch (error) {
       console.error("Error al enviar los datos", error);
     }
@@ -205,7 +207,6 @@ const LayoutProject = () => {
   const onFinishFailed = (errorInfo) => {
     console.log("Fallo:", errorInfo);
   };
-
   return (
     <>
       <div className="w-full max-h-screen overflow-hidden">
@@ -213,7 +214,7 @@ const LayoutProject = () => {
           <div className="flex flex-col h-full justify-between">
             <div className="flex flex-col gap-1 justify-center w-full lg:mt-[1rem]">
               <div className="flex gap-5 items-center">
-                <p className="text-[1.8rem] font-semibold">SAO web project</p>
+                <p className="text-[1.8rem] font-semibold">{project.name}</p>
                 <img src={editIcon} alt="" className="w-6 h-6" />
               </div>
               <div className="hidden lg:flex items-center gap-3 mt-1">

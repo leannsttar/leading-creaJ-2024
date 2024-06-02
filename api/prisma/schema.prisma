@@ -9,9 +9,10 @@ datasource db {
 
 model Users {
   id                Int                  @id @default(autoincrement())
-  email             String               @unique
-  name              String
-  password          String
+  email             String?              @unique
+  name              String?
+  password          String?
+  image             String
   comments          Comments[]
   files             Files[]
   links             Links[]

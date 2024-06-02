@@ -109,30 +109,37 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
 export const SideBar = () => {
   const { logout, usuario, userToken } = useSession();
 
-  
-
   const [fileList, setFileList] = useState([
     {
       uid: "-1",
       name: "image.png",
       status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+      url: `http://localhost:5000/${usuario.image}`,
+    },
+  ]);
+
+  const [fileList2, setFileList2] = useState([
+    {
+      uid: "-1",
+      name: "image.png",
+      status: "done",
+      url: `http://localhost:5000/${usuario.image}`,
     },
   ]);
 
   const [proyectos, setProyectos] = useState([]);
 
-  useEffect(() => {
-    const obtenerProyectos = async () => {
-      try {
-        const response = await clienteAxios.get("/api/projects");
-        console.log(response.data);
-        setProyectos(response.data);
-      } catch (error) {
-        console.log("Error al obtener los proyectos:", error);
-      }
-    };
+  const obtenerProyectos = async () => {
+    try {
+      const response = await clienteAxios.get(`/api/projects/${usuario.id}`);
+      console.log(response.data);
+      setProyectos(response.data);
+    } catch (error) {
+      console.log("Error al obtener los proyectos:", error);
+    }
+  };
 
+  useEffect(() => {
     obtenerProyectos();
   }, []);
 
@@ -144,30 +151,61 @@ export const SideBar = () => {
   const [createProjectDescription, setCreateProjectDescription] = useState();
   const [createProjectFile, setCreateProjectFile] = useState();
 
+  const [userName, setUserName] = useState(usuario.name)
+
   const [modal1Open, setModal1Open] = useState(false);
   const [modal2Open, setModal2Open] = useState(false);
+  const [modal3Open, setModal3Open] = useState(false);
 
   const onFinish = async () => {
     try {
-      const fileImg = fileList.map(file => file.originFileObj)[0]
-      
+      const fileImg = fileList.map((file) => file.originFileObj)[0];
+
       console.log(createProjectDescription);
-      
+
       const formData = new FormData();
-      
+
       formData.append("imagen", fileImg);
       formData.append("nombre", createProjectName);
       formData.append("descripcion", createProjectDescription);
 
-
       const response = await clienteAxios.postForm("/api/projects", formData, {
         headers: {
-          Authorization: 'Bearer '+userToken
-        }
+          Authorization: "Bearer " + userToken,
+        },
       });
 
       console.log("Respuesta del backend:", response.data);
-      // setModal2Open(false); 
+      setModal2Open(false)
+      obtenerProyectos()
+      setCreateProjectName('')
+      setCreateProjectDescription('')
+      // setModal2Open(false);
+    } catch (error) {
+      console.error("Error al enviar los datos", error);
+    }
+  };
+
+  const onFinish2 = async () => {
+    try {
+      const fileImg = fileList2.map((file) => file.originFileObj)[0];
+
+      console.log(createProjectDescription);
+
+      const formData = new FormData();
+
+      formData.append("imagen", fileImg);
+      formData.append("nombre", userName);
+      
+
+      const response = await clienteAxios.postForm("/api/projects", formData, {
+        headers: {
+          Authorization: "Bearer " + userToken,
+        },
+      });
+
+      console.log("Respuesta del backend:", response.data);
+      // setModal2Open(false);
     } catch (error) {
       console.error("Error al enviar los datos", error);
     }
@@ -179,6 +217,10 @@ export const SideBar = () => {
 
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
+  };
+
+  const onChange2 = ({ fileList2: newFileList }) => {
+    setFileList2(newFileList);
   };
 
   const onPreview = async (file) => {
@@ -221,15 +263,7 @@ export const SideBar = () => {
   const items = [
     {
       key: "1",
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.antgroup.com"
-        >
-          Editar perfil
-        </a>
-      ),
+      label: <a onClick={() => setModal3Open(true)}>Editar perfil</a>,
     },
     {
       key: "2",
@@ -306,17 +340,18 @@ export const SideBar = () => {
               </div>
               <div className="mt-3 flex flex-col gap-1 lg:h-[10rem] ">
                 {proyectos &&
-                  proyectos.map((proyecto) => 
-                    {return (
+                  proyectos.map((proyecto) => {
+                    return (
                       <SideBarLink
-                      key={proyecto.id}
-                      name={proyecto.name}
-                      img={`http://localhost:5000/${proyecto.imagen}`}
-                      isProject
-                      isShrinked={isShrinked}
-                      href={`/dashboard/project/${proyecto.id}`}/>
-                    )}
-                  )}
+                        key={proyecto.id}
+                        name={proyecto.name}
+                        img={`http://localhost:5000/${proyecto.imagen}`}
+                        isProject
+                        isShrinked={isShrinked}
+                        href={`/dashboard/project/${proyecto.id}`}
+                      />
+                    );
+                  })}
               </div>
             </div>
           </div>
@@ -393,7 +428,7 @@ export const SideBar = () => {
         <div className="flex items-center justify-between mb-1 2xl:mb-5">
           <div className="flex gap-2 items-center justify-between">
             <img
-              src={avatar}
+              src={`http://localhost:5000/${usuario.image}`}
               alt=""
               className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
             />
@@ -483,7 +518,7 @@ export const SideBar = () => {
                     onPreview={onPreview}
                     maxCount={1}
                   >
-                    {"+ Upload"}
+                    {"+ Subir"}
                   </Upload>
                 </ImgCrop>
               </Form.Item>
@@ -515,6 +550,67 @@ export const SideBar = () => {
                   placeholder="Ingrese una descripción"
                 />
               </Form.Item>
+            </Form>
+          </Modal>
+          <Modal
+            title="Editar perfil"
+            okButtonProps={{ style: { backgroundColor: "black" } }}
+            okText="Actualizar perfil"
+            centered
+            open={modal3Open}
+            onOk={() => setModal3Open(false)}
+            onCancel={() => setModal3Open(false)}
+          >
+            <Form
+              name="basic"
+              initialValues={{
+                remember: true,
+              }}
+              onFinishFailed={onFinishFailed}
+              autoComplete="off"
+            >
+              <Form.Item
+                name="projectImage"
+                rules={[
+                  {
+                    required: false,
+                    message: "Suba una iamgen!",
+                  },
+                ]}
+              >
+                <ImgCrop
+                  rotationSlider
+                  okButtonProps={{
+                    style: { backgroundColor: "black", color: "white" },
+                  }}
+                >
+                  <Upload
+                    fileList={fileList2}
+                    onChange={onChange2}
+                    onPreview={onPreview}
+                    maxCount={1}
+                    listType="picture-circle"
+                  >
+                    {"+ Nueva imagen"}
+                  </Upload>
+                </ImgCrop>
+              </Form.Item>
+              <Form.Item
+                name="nombre"
+                rules={[
+                  {
+                    required: true,
+                    message: "Ingresa un nombre",
+                  },
+                ]}
+              >
+                <Input
+                  onChange={(e) => setUserName(e.target.value)}
+                  defaultValue={usuario.name}
+                  
+                />
+              </Form.Item>
+              
             </Form>
           </Modal>
         </div>

@@ -15,6 +15,7 @@ export const signup = async (req, res) => {
         name,
         email,
         password: hashedPassword,
+        image: 'uploads/avatarDefault.jpg'
       },
     });
     res.status(201).json({ message: 'Usuario creado' });

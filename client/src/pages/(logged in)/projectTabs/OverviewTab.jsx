@@ -23,8 +23,6 @@ const ActivityRecord = ({ img, message, date }) => {
 };
 
 export const OverviewTab = () => {
-
-
   let messages1 = ["just ideas for next time", "I'll be there in 2 mins ⏰"];
   let messages2 = ["woohoooo", "Haha oh man", "Haha that's terrifying 😂"];
   let messages3 = ["aww", "omg, this is amazing", "woohoooo 🔥"];
@@ -115,45 +113,47 @@ export const OverviewTab = () => {
   const [project, setProject] = useState("loading");
 
   useEffect(() => {
-    (async()=>{
+    (async () => {
       try {
-        const response = await clienteAxios.get(`/api/projects/getProject/${params.id}`);
+        const response = await clienteAxios.get(
+          `/api/projects/getProject/${params.id}`
+        );
         // console.log(response.data);
-        setProject(response.data)
+        setProject(response.data);
       } catch (error) {
         console.log("Error al obtener el proyecto:", error);
       }
-  
-    })()
+    })();
     // console.log(project)
   }, [params.id]);
 
-  if(project == "loading") return <p>Cargando Proyecto...</p>
+  if (project == "loading") return <p>Cargando Proyecto...</p>;
 
   return (
     <div className="m-5 lg:m-12 lg:flex lg:gap-8">
       <div className="space-y-5 lg:w-[65%] 2xl:w-[70%]">
         <div className="bg-[#f7f7f7] px-4 py-3 rounded-xl flex items-start lg:items-center">
           <div className="space-y-3">
-            <div className="">
+            <div className="flex">
               <img
                 src={`http://localhost:5000/${project.imagen}`}
                 alt="Imagen proyecto"
                 className="rounded-xl object-cover w-[8rem] h-[8rem] float-left mr-3 flex-shrink-0"
               />
-              <div className="space-y-2">
+              <div>
                 <div className="flex justify-between items-center">
-                  <p className="text-2xl font-semibold"></p>
-                  {/* <p className="text-3xl text-[#A692DF] font-normal">84%</p> */}
+                  <p className="font-semibold text-xl mb-2">
+                    {project.name}{" "}
+                    <span className="text-[#A692DF] font-normal">
+                      {project.percentage}%
+                    </span>
+                  </p>
                 </div>
-                <p className="text-justify">
-                  El proyecto es una plataforma en línea que combina tecnología
-                  de realidad virtual y experiencias inmersivas, ofreciendo una
-                  fusión única de juegos de rol, narrativa y socialización en un
-                  entorno virtual colaborativo. Su objetivo es proporcionar a
-                  los usuarios una experiencia envolvente y emocionante en
-                  mundos digitales interactivos.
-                </p>
+                <div>
+                  <p className="text-justify">
+                    {project.description} 
+                  </p>
+                </div>
               </div>
             </div>
             {/* <p className="font-semibold">

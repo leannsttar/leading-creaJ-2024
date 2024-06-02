@@ -1,5 +1,6 @@
 
 import { prisma } from "../../config/prisma.js";
+
 export const createProject = async (req, res) => {
   const { nombre, descripcion } = req.body;
   const usuarioId = req.usuario.id
@@ -117,8 +118,20 @@ export const createMeeting = async (req, res) => {
 };
 
 export const getAllProjects = async (req, res) => {
+  const { usuarioId } = req.params;
+
   try {
-    const projects = await prisma.projects.findMany()
+    const userProjects = await prisma.teamProject.findMany({
+      where: {
+        userId: +usuarioId,
+      },
+      include: {
+        project: true,
+      },
+    });
+
+    const projects = userProjects.map(userProject => userProject.project);
+    
     res.status(200).json(projects);
   } catch (error) {
     console.error("Error al obtener los proyectos:", error);

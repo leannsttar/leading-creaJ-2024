@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 router.post('/', auth, upload.single('imagen'), createProject);
-router.get('/', getAllProjects);
+router.get('/:usuarioId', getAllProjects);
 
 router.post('/addMember', upload.single(), addTeamMember)
 router.post('/createMeeting', upload.single(), createMeeting)
