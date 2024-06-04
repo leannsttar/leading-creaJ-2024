@@ -1,11 +1,9 @@
-import { Router } from "express";
-import { signup } from "../controllers/register-controller.js";
-import { auth, perfil } from "../../middleware/auth.js";
-
+import express from "express";
+import { auth } from "../../middleware/auth.js";
 import multer from "multer";
 import { editUser } from "../controllers/user-controller.js";
 
-const router = Router();
+const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -18,9 +16,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/signup", signup);
-router.get("/", auth, perfil);
-
-router.post("/editUser", upload.single("imagen"), editUser);
+router.post('/editUser', upload.single('imagen'), editUser)
 
 export default router;

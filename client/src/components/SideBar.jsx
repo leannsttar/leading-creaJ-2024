@@ -27,6 +27,7 @@ import {
   Form,
   Input,
   Upload,
+  message,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import ImgCrop from "antd-img-crop";
@@ -107,18 +108,9 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
 };
 
 export const SideBar = () => {
-  const { logout, usuario, userToken } = useSession();
+  const { logout, usuario, userToken, updateUserInfo } = useSession();
 
   const [fileList, setFileList] = useState([
-    {
-      uid: "-1",
-      name: "image.png",
-      status: "done",
-      url: `http://localhost:5000/${usuario.image}`,
-    },
-  ]);
-
-  const [fileList2, setFileList2] = useState([
     {
       uid: "-1",
       name: "image.png",
@@ -151,14 +143,56 @@ export const SideBar = () => {
   const [createProjectDescription, setCreateProjectDescription] = useState();
   const [createProjectFile, setCreateProjectFile] = useState();
 
-  const [userName, setUserName] = useState(usuario.name)
+  const [userName, setUserName] = useState(usuario.name);
 
   const [modal1Open, setModal1Open] = useState(false);
   const [modal2Open, setModal2Open] = useState(false);
   const [modal3Open, setModal3Open] = useState(false);
 
+  const closeModal2 = () => {
+    setModal2Open(false);
+    setCreateProjectDescription("");
+    setCreateProjectName("");
+    setFileList([
+      {
+        uid: "-1",
+        name: "image.png",
+        status: "done",
+        url: `http://localhost:5000/${usuario.image}`,
+      },
+    ]);
+  };
+
+  const closeModal3 = () => {
+    setModal3Open(false);
+    setUserName("");
+    setFileList([
+      {
+        uid: "-1",
+        name: "image.png",
+        status: "done",
+        url: `http://localhost:5000/${usuario.image}`,
+      },
+    ]);
+  };
+
+  const onChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+
+  const [messageApi, contextHolder] = message.useMessage();
+
   const onFinish = async () => {
     try {
+      if (fileList[0].name === "image.png" || !createProjectName || !createProjectDescription) {
+        messageApi.open({
+          type: "error",
+          content: "Por favor, completa todos los campos antes de crear un proyecto.",
+        });
+        return;
+      }
+
+
       const fileImg = fileList.map((file) => file.originFileObj)[0];
 
       console.log(createProjectDescription);
@@ -176,11 +210,11 @@ export const SideBar = () => {
       });
 
       console.log("Respuesta del backend:", response.data);
-      setModal2Open(false)
-      obtenerProyectos()
-      setCreateProjectName('')
-      setCreateProjectDescription('')
-      // setModal2Open(false);
+      setModal2Open(false);
+      setCreateProjectName("");
+      setCreateProjectDescription("");
+
+      obtenerProyectos();
     } catch (error) {
       console.error("Error al enviar los datos", error);
     }
@@ -188,24 +222,44 @@ export const SideBar = () => {
 
   const onFinish2 = async () => {
     try {
-      const fileImg = fileList2.map((file) => file.originFileObj)[0];
-
-      console.log(createProjectDescription);
-
       const formData = new FormData();
 
-      formData.append("imagen", fileImg);
-      formData.append("nombre", userName);
-      
+      if (!fileList) {
+        const fileImg = fileList.map((file) => file.originFileObj)[0];
+        formData.append("imagen", fileImg);
+      }
 
-      const response = await clienteAxios.postForm("/api/projects", formData, {
-        headers: {
-          Authorization: "Bearer " + userToken,
-        },
-      });
+      formData.append("nombre", userName);
+      formData.append("usuarioId", usuario.id);
+
+      const response = await clienteAxios.postForm(
+        "/api/users/editUser",
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
 
       console.log("Respuesta del backend:", response.data);
-      // setModal2Open(false);
+
+      updateUserInfo({
+        ...usuario,
+        name: userName,
+        image: response.data.image,
+      });
+
+      // setFileList([
+      //   {
+      //     uid: "-1",
+      //     name: "image.png",
+      //     status: "done",
+      //     url: newImageUrl,
+      //   },
+      // ]);
+
+      setModal3Open(false);
     } catch (error) {
       console.error("Error al enviar los datos", error);
     }
@@ -213,14 +267,6 @@ export const SideBar = () => {
 
   const onFinishFailed = (errorInfo) => {
     console.log("Fallo:", errorInfo);
-  };
-
-  const onChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-  };
-
-  const onChange2 = ({ fileList2: newFileList }) => {
-    setFileList2(newFileList);
   };
 
   const onPreview = async (file) => {
@@ -272,350 +318,361 @@ export const SideBar = () => {
   ];
 
   return (
-    <aside
-      className={`w-[20rem] h-screen font-inter flex flex-col justify-between border-r-[1px] ${
-        isShrinked ? "w-[5rem]" : ""
-      }`}
-      style={{ transition: "width 500ms ease" }}
-    >
-      <div>
-        <div
-          className={`flex items-center gap-3 px-6 h-[5rem] relative justify-end ${
-            isShrinked ? "!px-1 !mx-5" : ""
-          }`}
-        >
+    <>
+      {contextHolder}
+      <aside
+        className={`w-[20rem] h-screen font-inter flex flex-col justify-between border-r-[1px] ${
+          isShrinked ? "w-[5rem]" : ""
+        }`}
+        style={{ transition: "width 500ms ease" }}
+      >
+        <div>
           <div
-            className={`flex items-center gap-3 ${
-              isShrinked ? "opacity-0 absolute left-0 -z-10" : ""
+            className={`flex items-center gap-3 px-6 h-[5rem] relative justify-end ${
+              isShrinked ? "!px-1 !mx-5" : ""
             }`}
-            style={{ transition: "opacity 300ms ease" }}
-          >
-            <img src="/logoTemporalBlack.svg" alt="Logo" className="w-[2rem]" />
-            <p className="font-[600] text-[1.3rem]">Leading</p>
-          </div>
-          <img
-            src={threeLinesMenu}
-            onClick={changeView}
-            alt=""
-            className={`ml-auto cursor-pointer ${isShrinked && "mr-1"}`}
-          />
-        </div>
-        <hr className="w-[85%] m-auto" />
-        <div className="p-4">
-          <div>
-            <div className="mt-1 space-y-[0.40rem] text-[#000000] pb-5 ">
-              {navLinks.map((link, index) => {
-                return (
-                  <div key={index} className="overflow-hidden">
-                    <SideBarLink
-                      name={link.title}
-                      img={link.img}
-                      href={link.href}
-                      isShrinked={isShrinked}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-            <hr className="w-[87%] m-auto" />
-            <div className="mt-7">
-              <div className="flex justify-end px-4">
-                <p
-                  className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${
-                    isShrinked ? "opacity-0 absolute left-0" : ""
-                  }`}
-                  style={{
-                    whiteSpace: "nowrap",
-                    transition: "opacity 300ms ease",
-                  }}
-                >
-                  MIS PROYECTOS
-                </p>
-                <img
-                  onClick={() => setModal2Open(true)}
-                  src={addProjectIcon}
-                  alt="Icono añadir proyecto"
-                  className={`cursor-pointer ${isShrinked && "h-[18px]"}`}
-                />
-              </div>
-              <div className="mt-3 flex flex-col gap-1 lg:h-[10rem] ">
-                {proyectos &&
-                  proyectos.map((proyecto) => {
-                    return (
-                      <SideBarLink
-                        key={proyecto.id}
-                        name={proyecto.name}
-                        img={`http://localhost:5000/${proyecto.imagen}`}
-                        isProject
-                        isShrinked={isShrinked}
-                        href={`/dashboard/project/${proyecto.id}`}
-                      />
-                    );
-                  })}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="p-4 flex flex-col gap-3 2xl:gap-6">
-        {!isLowRes ? (
-          <label className="swap swap-rotate">
-            {/* this hidden checkbox controls the state */}
-            <input
-              type="checkbox"
-              className="theme-controller"
-              value="synthwave"
-            />
-
-            {/* sun icon */}
-            <svg
-              className="swap-off fill-current w-8 h-8"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
-            </svg>
-
-            {/* moon icon */}
-            <svg
-              className="swap-on fill-current w-7 h-7"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
-            </svg>
-          </label>
-        ) : (
-          <button
-            onClick={changeMode}
-            className={`flex bg-[#F5F5F5] rounded-full p-1.5 w-fit relative   ${
-              isShrinked ? "flex-col" : ""
-            } `}
           >
             <div
-              className={`bg-[#fff] rounded-full shadow-lg absolute ${
-                isShrinked ? "" : isDark ? " translate-x-[95%]" : ""
+              className={`flex items-center gap-3 ${
+                isShrinked ? "opacity-0 absolute left-0 -z-10" : ""
               }`}
-              style={{
-                transition: "all 250ms ease",
-                transform: isShrinked && isDark && "translateY(50px)",
-              }}
+              style={{ transition: "opacity 300ms ease" }}
             >
               <img
-                src={sunLightMode}
-                alt=""
-                className={`invisible ${
-                  isShrinked ? "px-2 py-4" : "py-2 px-4"
-                } `}
+                src="/logoTemporalBlack.svg"
+                alt="Logo"
+                className="w-[2rem]"
               />
+              <p className="font-[600] text-[1.3rem]">Leading</p>
             </div>
-            <div className={`flex ${isShrinked ? "flex-col" : ""}`}>
-              <img
-                src={sunLightMode}
-                alt=""
-                className={`z-10 ${isShrinked ? "px-2 py-4" : "py-2 px-4"} `}
-              />
-              <img
-                src={moonDarkMode}
-                alt=""
-                className={` z-10 ${isShrinked ? "px-2 py-4" : "p-2 px-4"} `}
-              />
-            </div>
-          </button>
-        )}
-
-        <hr />
-        <div className="flex items-center justify-between mb-1 2xl:mb-5">
-          <div className="flex gap-2 items-center justify-between">
             <img
-              src={`http://localhost:5000/${usuario.image}`}
+              src={threeLinesMenu}
+              onClick={changeView}
               alt=""
-              className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
+              className={`ml-auto cursor-pointer ${isShrinked && "mr-1"}`}
             />
-            <div
-              className={`${isShrinked ? "opacity-0" : ""}`}
-              style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
-            >
-              <p className="font-semibold">{usuario.name}</p>
-              <p className="text-[.7rem] text-[#667085]">{usuario.email}</p>
+          </div>
+          <hr className="w-[85%] m-auto" />
+          <div className="p-4">
+            <div>
+              <div className="mt-1 space-y-[0.40rem] text-[#000000] pb-5 ">
+                {navLinks.map((link, index) => {
+                  return (
+                    <div key={index} className="overflow-hidden">
+                      <SideBarLink
+                        name={link.title}
+                        img={link.img}
+                        href={link.href}
+                        isShrinked={isShrinked}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              <hr className="w-[87%] m-auto" />
+              <div className="mt-7">
+                <div className="flex justify-end px-4">
+                  <p
+                    className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${
+                      isShrinked ? "opacity-0 absolute left-0" : ""
+                    }`}
+                    style={{
+                      whiteSpace: "nowrap",
+                      transition: "opacity 300ms ease",
+                    }}
+                  >
+                    MIS PROYECTOS
+                  </p>
+                  <img
+                    onClick={() => setModal2Open(true)}
+                    src={addProjectIcon}
+                    alt="Icono añadir proyecto"
+                    className={`cursor-pointer ${isShrinked && "h-[18px]"}`}
+                  />
+                </div>
+                <div className="mt-3 flex flex-col gap-1 lg:h-[10rem] ">
+                  {proyectos &&
+                    proyectos.map((proyecto) => {
+                      return (
+                        <SideBarLink
+                          key={proyecto.id}
+                          name={proyecto.name}
+                          img={`http://localhost:5000/${proyecto.imagen}`}
+                          isProject
+                          isShrinked={isShrinked}
+                          href={`/dashboard/project/${proyecto.id}`}
+                        />
+                      );
+                    })}
+                </div>
+              </div>
             </div>
           </div>
-          <Dropdown
-            menu={{
-              items,
-            }}
-            placement="top"
-          >
-            <Button
-              className={`px-2 py-4 flex items-center ${
-                isShrinked ? "opacity-0 absolute" : ""
+        </div>
+        <div className="p-4 flex flex-col gap-3 2xl:gap-6">
+          {!isLowRes ? (
+            <label className="swap swap-rotate">
+              {/* this hidden checkbox controls the state */}
+              <input
+                type="checkbox"
+                className="theme-controller"
+                value="synthwave"
+              />
+
+              {/* sun icon */}
+              <svg
+                className="swap-off fill-current w-8 h-8"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+              >
+                <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
+              </svg>
+
+              {/* moon icon */}
+              <svg
+                className="swap-on fill-current w-7 h-7"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+              >
+                <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
+              </svg>
+            </label>
+          ) : (
+            <button
+              onClick={changeMode}
+              className={`flex bg-[#F5F5F5] rounded-full p-1.5 w-fit relative   ${
+                isShrinked ? "flex-col" : ""
               } `}
             >
-              <img
-                src={threeDots}
-                alt=""
-                className={`cursor-pointer  ${
-                  isShrinked ? "opacity-0 absolute" : ""
+              <div
+                className={`bg-[#fff] rounded-full shadow-lg absolute ${
+                  isShrinked ? "" : isDark ? " translate-x-[95%]" : ""
                 }`}
                 style={{
-                  transition: "opacity 150ms ease",
-                  transition: "position 300ms ease",
+                  transition: "all 250ms ease",
+                  transform: isShrinked && isDark && "translateY(50px)",
                 }}
+              >
+                <img
+                  src={sunLightMode}
+                  alt=""
+                  className={`invisible ${
+                    isShrinked ? "px-2 py-4" : "py-2 px-4"
+                  } `}
+                />
+              </div>
+              <div className={`flex ${isShrinked ? "flex-col" : ""}`}>
+                <img
+                  src={sunLightMode}
+                  alt=""
+                  className={`z-10 ${isShrinked ? "px-2 py-4" : "py-2 px-4"} `}
+                />
+                <img
+                  src={moonDarkMode}
+                  alt=""
+                  className={` z-10 ${isShrinked ? "px-2 py-4" : "p-2 px-4"} `}
+                />
+              </div>
+            </button>
+          )}
+
+          <hr />
+          <div className="flex items-center justify-between mb-1 2xl:mb-5">
+            <div className="flex gap-2 items-center justify-between">
+              <img
+                src={`http://localhost:5000/${usuario.image}`}
+                alt=""
+                className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
               />
-            </Button>
-          </Dropdown>
-          <Modal
-            title="Cerrar sesión"
-            okButtonProps={{ style: { backgroundColor: "red" } }}
-            okText="Cerrar sesión"
-            centered
-            open={modal1Open}
-            onOk={logout}
-            onCancel={() => setModal1Open(false)}
-          >
-            <p>
-              ¿Estás seguro que quieres cerrar sesión? Una vez que cierras
-              sesión tendrás que iniciar sesión de nuevo
-            </p>
-          </Modal>
-          <Modal
-            title="Crear un nuevo proyecto"
-            okButtonProps={{
-              style: { backgroundColor: "black", color: "white" },
-            }}
-            okText="Crear proyecto"
-            centered
-            open={modal2Open}
-            onOk={onFinish}
-            onCancel={() => setModal2Open(false)}
-          >
-            <Form
-              name="basic"
-              initialValues={{
-                remember: true,
+              <div
+                className={`${isShrinked ? "opacity-0" : ""}`}
+                style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
+              >
+                <p className="font-semibold">{usuario.name}</p>
+                <p className="text-[.7rem] text-[#667085]">{usuario.email}</p>
+              </div>
+            </div>
+            <Dropdown
+              menu={{
+                items,
               }}
-              onFinishFailed={onFinishFailed}
-              autoComplete="off"
+              placement="top"
             >
-              <Form.Item
-                name="projectImage"
-                rules={[
-                  {
-                    required: false,
-                    message: "Suba una iamgen!",
-                  },
-                ]}
+              <Button
+                className={`px-2 py-4 flex items-center ${
+                  isShrinked ? "opacity-0 absolute" : ""
+                } `}
               >
-                <ImgCrop
-                  rotationSlider
-                  okButtonProps={{
-                    style: { backgroundColor: "black", color: "white" },
+                <img
+                  src={threeDots}
+                  alt=""
+                  className={`cursor-pointer  ${
+                    isShrinked ? "opacity-0 absolute" : ""
+                  }`}
+                  style={{
+                    transition: "opacity 150ms ease",
+                    transition: "position 300ms ease",
                   }}
-                >
-                  <Upload
-                    listType="picture-card"
-                    onChange={onChange}
-                    onPreview={onPreview}
-                    maxCount={1}
-                  >
-                    {"+ Subir"}
-                  </Upload>
-                </ImgCrop>
-              </Form.Item>
-              <Form.Item
-                name="nombre"
-                rules={[
-                  {
-                    required: true,
-                    message: "Ingresa un nombre",
-                  },
-                ]}
-              >
-                <Input
-                  onChange={(e) => setCreateProjectName(e.target.value)}
-                  placeholder="Ingresa el nombre del proyecto"
                 />
-              </Form.Item>
-              <Form.Item
-                name="descripcion"
-                rules={[
-                  {
-                    required: false,
-                    message: "Please input your password!",
-                  },
-                ]}
-              >
-                <TextArea
-                  onChange={(e) => setCreateProjectDescription(e.target.value)}
-                  placeholder="Ingrese una descripción"
-                />
-              </Form.Item>
-            </Form>
-          </Modal>
-          <Modal
-            title="Editar perfil"
-            okButtonProps={{ style: { backgroundColor: "black" } }}
-            okText="Actualizar perfil"
-            centered
-            open={modal3Open}
-            onOk={() => setModal3Open(false)}
-            onCancel={() => setModal3Open(false)}
-          >
-            <Form
-              name="basic"
-              initialValues={{
-                remember: true,
+              </Button>
+            </Dropdown>
+            <Modal
+              title="Cerrar sesión"
+              okButtonProps={{ style: { backgroundColor: "red" } }}
+              okText="Cerrar sesión"
+              centered
+              open={modal1Open}
+              onOk={logout}
+              onCancel={() => setModal1Open(false)}
+            >
+              <p>
+                ¿Estás seguro que quieres cerrar sesión? Una vez que cierras
+                sesión tendrás que iniciar sesión de nuevo
+              </p>
+            </Modal>
+            <Modal
+              title="Crear un nuevo proyecto"
+              okButtonProps={{
+                style: { backgroundColor: "black", color: "white" },
               }}
-              onFinishFailed={onFinishFailed}
-              autoComplete="off"
+              okText="Crear proyecto"
+              centered
+              open={modal2Open}
+              onOk={onFinish}
+              onCancel={closeModal2}
             >
-              <Form.Item
-                name="projectImage"
-                rules={[
-                  {
-                    required: false,
-                    message: "Suba una iamgen!",
-                  },
-                ]}
+              <Form
+                name="basic"
+                initialValues={{
+                  remember: true,
+                }}
+                onFinishFailed={onFinishFailed}
+                autoComplete="off"
               >
-                <ImgCrop
-                  rotationSlider
-                  okButtonProps={{
-                    style: { backgroundColor: "black", color: "white" },
-                  }}
+                <Form.Item
+                  name="projectImage"
+                  rules={[
+                    {
+                      required: false,
+                      message: "Suba una iamgen!",
+                    },
+                  ]}
                 >
-                  <Upload
-                    fileList={fileList2}
-                    onChange={onChange2}
-                    onPreview={onPreview}
-                    maxCount={1}
-                    listType="picture-circle"
+                  <ImgCrop
+                    rotationSlider
+                    modalTitle="Editar imagen"
+                    showReset={true}
+                    modalClassName={{
+                      style: { backgroundColor: "black", color: "white" },
+                    }}
                   >
-                    {"+ Nueva imagen"}
-                  </Upload>
-                </ImgCrop>
-              </Form.Item>
-              <Form.Item
-                name="nombre"
-                rules={[
-                  {
-                    required: true,
-                    message: "Ingresa un nombre",
-                  },
-                ]}
+                    <Upload
+                      listType="picture-card"
+                      onChange={onChange}
+                      onPreview={onPreview}
+                      maxCount={1}
+                    >
+                      {"+ Subir"}
+                    </Upload>
+                  </ImgCrop>
+                </Form.Item>
+                <Form.Item
+                  name="nombreProject"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Ingresa un nombre",
+                    },
+                  ]}
+                >
+                  <Input
+                    onChange={(e) => setCreateProjectName(e.target.value)}
+                    placeholder="Ingresa el nombre del proyecto"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="descripcion"
+                  rules={[
+                    {
+                      required: false,
+                      message: "Please input your password!",
+                    },
+                  ]}
+                >
+                  <TextArea
+                    onChange={(e) =>
+                      setCreateProjectDescription(e.target.value)
+                    }
+                    placeholder="Ingrese una descripción"
+                  />
+                </Form.Item>
+              </Form>
+            </Modal>
+            <Modal
+              title="Editar perfil"
+              okButtonProps={{ style: { backgroundColor: "black" } }}
+              okText="Actualizar perfil"
+              centered
+              open={modal3Open}
+              onOk={onFinish2}
+              onCancel={closeModal3}
+            >
+              <Form
+                name="basic"
+                initialValues={{
+                  remember: true,
+                }}
+                onFinishFailed={onFinishFailed}
+                autoComplete="off"
               >
-                <Input
-                  onChange={(e) => setUserName(e.target.value)}
-                  defaultValue={usuario.name}
-                  
-                />
-              </Form.Item>
-              
-            </Form>
-          </Modal>
+                <Form.Item
+                  name="userImage"
+                  rules={[
+                    {
+                      required: false,
+                      message: "Suba una iamgen!",
+                    },
+                  ]}
+                >
+                  <ImgCrop
+                    rotationSlider
+                    okButtonProps={{
+                      style: { backgroundColor: "black", color: "white" },
+                    }}
+                    showReset={true}
+                  >
+                    <Upload
+                      fileList={fileList}
+                      onChange={onChange}
+                      onPreview={onPreview}
+                      maxCount={1}
+                      listType="picture-circle"
+                    >
+                      {"+ Nueva imagen"}
+                    </Upload>
+                  </ImgCrop>
+                </Form.Item>
+                <Form.Item
+                  name="nombre"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Ingresa un nombre",
+                    },
+                  ]}
+                >
+                  <p className="font-semibold mb-1">Nombre</p>
+                  <Input
+                    onChange={(e) => setUserName(e.target.value)}
+                    defaultValue={usuario.name}
+                  />
+                </Form.Item>
+              </Form>
+            </Modal>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 };
 

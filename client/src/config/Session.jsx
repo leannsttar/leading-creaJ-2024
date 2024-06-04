@@ -19,15 +19,17 @@ const obtenerPerfil = async (token) => {
 const SessionProvider = ({ children }) => {
   const [usuario, setUsuario] = useState({});
   const [loading, setLoading] = useState(true);
-  const [userToken, setUserToken] = useState(null)
+  const [userToken, setUserToken] = useState(null);
+  const [imagen, setImagen] = useState(null);
 
   const perfil = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const { data } = await obtenerPerfil(token ?? "");
+      const { data } = await obtenerPerfil(token?? "");
       setUsuario(data);
-      setUserToken(token)
+      setImagen(data.imagen); 
+      setUserToken(token);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -38,8 +40,10 @@ const SessionProvider = ({ children }) => {
     localStorage.setItem("token", usuario.token);
     await perfil();
   };
+
   const logout = () => {
     setUsuario({});
+    setImagen(null);
     localStorage.removeItem("token");
     window.location.href = "/";
   };
@@ -48,7 +52,10 @@ const SessionProvider = ({ children }) => {
     perfil();
   }, []);
 
-
+  const updateUserInfo = async (newUserInfo, newImage) => {
+    setUsuario(newUserInfo);
+    setImagen(newImage);
+  };
 
   if (loading) return <p>Cargando...</p>;
 
@@ -56,9 +63,11 @@ const SessionProvider = ({ children }) => {
     <SessionContext.Provider
       value={{
         usuario,
+        imagen,
         login,
         logout,
-        userToken
+        userToken,
+        updateUserInfo
       }}
     >
       {children}

@@ -105,7 +105,7 @@ export const DashboardScreen = () => {
           </div>
           <div className="rounded-full shadow-xl w-[13rem] h-[13rem]">
             <img
-              src={avatar}
+              src={`http://localhost:5000/${usuario.image}`}
               alt=""
               className="rounded-full w-full h-full object-cover p-3"
             />
