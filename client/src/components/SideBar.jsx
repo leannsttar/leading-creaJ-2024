@@ -124,7 +124,7 @@ export const SideBar = () => {
   const obtenerProyectos = async () => {
     try {
       const response = await clienteAxios.get(`/api/projects/${usuario.id}`);
-      console.log(response.data);
+      
       setProyectos(response.data);
     } catch (error) {
       console.log("Error al obtener los proyectos:", error);
@@ -195,8 +195,6 @@ export const SideBar = () => {
 
       const fileImg = fileList.map((file) => file.originFileObj)[0];
 
-      console.log(createProjectDescription);
-
       const formData = new FormData();
 
       formData.append("imagen", fileImg);
@@ -224,13 +222,17 @@ export const SideBar = () => {
     try {
       const formData = new FormData();
 
-      if (!fileList) {
+     
+
+      if (fileList) {
         const fileImg = fileList.map((file) => file.originFileObj)[0];
         formData.append("imagen", fileImg);
       }
 
       formData.append("nombre", userName);
       formData.append("usuarioId", usuario.id);
+
+      
 
       const response = await clienteAxios.postForm(
         "/api/users/editUser",

@@ -116,7 +116,7 @@ export const OverviewTab = () => {
     (async () => {
       try {
         const response = await clienteAxios.get(
-          `/api/projects/getProject/${params.id}`
+          `/api/projects/getProjectOverview/${params.id}`
         );
         // console.log(response.data);
         setProject(response.data);

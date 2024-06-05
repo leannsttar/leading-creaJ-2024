@@ -407,7 +407,7 @@ const HeaderTaskCards = ({ title, numCards, hidden }) => {
       <div className="bg-[#F7F7F7] flex justify-between py-3 px-5 rounded-[1.5rem] lg:w-[80%]">
         <div>
           <p className="text-xl font-semibold">{title}</p>
-          <p className="text-[#959595]">{numCards} cards de tareas</p>
+          <p className="text-[#959595]">{numCards} tareas</p>
         </div>
         {hidden ?? <img
           src={plusTasksIcon}

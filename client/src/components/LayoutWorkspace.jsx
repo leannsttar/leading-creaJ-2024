@@ -5,15 +5,13 @@ import { Link, useLocation, Outlet, useParams } from "react-router-dom";
 import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
 
-
-
 import configIcon from "../assets/configIcon.svg";
 import threeDotsSmaller from "../assets/threeDotsSmaller.svg";
 import plusIcon from "../assets/plusIcon.svg";
 import usersProjectIcon from "../assets/usersProjectIcon.svg";
 import editIcon from "../assets/editIcon.svg";
 
-import { Modal, Form, Input } from "antd";
+import { Modal, Form, Input, message } from "antd";
 
 import { MobileSideBar, SideBar } from "./SideBar.jsx";
 import { HeaderMobileWorkspace } from "./HeaderMobileWorkspace.jsx";
@@ -49,9 +47,14 @@ const MiniTabLink = ({ title, notification, href }) => {
   );
 };
 
-const AvatarMember = ({ img, className }) => {
+const AvatarMember = ({ img, className, index }) => {
   return (
-    <img src={img} alt="" className={`w-8 h-8 rounded-full ${className}`} />
+    <img
+      key={index}
+      src={img}
+      alt=""
+      className={`w-8 h-8 rounded-full ${className}`}
+    />
   );
 };
 
@@ -156,10 +159,7 @@ const LayoutTasks = () => {
   );
 };
 
-
-
 const LayoutProject = () => {
-
   const { logout, usuario, userToken } = useSession();
   const params = useParams();
   const [project, setProject] = useState("loading");
@@ -169,7 +169,10 @@ const LayoutProject = () => {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const response = await clienteAxios.get(`/api/projects/getProject/${params.id}`);
+        const response = await clienteAxios.get(
+          `/api/projects/getProject/${params.id}`
+        );
+        
         setProject(response.data);
       } catch (error) {
         console.log("Error al obtener el proyecto:", error);
@@ -187,16 +190,39 @@ const LayoutProject = () => {
     { title: "Configuración", href: `/dashboard/project/${params.id}/config` },
   ];
 
+  const [messageApi, contextHolder] = message.useMessage();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const onFinish = async () => {
     try {
+      if (!newMemberEmail) {
+        messageApi.open({
+          type: "error",
+          content: "Por favor, ingresa un correo.",
+        });
+        return;
+      }
+
+      if (!emailRegex.test(newMemberEmail)) {
+        messageApi.open({
+          type: "error",
+          content: "Por favor, ingresa un correo válido.",
+        });
+        return;
+      }
+
       const formData = new FormData();
       formData.append("correo", newMemberEmail);
-      formData.append("proyectoId", params.id); // Use params.id instead of params
-      const response = await clienteAxios.postForm("/api/projects/addMember", formData, {
-        headers: {
-          Authorization: "Bearer " + userToken,
-        },
-      });
+      formData.append("proyectoId", params.id); // Usa params.id en lugar de params
+      const response = await clienteAxios.postForm(
+        "/api/projects/addMember",
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
       setModal1Open(false);
       console.log("Respuesta del backend:", response.data);
     } catch (error) {
@@ -209,6 +235,7 @@ const LayoutProject = () => {
   };
   return (
     <>
+      {contextHolder}
       <div className="w-full max-h-screen overflow-hidden">
         <div className="h-[6rem] px-5 w-full flex items-center justify-between mt-[5rem] lg:h-[10rem] lg:px-10 lg:mt-0 ">
           <div className="flex flex-col h-full justify-between">
@@ -221,26 +248,21 @@ const LayoutProject = () => {
                 <img src={usersProjectIcon} alt="" />
                 <p>Asignar al proyecto</p>
                 <div className="flex">
-                  <AvatarMember
-                    img={
-                      "https://i.pinimg.com/564x/bb/47/80/bb4780347a759a484265b65cb91d481a.jpg"
-                    }
-                  />
-                  <AvatarMember
-                    img={
-                      "https://i.pinimg.com/564x/33/f1/45/33f14533966e1d68e90b8646e82bd291.jpg"
-                    }
-                    className={"relative right-2"}
-                  />
-                  <AvatarMember
-                    img={
-                      "https://i.pinimg.com/564x/e1/d0/4e/e1d04e0e45c1301b98e7028955a9dfb9.jpg"
-                    }
-                    className={"relative right-4"}
-                  />
-                  <div className="bg-[#D9D9D9] w-8 h-8 flex justify-center items-center rounded-full relative right-6 font-semibold">
-                    <p>4+</p>
-                  </div>
+                  {project !== "loading" && project.users && (
+                    <div className="flex">
+                      {project.users.slice(0, 3).map((user, index) => (
+                        <AvatarMember
+                          key={index}
+                          img={`http://localhost:5000/${user.image}`}
+                        />
+                      ))}
+                      {project.users.length > 3 && (
+                        <div className="bg-[#D9D9D9] w-8 h-8 flex justify-center items-center rounded-full relative right-6 font-semibold">
+                          <p>{project.users.length - 3} +</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <button
                   onClick={() => setModal1Open(true)}
@@ -396,8 +418,6 @@ const LayoutMessages = () => {
 };
 
 export const LayoutWorkspace = () => {
-  
-
   const location = useLocation();
   const { pathname } = location;
 

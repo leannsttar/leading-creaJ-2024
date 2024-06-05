@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { clienteAxios } from "@/config/clienteAxios";
+
 import { Table } from "antd";
 
 import projectImage from "../../../assets/projectImage.jpg";
@@ -6,12 +9,12 @@ import threeDots from "../../../assets/threeDotsIcon.svg";
 
 import { IoSearchOutline } from "react-icons/io5";
 
-const ButtonConfig = ({ text, onClick, isActive, action }) => {
+const ButtonConfig = ({ text, onClick, isActive, action, textCenter }) => {
   return (
     <button
-      className={`hover:bg-[#f0f0f0] rounded-lg px-3 py-2 text-left ${
-        isActive ? "bg-[#f0f0f0]" : action ? "bg-[#f0f0f0]" : ""
-      }`}
+      className={`hover:bg-[#f0f0f0] rounded-lg px-3 py-2 ${
+        textCenter ? "text-center" : "text-left"
+      } ${isActive ? "bg-[#f0f0f0]" : action ? "bg-[#f0f0f0]" : ""}`}
       onClick={onClick}
     >
       {text}
@@ -54,7 +57,55 @@ const TableFileRecord = ({ userName, userPicture, email, role }) => {
 export const ConfigTab = () => {
   const [layout, setLayout] = useState("Detalles");
 
-  const dataSource = [
+  const params = useParams();
+  const [project, setProject] = useState("loading");
+
+  const [dataSource, setDataSource] = useState([]);
+  const [leader, setLeader] = useState('')
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await clienteAxios.get(
+          `/api/projects/getProjectConfig/${params.id}`
+        );
+        
+        setProject(response.data);
+        setDataSource(
+          response.data.users.map((user) => {
+            // Find corresponding teamProject entry for the user
+            const teamProjectEntry = response.data.team.find(
+              (teamMember) => teamMember.user.id === user.id
+            );
+
+            // Extract role from teamProject (handle missing role gracefully)
+            const role = teamProjectEntry?.role || "Unknown"; // Use 'Unknown' if role is missing
+            if (role === 'leader') {
+              setLeader(user)
+            }
+            return {
+              key: user.id,
+              picture: (
+                <img
+                  src={`http://localhost:5000/${user.image}`}
+                  className="rounded-full min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem]"
+                  alt=""
+                />
+              ),
+              name: user.name,
+              age: user.email,
+              address: role === 'leader' ? 'Líder' : role === 'member' ? 'Miembro' : '',
+              action: <img src={threeDots} className="cursor-pointer" />,
+            };
+          })
+        );
+      } catch (error) {
+        console.log("Error al obtener el proyecto:", error);
+      }
+    })();
+  }, [params.id]);
+
+  const fasdfasdfs = [
     {
       key: "1",
       picture: (
@@ -113,33 +164,17 @@ export const ConfigTab = () => {
     },
   ];
 
-  const [configInfo, setConfigInfo] = useState({
-    nombre: "SAO web project",
-    lider: [
-      "https://i.pinimg.com/564x/bf/94/d6/bf94d6014c3728c5684543a4d6486847.jpg",
-      "James Alyssa",
-    ],
-    descripcion:
-      'El proyecto "SAO web" es una plataforma en línea que combina tecnología de realidad virtual y experiencias inmersivas, ofreciendo una fusión única de juegos de rol, narrativa y socialización en un entorno...',
-  });
-
-  const handleChange = (field, value) => {
-    setConfigInfo((prevConfigInfo) => ({
-      ...prevConfigInfo,
-      [field]: value,
-    }));
-  };
 
   return (
     <div className="m-5 lg:my-9 lg:mx-14 xl:my-14 xl:mx-36 pb-16 lg:flex lg:p-4 lg:bg-[#F7F7F7] lg:gap-5 lg:rounded-xl">
       <div className="flex gap-3 lg:gap-1 mb-1 lg:flex-col lg:min-w-[17rem] lg:max-w-[17rem] lg:h-[624px] lg:bg-[#ffffff] lg:p-2 lg:rounded-xl">
         <div className="hidden lg:flex items-center gap-3 m-2">
           <img
-            src={projectImage}
+            src={`http://localhost:5000/${project.imagen}`}
             alt=""
             className="rounded-md min-w-[2.5rem] min-h-[2.5rem] max-w-[2.5rem] max-h-[2.5rem]"
           />
-          <p className="font-semibold">SAO web project</p>
+          <p className="font-semibold">{project.name}</p>
         </div>
         <ButtonConfig
           text={"Detalles"}
@@ -159,24 +194,22 @@ export const ConfigTab = () => {
           <div className="flex justify-center">
             <div className="lg:w-[95%] xl:w-[70%] lg:flex lg:flex-col lg:gap-7">
               <div className="space-y-5 mb-3 ">
-                <div className="lg:flex lg:gap-[4rem]">
+                <div className="lg:flex lg:gap-[2rem]">
                   <div className="flex flex-col items-center gap-4">
                     <img
-                      src={projectImage}
+                      src={`http://localhost:5000/${project.imagen}`}
                       alt=""
                       className="w-[60%] rounded-lg lg:w-[14rem]"
                     />
-                    <ButtonConfig text={"Cambiar imagen"} action />
+                    <ButtonConfig text={"Cambiar imagen"} textCenter action />
                   </div>
                   <div className="lg:flex flex-col gap-1 hidden lg:w-full">
                     <label htmlFor="" className="font-semibold">
                       Descripción
                     </label>
                     <textarea
-                      value={configInfo.descripcion}
-                      onChange={(e) =>
-                        handleChange("descripcion", e.target.value)
-                      }
+                      value={project.description}
+                      
                       className="text-[#00000080] h-full w-full p-2 border-[1px] border-[#d8d8d8] rounded-lg resize-none	"
                       name=""
                       id=""
@@ -190,8 +223,8 @@ export const ConfigTab = () => {
                     Nombre
                   </label>
                   <input
-                    value={configInfo.nombre}
-                    onChange={(e) => handleChange("nombre", e.target.value)}
+                    value={project.name || ''}
+                    
                     className="py-3 px-4 text-[#00000080] border-[1px] border-[#d8d8d8] rounded-lg"
                     type="text"
                     name=""
@@ -203,12 +236,12 @@ export const ConfigTab = () => {
                     Líder del proyecto
                   </label>
                   <img
-                    src={configInfo.lider[0]}
+                    src={`http://localhost:5000/${leader.image || ''}`}
                     alt=""
                     className="w-8 h-8 object-cover rounded-full absolute top-9 left-2.5"
                   />
                   <input
-                    value={configInfo.lider[1]}
+                    value={leader.name || ''}
                     readOnly
                     className="py-3 pl-12 pr-4 text-[#00000080] border-[1px] border-[#d8d8d8] rounded-lg"
                     type="text"
@@ -221,10 +254,8 @@ export const ConfigTab = () => {
                     Descripción
                   </label>
                   <textarea
-                    value={configInfo.descripcion}
-                    onChange={(e) =>
-                      handleChange("descripcion", e.target.value)
-                    }
+                    value={project.description || ''}
+                    
                     className="text-[#00000080] h-[9rem] p-2 border-[1px] border-[#d8d8d8] rounded-lg resize-none	"
                     name=""
                     id=""
@@ -258,13 +289,20 @@ export const ConfigTab = () => {
               />
             </div>
           </div>
-          <div className="overflow-auto">
-            <Table
-              dataSource={dataSource}
-              columns={columns}
-              pagination={false}
-            />
-          </div>
+          {project === "loading" && <p>Cargando usuarios...</p>}
+          {dataSource.length > 0 && (
+            <div className="overflow-auto">
+              <Table
+                dataSource={dataSource}
+                columns={columns}
+                pagination={false}
+              />
+            </div>
+          )}
+          {/* Display message if no users found */}
+          {dataSource.length === 0 && project !== "loading" && (
+            <p>No se encontraron usuarios para este proyecto.</p>
+          )}
           {/**<div className="bg-[#f5f5f5] rounded-2xl">
             <div className="overflow-x-auto ">
               <table className="table">
