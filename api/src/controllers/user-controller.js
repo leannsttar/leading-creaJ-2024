@@ -2,41 +2,20 @@ import { prisma } from "../../config/prisma.js";
 
 export const editUser = async (req, res) => {
   const { nombre, usuarioId } = req.body;
+  const imagePath = req.file?.path;
 
   try {
-    let updatedProfile;
+    const updateData = {
+     ...(nombre && { name: nombre }),
+     ...(imagePath && { image: imagePath }),
+    };
 
-    if (req.file && nombre) {
-      const imagePath = req.file.path;
-      updatedProfile = await prisma.users.update({
-        where: {
-          id: +usuarioId,
-        },
-        data: {
-          name: nombre,
-          image: imagePath,
-        },
-      });
-    } else if (req.file) {
-      const imagePath = req.file.path;
-      updatedProfile = await prisma.users.update({
-        where: {
-          id: +usuarioId,
-        },
-        data: {
-          image: imagePath,
-        },
-      });
-    } else {
-      updatedProfile = await prisma.users.update({
-        where: {
-          id: +usuarioId,
-        },
-        data: {
-          name: nombre,
-        },
-      });
-    }
+    const updatedProfile = await prisma.users.update({
+      where: {
+        id: +usuarioId,
+      },
+      data: updateData,
+    });
 
     res.status(200).json(updatedProfile);
   } catch (error) {

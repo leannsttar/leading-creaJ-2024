@@ -236,3 +236,26 @@ export const getProjectConfig = async (req, res) => {
     res.status(500).json({ error: "Error al obtener el proyecto" });
   }
 };
+
+export const updateProject = async (req, res) => {
+  const { nombre, descripcion, id } = req.body;
+  const imagePath = req.file?.path; // si req.file no existe, imagePath será undefined
+
+  try {
+    const updatedProject = await prisma.projects.update({
+      where: {
+        id: +id,
+      },
+      data: {
+        name: nombre?? undefined, // si nombre no se envía, se asignará undefined
+        description: descripcion?? undefined, // si descripcion no se envía, se asignará undefined
+        imagen: imagePath?? undefined, // si imagePath no se envía, se asignará undefined
+      },
+    });
+
+    res.status(200).json(updatedProject);
+  } catch (error) {
+    console.error("Error al actualizar el proyecto:", error);
+    res.status(500).json({ error: "Error al actualizar el proyecto" });
+  }
+};

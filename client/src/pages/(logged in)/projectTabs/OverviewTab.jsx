@@ -6,6 +6,8 @@ import { useParams } from "react-router-dom";
 
 import projectImage from "../../../assets/projectImage.jpg";
 
+import { Loader } from "@/components/Loader.jsx";
+
 const ActivityRecord = ({ img, message, date }) => {
   return (
     <div className="bg-white p-3 rounded-xl flex items-center gap-2">
@@ -127,7 +129,10 @@ export const OverviewTab = () => {
     // console.log(project)
   }, [params.id]);
 
-  if (project == "loading") return <p>Cargando Proyecto...</p>;
+  if (project == "loading")
+    return (
+      <Loader />
+    );
 
   return (
     <div className="m-5 lg:m-12 lg:flex lg:gap-8">

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 
 import { Link, useLocation, Outlet, useParams } from "react-router-dom";
 
+import { Loader } from "./Loader";
+
 import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
 
@@ -168,6 +170,7 @@ const LayoutProject = () => {
 
   useEffect(() => {
     const fetchProject = async () => {
+      setProject('loading')
       try {
         const response = await clienteAxios.get(
           `/api/projects/getProject/${params.id}`
@@ -213,7 +216,7 @@ const LayoutProject = () => {
 
       const formData = new FormData();
       formData.append("correo", newMemberEmail);
-      formData.append("proyectoId", params.id); // Usa params.id en lugar de params
+      formData.append("proyectoId", params.id); 
       const response = await clienteAxios.postForm(
         "/api/projects/addMember",
         formData,
@@ -233,6 +236,11 @@ const LayoutProject = () => {
   const onFinishFailed = (errorInfo) => {
     console.log("Fallo:", errorInfo);
   };
+
+  if (project == "loading")
+    return (
+      <Loader screen />
+    );
   return (
     <>
       {contextHolder}
