@@ -21,7 +21,7 @@ router.post('/', auth, upload.single('imagen'), createProject);
 router.get('/:usuarioId', getAllProjects);
 
 router.post('/addMember', upload.single(), addTeamMember)
-router.post('/createMeeting', upload.single(), createMeeting)
+router.post('/createMeeting', upload.none(), createMeeting)
 
 router.get('/getProject/:id', getProject);
 router.get('/getProjectOverview/:id', getProjectOverview);
