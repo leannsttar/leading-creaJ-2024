@@ -6,6 +6,8 @@ import { useParams } from "react-router-dom";
 
 import projectImage from "../../../assets/projectImage.jpg";
 
+import { ProyectosContext } from "@/config/ProyectosContext";
+
 import { Loader } from "@/components/Loader.jsx";
 
 const ActivityRecord = ({ img, message, date }) => {

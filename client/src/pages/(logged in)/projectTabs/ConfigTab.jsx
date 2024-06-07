@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
+
+import { ProyectosContext } from "@/config/ProyectosContext";
 
 import { Loader } from "@/components/Loader";
 
@@ -80,6 +82,8 @@ const TableFileRecord = ({ userName, userPicture, email, role }) => {
 };
 
 export const ConfigTab = () => {
+  const { proyectos, editProject } = useContext(ProyectosContext);
+
   const { logout, usuario, userToken, updateUserInfo } = useSession();
 
   const imageInputRef = useRef();
@@ -104,53 +108,55 @@ export const ConfigTab = () => {
     imageInputRef.current.click();
   };
 
+  const getProject = async () => {
+    try {
+      const response = await clienteAxios.get(
+        `/api/projects/getProjectConfig/${params.id}`
+      );
+
+      setProject(response.data);
+      setProjectName(response.data.name);
+      setProjectDescription(response.data.description);
+      setDataSource(
+        response.data.users.map((user) => {
+          // Find corresponding teamProject entry for the user
+          const teamProjectEntry = response.data.team.find(
+            (teamMember) => teamMember.user.id === user.id
+          );
+
+          // Extract role from teamProject (handle missing role gracefully)
+          const role = teamProjectEntry?.role || "Unknown"; // Use 'Unknown' if role is missing
+          if (role === "leader") {
+            setLeader(user);
+          }
+          return {
+            key: user.id,
+            picture: (
+              <img
+                src={`http://localhost:5000/${user.image}`}
+                className="rounded-full min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem]"
+                alt=""
+              />
+            ),
+            name: user.name,
+            age: user.email,
+            address:
+              role === "leader"
+                ? "Líder"
+                : role === "member"
+                ? "Miembro"
+                : "",
+            action: <img src={threeDots} className="cursor-pointer" />,
+          };
+        })
+      );
+    } catch (error) {
+      console.log("Error al obtener el proyecto:", error);
+    }
+  }
+
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await clienteAxios.get(
-          `/api/projects/getProjectConfig/${params.id}`
-        );
-
-        setProject(response.data);
-        setProjectName(response.data.name);
-        setProjectDescription(response.data.description);
-        setDataSource(
-          response.data.users.map((user) => {
-            // Find corresponding teamProject entry for the user
-            const teamProjectEntry = response.data.team.find(
-              (teamMember) => teamMember.user.id === user.id
-            );
-
-            // Extract role from teamProject (handle missing role gracefully)
-            const role = teamProjectEntry?.role || "Unknown"; // Use 'Unknown' if role is missing
-            if (role === "leader") {
-              setLeader(user);
-            }
-            return {
-              key: user.id,
-              picture: (
-                <img
-                  src={`http://localhost:5000/${user.image}`}
-                  className="rounded-full min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem]"
-                  alt=""
-                />
-              ),
-              name: user.name,
-              age: user.email,
-              address:
-                role === "leader"
-                  ? "Líder"
-                  : role === "member"
-                  ? "Miembro"
-                  : "",
-              action: <img src={threeDots} className="cursor-pointer" />,
-            };
-          })
-        );
-      } catch (error) {
-        console.log("Error al obtener el proyecto:", error);
-      }
-    })();
+    getProject()
   }, [params.id]);
 
 
@@ -168,9 +174,9 @@ export const ConfigTab = () => {
 
     const formData = new FormData();
 
-    
+    if (projectImage) {
       formData.append("imagen", projectImage);
-    
+    }
 
     formData.append("id", params.id);
     formData.append("nombre", projectName);
@@ -185,6 +191,23 @@ export const ConfigTab = () => {
         },
       }
     );
+
+    editProject(response.data)
+    getProject()
+
+    messageApi.open({
+      type: "success",
+      content: "Datos del proyecto actualizados",
+    });
+
+    const updatedProject = {
+      ...project,
+      name: projectName,
+      imagen: response.data.imagen, // Agregamos la imagen al objeto updatedProject
+    };
+
+    setProyectos(proyectos.map((p) => (p.id === project.id ? updatedProject : p)));
+
 
     console.log("Respuesta del backend:", response.data);
   } catch (error) {
@@ -231,7 +254,7 @@ export const ConfigTab = () => {
             <img
               src={`http://localhost:5000/${project.imagen}`}
               alt=""
-              className="rounded-md min-w-[2.5rem] min-h-[2.5rem] max-w-[2.5rem] max-h-[2.5rem]"
+              className="rounded-md min-w-[2.5rem] min-h-[2.5rem] max-w-[2.5rem] max-h-[2.5rem] object-cover"
             />
             <p className="font-semibold">{project.name}</p>
           </div>
@@ -251,7 +274,7 @@ export const ConfigTab = () => {
           <div className="lg:w-full lg:p-10 space-y-3 lg:space-y-5">
             <p className="text-2xl font-semibold lg:text-3xl">Detalles</p>
             <div className="flex justify-center">
-              <div className="lg:w-[95%] xl:w-[70%] lg:flex lg:flex-col lg:gap-7">
+              <div className="lg:w-[95%] 2xl:w-[80%] lg:flex lg:flex-col lg:gap-7">
                 <div className="space-y-5 mb-3 ">
                   <div className="lg:flex lg:gap-[2rem]">
                     <div className="flex flex-col items-center gap-4">

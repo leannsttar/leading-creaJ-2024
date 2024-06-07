@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import { Link, useLocation, Outlet, useParams } from "react-router-dom";
+
+import { ProyectosProvider } from "@/config/ProyectosContext";
+import { ProyectosContext } from "@/config/ProyectosContext";
 
 import { Loader } from "./Loader";
 
@@ -55,7 +58,7 @@ const AvatarMember = ({ img, className, index }) => {
       key={index}
       src={img}
       alt=""
-      className={`w-8 h-8 rounded-full ${className}`}
+      className={`w-8 h-8 rounded-full object-cover ${className}`}
     />
   );
 };
@@ -162,27 +165,43 @@ const LayoutTasks = () => {
 };
 
 const LayoutProject = () => {
+
+  const { proyectos, projectChange } = useContext(ProyectosContext);
+
   const { logout, usuario, userToken } = useSession();
   const params = useParams();
   const [project, setProject] = useState("loading");
+  const [projectt, setProjectt] = useState("loading");
   const [modal1Open, setModal1Open] = useState(false);
   const [newMemberEmail, setNewMemberEmail] = useState("");
 
   useEffect(() => {
-    const fetchProject = async () => {
-      setProject('loading')
-      try {
-        const response = await clienteAxios.get(
-          `/api/projects/getProject/${params.id}`
-        );
-        
-        setProject(response.data);
-      } catch (error) {
-        console.log("Error al obtener el proyecto:", error);
+    if (proyectos.length > 0) {
+      const projectFound = proyectos.find((proyecto) => proyecto.id == params.id);
+      if (projectFound) {
+        setProject(projectFound);
+      } else {
+        setProject(null); // o algún otro valor que indique que no se encontró el proyecto
       }
-    };
-    fetchProject();
-  }, [params.id]);
+    }
+  }, [params.id, proyectos]);
+
+  // useEffect(() => {
+  //   const fetchProject = async () => {
+  //     setProject("loading");
+  //     try {
+  //       const response = await clienteAxios.get(
+  //         `/api/projects/getProject/${params.id}`
+  //       );
+
+  //       setProject(response.data);
+  //       console.log(response.data)
+  //     } catch (error) {
+  //       console.log("Error al obtener el proyecto:", error);
+  //     }
+  //   };
+  //   fetchProject();
+  // }, [params.id]);
 
   const tabLinksProject = [
     { title: "Vista general", href: `/dashboard/project/${params.id}` },
@@ -216,7 +235,7 @@ const LayoutProject = () => {
 
       const formData = new FormData();
       formData.append("correo", newMemberEmail);
-      formData.append("proyectoId", params.id); 
+      formData.append("proyectoId", params.id);
       const response = await clienteAxios.postForm(
         "/api/projects/addMember",
         formData,
@@ -226,6 +245,7 @@ const LayoutProject = () => {
           },
         }
       );
+      projectChange()
       setModal1Open(false);
       console.log("Respuesta del backend:", response.data);
     } catch (error) {
@@ -237,10 +257,7 @@ const LayoutProject = () => {
     console.log("Fallo:", errorInfo);
   };
 
-  if (project == "loading")
-    return (
-      <Loader screen />
-    );
+  if (project == "loading" || project == undefined) return <Loader screen />;
   return (
     <>
       {contextHolder}
@@ -426,6 +443,7 @@ const LayoutMessages = () => {
 };
 
 export const LayoutWorkspace = () => {
+  
   const location = useLocation();
   const { pathname } = location;
 
@@ -484,8 +502,10 @@ export const LayoutWorkspace = () => {
     <>
       {isDesktop ? (
         <div className="flex font-inter">
-          <SideBar />
-          {renderComponentBasedOnPath()}
+          <ProyectosProvider>
+            <SideBar />
+            {renderComponentBasedOnPath()}
+          </ProyectosProvider>
         </div>
       ) : (
         <div className="flex flex-col font-inter">

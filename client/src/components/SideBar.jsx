@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import dashboardIcon from "../assets/dashboardIcon.svg";
@@ -15,6 +15,8 @@ import threeLinesMenu from "../assets/3linesMenu.svg";
 // Sesión
 import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
+
+import { ProyectosContext } from "@/config/ProyectosContext";
 
 import avatar from "../assets/Avatar.jpg";
 
@@ -108,6 +110,8 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
 };
 
 export const SideBar = () => {
+  const { proyectos, addProject, projectChange } = useContext(ProyectosContext);
+
   const { logout, usuario, userToken, updateUserInfo } = useSession();
 
   const [fileList, setFileList] = useState([
@@ -119,21 +123,21 @@ export const SideBar = () => {
     },
   ]);
 
-  const [proyectos, setProyectos] = useState([]);
+  // const [misProyectos, setMisProyectos] = useState([]);
 
-  const obtenerProyectos = async () => {
-    try {
-      const response = await clienteAxios.get(`/api/projects/${usuario.id}`);
+  // const obtenerProyectos = async () => {
+  //   try {
+  //     const response = await clienteAxios.get(`/api/projects/${usuario.id}`);
       
-      setProyectos(response.data);
-    } catch (error) {
-      console.log("Error al obtener los proyectos:", error);
-    }
-  };
+  //     setMisProyectos(response.data);
+  //   } catch (error) {
+  //     console.log("Error al obtener los proyectos:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    obtenerProyectos();
-  }, []);
+  // useEffect(() => {
+  //   obtenerProyectos();
+  // }, []);
 
   const [isDark, setIsDark] = useState(false);
   const [isShrinked, setIsShrinked] = useState(window.innerWidth < 1280);
@@ -207,12 +211,14 @@ export const SideBar = () => {
         },
       });
 
+      addProject(response.data);
+
       console.log("Respuesta del backend:", response.data);
       setModal2Open(false);
       setCreateProjectName("");
       setCreateProjectDescription("");
 
-      obtenerProyectos();
+      // obtenerProyectos();
     } catch (error) {
       console.error("Error al enviar los datos", error);
     }
@@ -222,7 +228,13 @@ export const SideBar = () => {
     try {
       const formData = new FormData();
 
-     
+      if (userName == "") {
+        messageApi.open({
+          type: "error",
+          content: "No puedes dejar los campos en blanco",
+        });
+        return;
+      }
 
       if (fileList) {
         const fileImg = fileList.map((file) => file.originFileObj)[0];
@@ -252,6 +264,8 @@ export const SideBar = () => {
         image: response.data.image,
       });
 
+      projectChange()
+
       // setFileList([
       //   {
       //     uid: "-1",
@@ -262,6 +276,11 @@ export const SideBar = () => {
       // ]);
 
       setModal3Open(false);
+
+      messageApi.open({
+        type: "success",
+        content: "Datos del usuario actualizados",
+      });
     } catch (error) {
       console.error("Error al enviar los datos", error);
     }

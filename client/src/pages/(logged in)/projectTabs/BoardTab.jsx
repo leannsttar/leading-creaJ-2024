@@ -197,7 +197,7 @@ const HeaderTaskCards = ({ title, numCards, hidden }) => {
           <Space>
             <Button onClick={onClose}>Cancelar</Button>
             <Button onClick={onClose} className="bg-black text-white">
-              Enviar
+              Crear tarea
             </Button>
           </Space>
         }

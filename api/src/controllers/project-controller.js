@@ -123,9 +123,28 @@ export const getAllProjects = async (req, res) => {
       },
     });
 
-    const projects = userProjects.map((userProject) => userProject.project);
+    const projectsWithMembers = await Promise.all(
+      userProjects.map(async (userProject) => {
+        const project = userProject.project;
+        const teamMembers = await prisma.teamProject.findMany({
+          where: {
+            projectId: project.id,
+          },
+          include: {
+            user: {
+              select: { image: true },
+            }
+          },
+        });
 
-    res.status(200).json(projects);
+        return {
+          ...project,
+          users: teamMembers.map((teamMember) => teamMember.user),
+        };
+      })
+    );
+
+    res.status(200).json(projectsWithMembers);
   } catch (error) {
     console.error("Error al obtener los proyectos:", error);
     res.status(500).json({ error: "Error al obtener los proyectos" });
