@@ -67,40 +67,18 @@ export const addTeamMember = async (req, res) => {
   }
 };
 
-function formatDateTime(fecha, hora) {
-  // Verifica si la fecha y la hora están presentes
-  if (!fecha || !hora) {
-    throw new Error("La fecha o la hora no están presentes");
-  }
-
-  // Combina la fecha y la hora en un solo string en formato ISO-8601
-  const dateTimeString = `${fecha}T${hora}:00`;
-
-  // Crea un objeto Date usando el string combinado
-  const dateTime = new Date(dateTimeString);
-
-  // Verifica si el objeto Date es válido
-  if (isNaN(dateTime.getTime())) {
-    throw new Error("Fecha u hora inválida");
-  }
-
-  // Devuelve el string en formato ISO-8601
-  return dateTime.toISOString();
-}
-
+//TODA ESTA PARTE ES EL CONTROLADOR DE LA MEETING
 export const createMeeting = async (req, res) => {
-  const { fecha, hora, enlace, descripcion, proyectoId, usuarioId } = req.body;
+  const { fecha, enlace, descripcion, proyectoId, usuarioId } = req.body;
   console.log(req.body);
 
   try {
-    const eventTime = formatDateTime(fecha, hora);
-
     const newMeeting = await prisma.meetings.create({
       data: {
         id: enlace,
-        event_time: fecha,
-        projectId: proyectoId,
-        authorId: usuarioId,
+        event_time: new Date(fecha),
+        projectId: +proyectoId,
+        authorId: +usuarioId,
       },
     });
     return res.status(200).json(newMeeting);
@@ -109,6 +87,8 @@ export const createMeeting = async (req, res) => {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 };
+
+//AQUÍ DE PROYECTOS
 
 export const getAllProjects = async (req, res) => {
   const { usuarioId } = req.params;
