@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
@@ -27,6 +27,38 @@ const MeetingsSection = ({ icon, title, numMeetings }) => {
         </div>
       </div>
     </div>
+  );
+};
+
+export const MeetingsList = ({ meetings }) => {
+  return (
+    <>
+      <div className="mt-14">
+        <p className="text-[1.5rem] font-semibold">Reuniones próximas</p>
+        <div className="bg-[#5B5B5B] w-[6rem] h-[5px] rounded-full" />
+      </div>
+      {meetings.map((meeting) => {
+        return (
+          <div className="mt-5 lg:mt-8 space-y-6 md:grid md:grid-cols-2 md:space-y-0 md:gap-4 lg:grid-cols-3 xl:gap-[3rem] 3xl:grid-cols-4">
+            <MeetingCard
+              userName={meeting.author.name}
+              userPicture={
+                "https://i.pinimg.com/564x/ab/a6/bb/aba6bb42cb08e35ac0d71e6044566b0a.jpg"
+              }
+              time={meeting.event_time}
+              going={11}
+              pending={2}
+              teamPictures={[
+                "https://i.pinimg.com/564x/5e/c5/99/5ec599c89cd988a416d361a123c14faa.jpg",
+                "https://i.pinimg.com/736x/01/4d/59/014d59542d152dd54e9c94091c3d8dd4.jpg",
+                "https://i.pinimg.com/736x/93/d4/ae/93d4aeb0fdf135036c70448e610dd78b.jpg",
+                "https://i.pinimg.com/736x/7c/d1/ab/7cd1abc221a4ad00720a989ac89a6218.jpg",
+              ]}
+            />
+          </div>
+        );
+      })}
+    </>
   );
 };
 
@@ -91,6 +123,25 @@ const MeetingCard = ({
 export const MeetingsTab = () => {
   const { logout, usuario, userToken } = useSession();
 
+  const [meetings, setMeetings] = useState([]);
+
+  useEffect(() => {
+    const fetchMeetings = async () => {
+      try {
+        const response = await clienteAxios.get("/api/projects/meetings", {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        });
+        setMeetings(response.data);
+      } catch (error) {
+        console.error("Error al obtener las reuniones:", error);
+      }
+    };
+
+    fetchMeetings();
+  }, []);
+
   const [meetingDate, setMeetingDate] = useState();
   const [meetingLink, setMeetingLink] = useState();
 
@@ -102,8 +153,8 @@ export const MeetingsTab = () => {
 
       formData.append("fecha", meetingDate);
       formData.append("enlace", meetingLink);
-      formData.append("proyectoId", 13)
-      formData.append("usuarioId", usuario.id)
+      formData.append("proyectoId", 13);
+      formData.append("usuarioId", usuario.id);
 
       const response = await clienteAxios.postForm(
         "/api/projects/createMeeting",
@@ -125,8 +176,7 @@ export const MeetingsTab = () => {
   const onFinishFailed = (errorInfo) => {
     console.log("Fallo:", errorInfo);
   };
-  
-  
+
   // const [formData, setFormData] = useState({
   //   date: null,
   //   time: null,
@@ -212,7 +262,6 @@ export const MeetingsTab = () => {
         <div className="">
           <Form
             layout="vertical"
-            
             style={{ width: 400, margin: "20px" }}
             onFinishFailed={onFinishFailed}
           >
@@ -226,8 +275,11 @@ export const MeetingsTab = () => {
                 },
               ]}
             >
-              <DatePicker onChange={(date) => setMeetingDate(date)} placeholder="Fecha"/>
-            </Form.Item >
+              <DatePicker
+                onChange={(date) => setMeetingDate(date)}
+                placeholder="Fecha"
+              />
+            </Form.Item>
 
             {/* <Form.Item
               label="Hora de la reunión"
@@ -252,7 +304,10 @@ export const MeetingsTab = () => {
                 },
               ]}
             >
-              <Input onChange={(e) => setMeetingLink(e.target.value)}  placeholder="Enlace del meet" />
+              <Input
+                onChange={(e) => setMeetingLink(e.target.value)}
+                placeholder="Enlace del meet"
+              />
             </Form.Item>
 
             {/* <Form.Item
@@ -271,62 +326,10 @@ export const MeetingsTab = () => {
                 onChange={onDescriptionChange}
               />
             </Form.Item> */}
-
-
           </Form>
         </div>
       </Modal>
-      <div className="mt-14">
-        <p className="text-[1.5rem] font-semibold">Reuniones próximas</p>
-        <div className="bg-[#5B5B5B] w-[6rem] h-[5px] rounded-full" />
-      </div>
-      <div className="mt-5 lg:mt-8 space-y-6 md:grid md:grid-cols-2 md:space-y-0 md:gap-4 lg:grid-cols-3 xl:gap-[3rem] 3xl:grid-cols-4">
-        <MeetingCard
-          userName={"Mashle Burnedead"}
-          userPicture={
-            "https://i.pinimg.com/564x/ab/a6/bb/aba6bb42cb08e35ac0d71e6044566b0a.jpg"
-          }
-          time={"11:00 AM"}
-          going={11}
-          pending={2}
-          teamPictures={[
-            "https://i.pinimg.com/564x/5e/c5/99/5ec599c89cd988a416d361a123c14faa.jpg",
-            "https://i.pinimg.com/736x/01/4d/59/014d59542d152dd54e9c94091c3d8dd4.jpg",
-            "https://i.pinimg.com/736x/93/d4/ae/93d4aeb0fdf135036c70448e610dd78b.jpg",
-            "https://i.pinimg.com/736x/7c/d1/ab/7cd1abc221a4ad00720a989ac89a6218.jpg",
-          ]}
-        />
-        <MeetingCard
-          userName={"Mashle Burnedead"}
-          userPicture={
-            "https://i.pinimg.com/564x/ab/a6/bb/aba6bb42cb08e35ac0d71e6044566b0a.jpg"
-          }
-          time={"11:00 AM"}
-          going={4}
-          pending={10}
-          teamPictures={[
-            "https://i.pinimg.com/564x/5e/c5/99/5ec599c89cd988a416d361a123c14faa.jpg",
-            "https://i.pinimg.com/736x/01/4d/59/014d59542d152dd54e9c94091c3d8dd4.jpg",
-            "https://i.pinimg.com/736x/93/d4/ae/93d4aeb0fdf135036c70448e610dd78b.jpg",
-            "https://i.pinimg.com/736x/7c/d1/ab/7cd1abc221a4ad00720a989ac89a6218.jpg",
-          ]}
-        />
-        <MeetingCard
-          userName={"Mashle Burnedead"}
-          userPicture={
-            "https://i.pinimg.com/564x/ab/a6/bb/aba6bb42cb08e35ac0d71e6044566b0a.jpg"
-          }
-          time={"11:00 AM"}
-          going={9}
-          pending={3}
-          teamPictures={[
-            "https://i.pinimg.com/564x/5e/c5/99/5ec599c89cd988a416d361a123c14faa.jpg",
-            "https://i.pinimg.com/736x/01/4d/59/014d59542d152dd54e9c94091c3d8dd4.jpg",
-            "https://i.pinimg.com/736x/93/d4/ae/93d4aeb0fdf135036c70448e610dd78b.jpg",
-            "https://i.pinimg.com/736x/7c/d1/ab/7cd1abc221a4ad00720a989ac89a6218.jpg",
-          ]}
-        />
-      </div>
+      <MeetingsList meetings={meetings} />
     </div>
   );
 };
