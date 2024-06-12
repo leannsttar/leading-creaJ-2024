@@ -88,6 +88,26 @@ export const createMeeting = async (req, res) => {
   }
 };
 
+
+//tomar las reuniones 
+export const getMeetings = async (req, res) => {
+  try {
+    const meetings = await prisma.meetings.findMany({
+      include: {
+        project: true, 
+        author: true,  
+      },
+    });
+
+    return res.status(200).json(meetings);
+  } catch (error) {
+    console.error("Error al obtener las reuniones:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
+
+
 //AQUÍ DE PROYECTOS
 
 export const getAllProjects = async (req, res) => {
