@@ -1,5 +1,16 @@
-import { useState, useRef, useEffect } from "react";
-import Link from "antd/es/typography/Link";
+import { useState, useRef, useEffect, useContext } from "react";
+
+import { ProyectosContext } from "@/config/ProyectosContext";
+import { useSession } from "@/config/useSession";
+
+import { Loader } from "@/components/Loader";
+
+import "../../../index.css";
+
+import { useParams } from "react-router-dom";
+
+import { clienteAxios } from "@/config/clienteAxios";
+
 import { FaPlus } from "react-icons/fa6";
 import { TbEdit } from "react-icons/tb";
 import { PiListChecks } from "react-icons/pi";
@@ -26,11 +37,18 @@ import {
   Progress,
   Checkbox,
   TreeSelect,
+  message,
+  Upload,
 } from "antd";
 const { Option } = Select;
 
-import { InboxOutlined, MinusCircleOutlined, PlusOutlined,  SendOutlined, UploadOutlined } from "@ant-design/icons";
-import { message, Upload } from "antd";
+import {
+  InboxOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+  SendOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 const { Dragger } = Upload;
 const fileList = [
   {
@@ -91,68 +109,137 @@ const props = {
   ],
 };
 
-const treeDataTags = [
-  {
-    value: "research",
-    title: "Research",
-  },
-  {
-    value: "ux",
-    title: "UX",
-  },
-  {
-    value: "ui",
-    title: "UI",
-  },
-  {
-    value: "design system",
-    title: "Design System",
-  },
-];
+const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
+  
+  const { userToken } = useSession();
 
-const treeDataMembers = [
-  {
-    value: "member1",
-    title: (
-      <div className="flex items-center gap-1">
-        <img src="https://i.pinimg.com/564x/1d/74/78/1d7478575d3660265b0163630aff82ff.jpg" className="w-4 h-4 rounded-full object-cover"/>
-        <p>miembro 1</p>
-      </div>
-    ),
-  },
-  {
-    value: "member2",
-    title: (
-      <div className="flex items-center gap-1">
-        <img src="https://i.pinimg.com/564x/bf/1b/15/bf1b150ed20b1071a77c192a7d6a98ef.jpg" className="w-4 h-4 rounded-full object-cover"/>
-        <p>miembro 2</p>
-      </div>
-    ),
-  },
-  {
-    value: "member3",
-    title: (
-      <div className="flex items-center gap-1">
-        <img src="https://i.pinimg.com/564x/bd/3c/61/bd3c61b844be21ce958a5d5413c991a9.jpg" className="w-4 h-4 rounded-full object-cover"/>
-        <p>miembro 3</p>
-      </div>
-    ),
-  },
-  {
-    value: "member4",
-    title: (
-      <div className="flex items-center gap-1">
-        <img src="https://i.pinimg.com/564x/d4/9c/ff/d49cffc63e34c2ecb55a31a01067aa7c.jpg" className="w-4 h-4 rounded-full object-cover"/>
-        <p>miembro 4</p>
-      </div>
-    ),
-  },
-];
-
-const HeaderTaskCards = ({ title, numCards, hidden }) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState();
-  const [subtasks, setSubtasks] = useState([]); 
+  const [subtasks, setSubtasks] = useState([]);
+  const [treeDataMembers, setTreeDataMembers] = useState([]);
+
+  const [value, setValue] = useState([]);
+  const [newTag, setNewTag] = useState("");
+  const [treeDataTags, setTreeDataTags] = useState([
+
+  
+    // {
+    //   value: "research",
+    //   title: "Research",
+    // },
+    // {
+    //   value: "ux",
+    //   title: "UX",
+    // },
+    // {
+    //   value: "ui",
+    //   title: "UI",
+    // },
+    // {
+    //   value: "design system",
+    //   title: "Design System",
+    // },
+  ]);
+
+  useEffect(() => {
+    if (project.tags) {
+      setTreeDataTags(
+        project.tags.map((tag) => ({ value: tag.name, title: tag.name }))
+      );
+    }
+  }, [project]); 
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const handleAddNewTag = async () => {
+    try {
+      if (newTag == "") {
+        messageApi.open({
+          type: "error",
+          content: "No puedes dejar la etiqueta en blanco",
+        });
+        return;
+      }
+
+      let tagExists = false;
+      treeDataTags.map((tag) => {
+        if (newTag == tag.title) {
+          messageApi.open({
+            type: "warning",
+            content: "Esta etiqueta ya existe",
+          });
+          tagExists = true;
+          return;
+        }
+      });
+
+      if (!tagExists) {
+        const newTagData = {
+          title: newTag,
+          value: newTag,
+          key: newTag,
+        };
+        setTreeDataTags([...treeDataTags, newTagData]);
+        setValue([...value, newTag]);
+
+        const formData = new FormData();
+
+        formData.append("projectoId", project.id);
+        formData.append("tag", newTag);
+
+        setNewTag("");
+
+        const response = await clienteAxios.postForm(
+          `/api/projects/createTag`,
+          formData,
+          {
+            headers: {
+              Authorization: "Bearer " + userToken,
+            },
+          }
+        );
+
+        messageApi.open({
+          type: "success",
+          content: "Etiqueta creada correctamente",
+        });
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Hubo un error al crear la etiqueta",
+      });
+      console.error("Error al enviar los datos", error);
+    }
+  };
+
+  const handleNewTagChange = (e) => {
+    setNewTag(e.target.value);
+  };
+
+  useEffect(() => {
+    if (project != "loading") {
+      setTreeDataMembers(
+        project.team.map((member) => {
+          return {
+            value: member.user.id,
+            title: (
+              <div className="flex items-center gap-2">
+                <img
+                  src={`http://localhost:5000/${member.user.image}`}
+                  className="w-4 h-4 rounded-full object-cover"
+                />
+                <p>{member.user.name}</p>
+              </div>
+            ),
+          };
+        })
+      );
+    }
+  }, [project]);
+
+  // if (project != "loading") {
+  //   console.log(treeDataMembers);
+  // }
 
   const showDrawer = () => {
     setOpen(true);
@@ -166,23 +253,26 @@ const HeaderTaskCards = ({ title, numCards, hidden }) => {
   };
 
   const handleAddSubtask = () => {
-    setSubtasks([...subtasks, { name: '', completed: false }]); // Add empty subtask
+    setSubtasks([...subtasks, { name: "", completed: false }]);
   };
 
   const handleRemoveSubtask = (index) => {
-    const updatedSubtasks = [...subtasks]; // Create a copy to avoid mutation
-    updatedSubtasks.splice(index, 1); // Remove subtask at the specified index
+    const updatedSubtasks = [...subtasks];
+    updatedSubtasks.splice(index, 1);
     setSubtasks(updatedSubtasks);
   };
 
   const handleSubtaskChange = (event, index) => {
-    const updatedSubtasks = [...subtasks]; // Create a copy to avoid mutation
-    updatedSubtasks[index].name = event.target.value; // Update the name of the subtask
+    const updatedSubtasks = [...subtasks];
+    updatedSubtasks[index].name = event.target.value;
     setSubtasks(updatedSubtasks);
   };
 
+  
+
   return (
     <>
+      {contextHolder}
       <Drawer
         title="Crea una nueva tarea"
         width={720}
@@ -218,27 +308,6 @@ const HeaderTaskCards = ({ title, numCards, hidden }) => {
                 <Input placeholder="Ingresa el título" />
               </Form.Item>
             </Col>
-            {/* <Col span={12}>
-              <Form.Item
-                name="url"
-                label="Url"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter url",
-                  },
-                ]}
-              >
-                <Input
-                  style={{
-                    width: "100%",
-                  }}
-                  addonBefore="http://"
-                  addonAfter=".com"
-                  placeholder="Please enter url"
-                />
-              </Form.Item>
-            </Col> */}
             <Col span={12}>
               <Form.Item
                 name="dateTime"
@@ -275,7 +344,6 @@ const HeaderTaskCards = ({ title, numCards, hidden }) => {
                   showSearch
                   style={{
                     width: "100%",
-                    
                   }}
                   value={value}
                   dropdownStyle={{
@@ -319,47 +387,21 @@ const HeaderTaskCards = ({ title, numCards, hidden }) => {
                   onChange={onChange}
                   treeData={treeDataTags}
                 />
+                <div className="mt-3 flex gap-1">
+                  <input
+                    type="text"
+                    value={newTag}
+                    onChange={handleNewTagChange}
+                    placeholder="Crear nueva etiqueta"
+                    className="outline-none py-1 px-2 border-[1px] border-gray-300 rounded-md custom-placeholder"
+                    style={{ placeholder: { color: "#fff" } }}
+                  />
+
+                  <Button onClick={handleAddNewTag}>Agregar</Button>
+                </div>
               </Form.Item>
             </Col>
           </Row>
-          {/* <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="approver"
-                label="Approver"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please choose the approver",
-                  },
-                ]}
-              >
-                <Select placeholder="Please choose the approver">
-                  <Option value="jack">Jack Ma</Option>
-                  <Option value="tom">Tom Liu</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="dateTime"
-                label="Fecha de entrega"
-                rules={[
-                  {
-                    required: true,
-                    message: "Por favor elige una fecha",
-                  },
-                ]}
-              >
-                <DatePicker
-                  style={{
-                    width: "100%",
-                  }}
-                  getPopupContainer={(trigger) => trigger.parentElement}
-                />
-              </Form.Item>
-            </Col>
-          </Row> */}
           <Row gutter={16}>
             <Col span={24}>
               <Form.Item
@@ -383,12 +425,15 @@ const HeaderTaskCards = ({ title, numCards, hidden }) => {
             <Col span={24}>
               <Form.Item label="Subtareas">
                 {subtasks.map((subtask, index) => (
-                  <div key={index} className="flex items-center justify-between mb-2">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between mb-2"
+                  >
                     <Input
                       value={subtask.name}
                       onChange={(event) => handleSubtaskChange(event, index)}
                       placeholder="Ingresa el nombre de la subtarea"
-                      style={{ width: '90%' }}
+                      style={{ width: "90%" }}
                     />
                     <MinusCircleOutlined
                       className="cursor-pointer ml-2"
@@ -396,7 +441,11 @@ const HeaderTaskCards = ({ title, numCards, hidden }) => {
                     />
                   </div>
                 ))}
-                <Button type="dashed" onClick={handleAddSubtask} icon={<PlusOutlined />}>
+                <Button
+                  type="dashed"
+                  onClick={handleAddSubtask}
+                  icon={<PlusOutlined />}
+                >
                   Agregar subtarea
                 </Button>
               </Form.Item>
@@ -409,22 +458,28 @@ const HeaderTaskCards = ({ title, numCards, hidden }) => {
           <p className="text-xl font-semibold">{title}</p>
           <p className="text-[#959595]">{numCards} tareas</p>
         </div>
-        {hidden ?? <img
-          src={plusTasksIcon}
-          alt="add icon"
-          className="w-8 cursor-pointer"
-          onClick={showDrawer}
-        />}
+        {hidden ?? (
+          <img
+            src={plusTasksIcon}
+            alt="add icon"
+            className="w-8 cursor-pointer"
+            onClick={showDrawer}
+          />
+        )}
       </div>
     </>
   );
 };
 
-const ColTasks = ({ title, numCards, children, index }) => {
+const ColTasks = ({ title, numCards, children, index, project }) => {
   return (
     <div key={index} className="space-y-3 lg:w-[30%] lg:space-y-8">
-      {title === "Próximo" ? <HeaderTaskCards title={title} numCards={numCards} /> : <HeaderTaskCards title={title} numCards={numCards} hidden/> }
-      
+      {title === "Próximo" ? (
+        <HeaderTaskCards title={title} numCards={numCards} project={project}/>
+      ) : (
+        <HeaderTaskCards title={title} numCards={numCards} hidden project={project}/>
+      )}
+
       <div className="flex gap-3 overflow-auto pb-2 lg:flex-col lg:gap-6">
         {children}
       </div>
@@ -472,42 +527,18 @@ const CommentComponent = ({ userName, userPicture, message, timeAgo }) => {
 };
 
 export const BoardTab = () => {
+
+  
+
+  const params = useParams();
+
+  const timerRef = useRef();
+
   const [open, setOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [section, setSection] = useState("progreso");
-  const timerRef = useRef();
-
-  const clearTimer = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  };
-
-  const showDrawer = (task) => {
-    setSelectedTask(task);
-    setOpen(true);
-    setLoading(true);
-    timerRef.current = setTimeout(() => {
-      setLoading(false);
-    }, 600);
-  };
-
-  const onClose = () => {
-    setOpen(false);
-  };
-
-  const changeSection = (newSection) => {
-    setSection(newSection);
-  };
-
-  useEffect(() => clearTimer, []);
-
-  // const handleSubmit = (values) => {
-  //   console.log("Received values:", values);
-
-  // };
 
   const [data, setData] = useState([
     {
@@ -715,6 +746,57 @@ export const BoardTab = () => {
       status: "upcoming",
     },
   ]);
+  
+  const [project, setProject] = useState("loading");
+
+  const getProject = async () => {
+    try {
+      const response = await clienteAxios.get(
+        `/api/projects/getProjectBoard/${params.id}`
+      );
+      // console.log(response)
+      setProject(response.data);
+      
+    } catch (error) {
+      console.log("Error al obtener el proyecto:", error);
+    }
+  };
+
+  useEffect(() => {
+    getProject();
+  }, [params.id]);
+
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  };
+
+  const showDrawer = (task) => {
+    setSelectedTask(task);
+    setOpen(true);
+    setLoading(true);
+    timerRef.current = setTimeout(() => {
+      setLoading(false);
+    }, 600);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  const changeSection = (newSection) => {
+    setSection(newSection);
+  };
+
+  useEffect(() => clearTimer, []);
+
+  // const handleSubmit = (values) => {
+  //   console.log("Received values:", values);
+
+  // };
+
+  if (project == "loading" || project == undefined) return <Loader screen />;
 
   return (
     <>
@@ -967,7 +1049,7 @@ export const BoardTab = () => {
         )}
       </Drawer>
       <div className="mx-5 my-9 lg:mx-11 lg:my-16 space-y-10 lg:flex lg:space-y-0 lg:justify-around">
-        <ColTasks title={"Próximo"} numCards={12} index={1}>
+        <ColTasks title={"Próximo"} numCards={12} index={1} project={project}>
           {data.map((task, index) => (
             <TaskCardProject
               index={task.id}
@@ -977,7 +1059,7 @@ export const BoardTab = () => {
             />
           ))}
         </ColTasks>
-        <ColTasks title={"En proceso"} numCards={12} index={2}>
+        <ColTasks title={"En proceso"} numCards={12} index={2} project={project}>
           {data2.map((task, index) => (
             <TaskCardProject
               index={task.id}
@@ -987,7 +1069,7 @@ export const BoardTab = () => {
             />
           ))}
         </ColTasks>
-        <ColTasks title={"Terminadas"} numCards={12} index={3}>
+        <ColTasks title={"Terminadas"} numCards={12} index={3} project={project}>
           {data3.map((task, index) => (
             <TaskCardProject
               index={task.id}

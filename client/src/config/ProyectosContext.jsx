@@ -5,9 +5,10 @@ import { useSession } from "@/config/useSession";
 const ProyectosContext = createContext();
 
 const ProyectosProvider = ({ children }) => {
-  const { logout, usuario, userToken, updateUserInfo } = useSession();
+  const { usuario } = useSession();
 
   const [proyectos, setProyectos] = useState([]);
+  const [fetchInfo, setFetchInfo] = useState(null)
 
   const obtenerProyectos = async () => {
     try {
@@ -42,8 +43,9 @@ const ProyectosProvider = ({ children }) => {
     obtenerProyectos()
   }
 
+
   return (
-    <ProyectosContext.Provider value={{ proyectos, addProject, editProject, projectChange }}>
+    <ProyectosContext.Provider value={{ proyectos, addProject, editProject, projectChange, setFetchInfo, fetchInfo }}>
       {children}
     </ProyectosContext.Provider>
   );

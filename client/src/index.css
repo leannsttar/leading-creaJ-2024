@@ -2,3 +2,7 @@
 @tailwind components;
 @tailwind utilities;
   
+.custom-placeholder::placeholder {
+    color: #c0c0c0;
+    font-weight: 200; /* o cualquier otro color que desees */
+  }

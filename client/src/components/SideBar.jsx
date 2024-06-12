@@ -110,7 +110,7 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
 };
 
 export const SideBar = () => {
-  const { proyectos, addProject, projectChange } = useContext(ProyectosContext);
+  const { proyectos, addProject, projectChange, setFetchInfo } = useContext(ProyectosContext);
 
   const { logout, usuario, userToken, updateUserInfo } = useSession();
 
@@ -213,6 +213,11 @@ export const SideBar = () => {
 
       addProject(response.data);
 
+      messageApi.open({
+        type: "success",
+        content: "Se ha creado el proyecto correctamente",
+      });
+
       console.log("Respuesta del backend:", response.data);
       setModal2Open(false);
       setCreateProjectName("");
@@ -221,6 +226,10 @@ export const SideBar = () => {
       // obtenerProyectos();
     } catch (error) {
       console.error("Error al enviar los datos", error);
+      messageApi.open({
+        type: "error",
+        content: "Hubo un error al crear el proyecto",
+      });
     }
   };
 
@@ -265,6 +274,7 @@ export const SideBar = () => {
       });
 
       projectChange()
+      setFetchInfo(true)
 
       // setFileList([
       //   {
@@ -283,6 +293,10 @@ export const SideBar = () => {
       });
     } catch (error) {
       console.error("Error al enviar los datos", error);
+      messageApi.open({
+        type: "error",
+        content: "Hubo un error al actualizar los datos",
+      });
     }
   };
 

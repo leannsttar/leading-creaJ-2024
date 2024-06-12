@@ -23,6 +23,7 @@ model Users {
   tasks             Tasks[]
   teams             TeamProject[]
   timeline          Timeline[]
+  assignedTasks     TasksAssignees[]
 }
 
 model Projects {
@@ -36,6 +37,7 @@ model Projects {
   messages    Messages[]
   tasks       Tasks[]
   team        TeamProject[]
+  tags        Tags[]
 }
 
 model TeamProject {
@@ -48,7 +50,7 @@ model TeamProject {
 }
 
 model Tasks {
-  id            Int             @id @default(autoincrement())
+  id            Int              @id @default(autoincrement())
   name          String
   status        String
   description   String
@@ -60,10 +62,11 @@ model Tasks {
   links         Links[]
   notifications Notifications[]
   subTasks      SubTasks[]
-  labels        TaskLabels[]
-  creator       Users           @relation(fields: [authorId], references: [id])
-  project       Projects        @relation(fields: [projectId], references: [id])
+  tags          TaskTags[]
+  creator       Users            @relation(fields: [authorId], references: [id])
+  project       Projects         @relation(fields: [projectId], references: [id])
   timeline      Timeline[]
+  assignees     TasksAssignees[]
 }
 
 model SubTasks {
@@ -71,6 +74,14 @@ model SubTasks {
   name   String
   taskId Int
   task   Tasks  @relation(fields: [taskId], references: [id])
+}
+
+model TasksAssignees {
+  id     Int   @id @default(autoincrement())
+  taskId Int
+  userId Int
+  task   Tasks @relation(fields: [taskId], references: [id])
+  user   Users @relation(fields: [userId], references: [id])
 }
 
 model Comments {
@@ -104,18 +115,20 @@ model Links {
   task     Tasks  @relation(fields: [taskId], references: [id])
 }
 
-model Labels {
-  id         Int          @id @default(autoincrement())
-  name       String
-  taskLabels TaskLabels[]
+model Tags {
+  id        Int        @id @default(autoincrement())
+  name      String
+  projectId Int
+  project   Projects   @relation(fields: [projectId], references: [id])
+  taskTags  TaskTags[]
 }
 
-model TaskLabels {
-  id      Int    @id @default(autoincrement())
-  labelId Int
-  taskId  Int
-  label   Labels @relation(fields: [labelId], references: [id])
-  task    Tasks  @relation(fields: [taskId], references: [id])
+model TaskTags {
+  id     Int   @id @default(autoincrement())
+  tagId  Int
+  taskId Int
+  tag    Tags  @relation(fields: [tagId], references: [id])
+  task   Tasks @relation(fields: [taskId], references: [id])
 }
 
 model Notifications {

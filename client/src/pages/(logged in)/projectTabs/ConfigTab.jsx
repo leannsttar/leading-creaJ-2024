@@ -14,14 +14,6 @@ import { IoSearchOutline } from "react-icons/io5";
 
 import {
   Table,
-  Button,
-  Dropdown,
-  Space,
-  Modal,
-  Checkbox,
-  Form,
-  Input,
-  Upload,
   message,
 } from "antd";
 
@@ -82,7 +74,7 @@ const TableFileRecord = ({ userName, userPicture, email, role }) => {
 };
 
 export const ConfigTab = () => {
-  const { proyectos, editProject } = useContext(ProyectosContext);
+  const { proyectos, editProject, fetchInfo, setFetchInfo } = useContext(ProyectosContext);
 
   const { logout, usuario, userToken, updateUserInfo } = useSession();
 
@@ -159,6 +151,10 @@ export const ConfigTab = () => {
     getProject()
   }, [params.id]);
 
+  if (fetchInfo) {
+    getProject()
+    // setFetchInfo(false)
+  }
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -192,7 +188,7 @@ export const ConfigTab = () => {
       }
     );
 
-    editProject(response.data)
+    
     getProject()
 
     messageApi.open({
@@ -206,11 +202,16 @@ export const ConfigTab = () => {
       imagen: response.data.imagen, // Agregamos la imagen al objeto updatedProject
     };
 
-    setProyectos(proyectos.map((p) => (p.id === project.id ? updatedProject : p)));
+    editProject(updatedProject)
+    // setProyectos(proyectos.map((p) => (p.id === project.id ? updatedProject : p)));
 
 
     console.log("Respuesta del backend:", response.data);
   } catch (error) {
+    messageApi.open({
+      type: "error",
+      content: "Hubo un error al actualizar los datos",
+    });
     console.error("Error al enviar los datos", error);
   }
 };

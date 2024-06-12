@@ -112,7 +112,7 @@ export const getAllProjects = async (req, res) => {
           },
           include: {
             user: {
-              select: { image: true },
+              select: { image: true, name: true, id: true },
             }
           },
         });
@@ -143,7 +143,7 @@ export const getProject = async (req, res) => {
         team: {
           include: {
             user: {
-              select: { id: false, name: false, email: false, image: true } 
+              select: { id: false, name: true, email: false, image: true } 
             },
           },
         },
@@ -236,6 +236,33 @@ export const getProjectConfig = async (req, res) => {
   }
 };
 
+export const getProjectBoard = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const project = await prisma.projects.findFirst({
+      where: {
+        id: +id,
+      },
+      include: {
+        team: {
+          include: {
+            user: true
+          },
+        },
+        tags: true,
+        tasks: true
+      },
+    });
+
+
+    res.status(200).json(project);
+  } catch (error) {
+    console.error("Error al obtener el proyecto:", error);
+    res.status(500).json({ error: "Error al obtener el proyecto" });
+  }
+};
+
 export const updateProject = async (req, res) => {
   const { nombre, descripcion, id } = req.body;
   const imagePath = req.file?.path; // si req.file no existe, imagePath será undefined
@@ -258,3 +285,21 @@ export const updateProject = async (req, res) => {
     res.status(500).json({ error: "Error al actualizar el proyecto" });
   }
 };
+
+export const createTag = async (req, res) => {
+  const { projectoId, tag } = req.body;
+
+  try {
+    const newTag = await prisma.tags.create({
+      data: {
+        name: tag,
+        projectId: +projectoId
+      }
+    })
+
+    res.status(200).json(newTag);
+  } catch (error) {
+    console.error("Error al crear la tag:", error);
+    res.status(500).json({ error: "Error al crear la tag" });
+  }
+}
