@@ -117,7 +117,8 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
   const [subtasks, setSubtasks] = useState([]);
   const [treeDataMembers, setTreeDataMembers] = useState([]);
 
-  const [value, setValue] = useState([]);
+  const [valueMembers, setValueMembers] = useState([]);
+  const [valueTags, setValueTags] = useState([]);
   const [newTag, setNewTag] = useState("");
   const [treeDataTags, setTreeDataTags] = useState([
 
@@ -248,8 +249,13 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
     setOpen(false);
   };
 
-  const onChange = (newValue) => {
-    setValue(newValue);
+  const onChangeMembers = (newValue) => {
+    setValueMembers(newValue);
+  };
+
+  
+  const onChangeTags = (newValue) => {
+    setValueTags(newValue);
   };
 
   const handleAddSubtask = () => {
@@ -345,7 +351,7 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
                   style={{
                     width: "100%",
                   }}
-                  value={value}
+                  value={valueMembers}
                   dropdownStyle={{
                     maxHeight: 400,
                     overflow: "auto",
@@ -354,7 +360,7 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
                   allowClear
                   multiple
                   treeDefaultExpandAll
-                  onChange={onChange}
+                  onChange={onChangeMembers}
                   treeData={treeDataMembers}
                 />
               </Form.Item>
@@ -375,7 +381,7 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
                   style={{
                     width: "100%",
                   }}
-                  value={value}
+                  value={valueTags}
                   dropdownStyle={{
                     maxHeight: 400,
                     overflow: "auto",
@@ -384,7 +390,7 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
                   allowClear
                   multiple
                   treeDefaultExpandAll
-                  onChange={onChange}
+                  onChange={onChangeTags}
                   treeData={treeDataTags}
                 />
                 <div className="mt-3 flex gap-1">

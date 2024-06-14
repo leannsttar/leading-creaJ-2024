@@ -16,7 +16,7 @@ import plusIcon from "../assets/plusIcon.svg";
 import usersProjectIcon from "../assets/usersProjectIcon.svg";
 import editIcon from "../assets/editIcon.svg";
 
-import { Modal, Form, Input, message } from "antd";
+import { Modal, Form, Input, message, Image } from "antd";
 
 import { MobileSideBar, SideBar } from "./SideBar.jsx";
 import { HeaderMobileWorkspace } from "./HeaderMobileWorkspace.jsx";
@@ -165,7 +165,6 @@ const LayoutTasks = () => {
 };
 
 const LayoutProject = () => {
-
   const { proyectos, projectChange } = useContext(ProyectosContext);
 
   const { logout, usuario, userToken } = useSession();
@@ -177,7 +176,9 @@ const LayoutProject = () => {
 
   useEffect(() => {
     if (proyectos.length > 0) {
-      const projectFound = proyectos.find((proyecto) => proyecto.id == params.id);
+      const projectFound = proyectos.find(
+        (proyecto) => proyecto.id == params.id
+      );
       if (projectFound) {
         setProject(projectFound);
       } else {
@@ -245,7 +246,7 @@ const LayoutProject = () => {
           },
         }
       );
-      projectChange()
+      projectChange();
       setModal1Open(false);
       console.log("Respuesta del backend:", response.data);
     } catch (error) {
@@ -265,9 +266,16 @@ const LayoutProject = () => {
         <div className="h-[6rem] px-5 w-full flex items-center justify-between mt-[5rem] lg:h-[10rem] lg:px-10 lg:mt-0 ">
           <div className="flex flex-col h-full justify-between">
             <div className="flex flex-col gap-1 justify-center w-full lg:mt-[1rem]">
-              <div className="flex gap-5 items-center">
+              <div className="flex gap-2 items-center">
+                
+                <Image
+                  width={35}
+                  src={`http://localhost:5000/${project.imagen}`}
+                  className="rounded-md"
+                  
+                />
                 <p className="text-[1.8rem] font-semibold">{project.name}</p>
-                <img src={editIcon} alt="" className="w-6 h-6" />
+                <img src={editIcon} alt="" className="w-6 h-6 ml-3" />
               </div>
               <div className="hidden lg:flex items-center gap-3 mt-1">
                 <img src={usersProjectIcon} alt="" />
@@ -443,7 +451,6 @@ const LayoutMessages = () => {
 };
 
 export const LayoutWorkspace = () => {
-  
   const location = useLocation();
   const { pathname } = location;
 
