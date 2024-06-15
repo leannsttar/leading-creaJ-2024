@@ -69,7 +69,7 @@ export const addTeamMember = async (req, res) => {
 
 //TODA ESTA PARTE ES EL CONTROLADOR DE LA MEETING
 export const createMeeting = async (req, res) => {
-  const { fecha, enlace, descripcion, proyectoId, usuarioId } = req.body;
+  const { fecha, enlace, proyectoId, usuarioId } = req.body;
   console.log(req.body);
 
   try {
