@@ -9,6 +9,8 @@ import "../../../index.css";
 
 import { useParams } from "react-router-dom";
 
+import { format } from "date-fns";
+
 import { clienteAxios } from "@/config/clienteAxios";
 
 import { FaPlus } from "react-icons/fa6";
@@ -110,8 +112,9 @@ const props = {
 };
 
 const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
-  
-  const { userToken } = useSession();
+  const { usuario, userToken } = useSession();
+
+  const params = useParams();
 
   const [open, setOpen] = useState(false);
   const [subtasks, setSubtasks] = useState([]);
@@ -120,34 +123,19 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
   const [valueMembers, setValueMembers] = useState([]);
   const [valueTags, setValueTags] = useState([]);
   const [newTag, setNewTag] = useState("");
-  const [treeDataTags, setTreeDataTags] = useState([
+  const [treeDataTags, setTreeDataTags] = useState([]);
 
-  
-    // {
-    //   value: "research",
-    //   title: "Research",
-    // },
-    // {
-    //   value: "ux",
-    //   title: "UX",
-    // },
-    // {
-    //   value: "ui",
-    //   title: "UI",
-    // },
-    // {
-    //   value: "design system",
-    //   title: "Design System",
-    // },
-  ]);
+  const [titleTask, setTitleTask] = useState("");
+  const [dateTask, setDateTask] = useState("");
+  const [descriptionTask, setDescriptionTask] = useState("");
 
   useEffect(() => {
     if (project.tags) {
       setTreeDataTags(
-        project.tags.map((tag) => ({ value: tag.name, title: tag.name }))
+        project.tags.map((tag) => ({ value: tag.id, title: tag.name }))
       );
     }
-  }, [project]); 
+  }, [project]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -174,14 +162,6 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
       });
 
       if (!tagExists) {
-        const newTagData = {
-          title: newTag,
-          value: newTag,
-          key: newTag,
-        };
-        setTreeDataTags([...treeDataTags, newTagData]);
-        setValue([...value, newTag]);
-
         const formData = new FormData();
 
         formData.append("projectoId", project.id);
@@ -190,7 +170,7 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
         setNewTag("");
 
         const response = await clienteAxios.postForm(
-          `/api/projects/createTag`,
+          `/api/tasks/createTag`,
           formData,
           {
             headers: {
@@ -198,6 +178,17 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
             },
           }
         );
+
+        console.log(response);
+
+        const newTagData = {
+          title: newTag,
+          value: response.data.id,
+          key: response.data.id,
+        };
+
+        setTreeDataTags([...treeDataTags, newTagData]);
+        setValueTags([...valueTags, newTagData.value]);
 
         messageApi.open({
           type: "success",
@@ -253,13 +244,12 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
     setValueMembers(newValue);
   };
 
-  
   const onChangeTags = (newValue) => {
     setValueTags(newValue);
   };
 
   const handleAddSubtask = () => {
-    setSubtasks([...subtasks, { name: "", completed: false }]);
+    setSubtasks([...subtasks, ""]);
   };
 
   const handleRemoveSubtask = (index) => {
@@ -270,11 +260,116 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
 
   const handleSubtaskChange = (event, index) => {
     const updatedSubtasks = [...subtasks];
-    updatedSubtasks[index].name = event.target.value;
-    setSubtasks(updatedSubtasks);
+    const newSubtask = event.target.value.trim();
+    if (newSubtask !== "") {
+      updatedSubtasks[index] = newSubtask;
+      setSubtasks(updatedSubtasks);
+    }
   };
 
-  
+  const onChangeDate = (date, dateString) => {
+    // console.log(date, dateString);
+    setDateTask(dateString);
+  };
+
+  const createTask = async () => {
+    try {
+      if (!titleTask.trim()) {
+        messageApi.open({
+          type: "error",
+          content: "El título de la tarea es obligatorio",
+        });
+        return;
+      }
+
+      if (!dateTask) {
+        messageApi.open({
+          type: "error",
+          content: "La fecha de entrega es obligatoria",
+        });
+        return;
+      }
+
+      if (valueMembers.length === 0) {
+        messageApi.open({
+          type: "error",
+          content: "Debes seleccionar al menos un miembro",
+        });
+        return;
+      }
+
+      if (valueTags.length === 0) {
+        messageApi.open({
+          type: "error",
+          content: "Debes seleccionar al menos una etiqueta",
+        });
+        return;
+      }
+
+      if (!descriptionTask.trim()) {
+        messageApi.open({
+          type: "error",
+          content: "La descripción de la tarea es obligatoria",
+        });
+        return;
+      }
+
+      console.log("title", titleTask);
+      console.log("date", dateTask);
+      console.log("members", valueMembers);
+      console.log("tags", valueTags);
+      console.log("description", descriptionTask);
+      console.log("subtasks", subtasks);
+
+      const formData = new FormData();
+
+      const filteredSubtasks = subtasks.filter(
+        (subtask) => subtask.trim() !== ""
+      );
+      if (filteredSubtasks.length > 0) {
+        formData.append("subtasks", JSON.stringify(filteredSubtasks));
+      }
+
+      formData.append("projectId", params.id);
+      formData.append("authorId", usuario.id);
+      formData.append("title", titleTask);
+      formData.append("date", dateTask);
+      formData.append("members", JSON.stringify(valueMembers));
+      formData.append("tags", JSON.stringify(valueTags));
+      formData.append("description", descriptionTask);
+
+      const response = await clienteAxios.postForm(
+        "/api/tasks/createTask",
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
+
+      console.log(response);
+
+      // const formDataTasksAssignees = new FormData();
+
+      // valueMembers.map((member) => {
+      //   formDataTasksAssignees.append("assigneeId", member.id);
+      // })
+
+      messageApi.open({
+        type: "success",
+        content: "Tarea creada correctamente",
+      });
+
+      console.log("Respuesta del backend:", response.data);
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Hubo un error al crear la tarea",
+      });
+      console.error("Error al enviar los datos", error);
+    }
+  };
 
   return (
     <>
@@ -292,7 +387,7 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
         extra={
           <Space>
             <Button onClick={onClose}>Cancelar</Button>
-            <Button onClick={onClose} className="bg-black text-white">
+            <Button onClick={createTask} className="bg-black text-white">
               Crear tarea
             </Button>
           </Space>
@@ -311,7 +406,10 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
                   },
                 ]}
               >
-                <Input placeholder="Ingresa el título" />
+                <Input
+                  placeholder="Ingresa el título"
+                  onChange={(e) => setTitleTask(e.target.value)}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -330,6 +428,7 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
                     width: "100%",
                   }}
                   getPopupContainer={(trigger) => trigger.parentElement}
+                  onChange={onChangeDate}
                 />
               </Form.Item>
             </Col>
@@ -423,6 +522,7 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
                 <Input.TextArea
                   rows={4}
                   placeholder="Escribe una descripción de la tarea"
+                  onChange={(e) => setDescriptionTask(e.target.value)}
                 />
               </Form.Item>
             </Col>
@@ -481,9 +581,14 @@ const ColTasks = ({ title, numCards, children, index, project }) => {
   return (
     <div key={index} className="space-y-3 lg:w-[30%] lg:space-y-8">
       {title === "Próximo" ? (
-        <HeaderTaskCards title={title} numCards={numCards} project={project}/>
+        <HeaderTaskCards title={title} numCards={numCards} project={project} />
       ) : (
-        <HeaderTaskCards title={title} numCards={numCards} hidden project={project}/>
+        <HeaderTaskCards
+          title={title}
+          numCards={numCards}
+          hidden
+          project={project}
+        />
       )}
 
       <div className="flex gap-3 overflow-auto pb-2 lg:flex-col lg:gap-6">
@@ -533,9 +638,6 @@ const CommentComponent = ({ userName, userPicture, message, timeAgo }) => {
 };
 
 export const BoardTab = () => {
-
-  
-
   const params = useParams();
 
   const timerRef = useRef();
@@ -546,223 +648,43 @@ export const BoardTab = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [section, setSection] = useState("progreso");
 
-  const [data, setData] = useState([
-    {
-      id: 1,
-      title: "Create component button web",
-      tags: ["Design System", "UI"],
-      description:
-        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [
-        "Medium button",
-        "Small button",
-        "Hover button",
-        "Ghost button",
-      ],
-      date: "Nov 16, 2022",
-      files: 3,
-      members: [
-        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-      ],
-      comments: 0,
-      status: "inProgress",
-    },
-    {
-      id: 2,
-      title: "Payment method via e-commerce",
-      tags: ["Research", "UX"],
-      description:
-        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [
-        "Medium button",
-        "Small button",
-        "Hover button",
-        "Ghost button",
-      ],
-      date: "Nov 18",
-      files: 3,
-      members: [
-        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-      ],
-      comments: 0,
-      status: "done",
-    },
-    {
-      id: 3,
-      title: "Create home ux writing content",
-      tags: ["UX Writer", "UX"],
-      description:
-        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [
-        "Medium button",
-        "Small button",
-        "Hover button",
-        "Ghost button",
-      ],
-      date: "Nov 17",
-      files: 3,
-      members: [
-        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-      ],
-      comments: 0,
-      status: "upcoming",
-    },
-  ]);
-
-  const [data2, setData2] = useState([
-    {
-      id: 4,
-      title: "Create component button web",
-      tags: ["Design System", "UI"],
-      description:
-        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [
-        "Medium button",
-        "Small button",
-        "Hover button",
-        "Ghost button",
-      ],
-      date: "Nov 16, 2022",
-      files: 3,
-      members: [
-        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-      ],
-      comments: 0,
-      status: "inProgress",
-    },
-    {
-      id: 5,
-      title: "Payment method via e-commerce",
-      tags: ["Research", "UX"],
-      description:
-        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [
-        "Medium button",
-        "Small button",
-        "Hover button",
-        "Ghost button",
-      ],
-      date: "Nov 18",
-      files: 3,
-      members: [
-        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-      ],
-      comments: 0,
-      status: "done",
-    },
-    {
-      id: 6,
-      title: "Create home ux writing content",
-      tags: ["UX Writer", "UX"],
-      description:
-        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [
-        "Medium button",
-        "Small button",
-        "Hover button",
-        "Ghost button",
-      ],
-      date: "Nov 17",
-      files: 3,
-      members: [
-        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-      ],
-      comments: 0,
-      status: "upcoming",
-    },
-  ]);
-
-  const [data3, setData3] = useState([
-    {
-      id: 7,
-      title: "Create component button web",
-      tags: ["Design System", "UI"],
-      description:
-        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [
-        "Medium button",
-        "Small button",
-        "Hover button",
-        "Ghost button",
-      ],
-      date: "Nov 16, 2022",
-      files: 3,
-      members: [
-        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-      ],
-      comments: 0,
-      status: "inProgress",
-    },
-    {
-      id: 8,
-      title: "Payment method via e-commerce",
-      tags: ["Research", "UX"],
-      description:
-        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [
-        "Medium button",
-        "Small button",
-        "Hover button",
-        "Ghost button",
-      ],
-      date: "Nov 18",
-      files: 3,
-      members: [
-        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-      ],
-      comments: 0,
-      status: "done",
-    },
-    {
-      id: 9,
-      title: "Create home ux writing content",
-      tags: ["UX Writer", "UX"],
-      description:
-        "On the main page there are several banners displayed. The latest main products are displayed at the top. The need for a call to action must also be considered when it is on the top web banner. Don't forget to enter the categories too",
-      subTasks: [
-        "Medium button",
-        "Small button",
-        "Hover button",
-        "Ghost button",
-      ],
-      date: "Nov 17",
-      files: 3,
-      members: [
-        "https://i.pinimg.com/564x/5e/d9/15/5ed91505500b45218ba337b64d289ce2.jpg",
-        "https://i.pinimg.com/564x/ef/eb/d5/efebd5b0417315939af60c242c9c32cc.jpg",
-        "https://i.pinimg.com/564x/b5/e8/e9/b5e8e9c436fb3d3b08c9a333c8d5c48e.jpg",
-      ],
-      comments: 0,
-      status: "upcoming",
-    },
-  ]);
-  
   const [project, setProject] = useState("loading");
+
+  const [upcomingTasks, setUpcomingTasks] = useState([]);
 
   const getProject = async () => {
     try {
       const response = await clienteAxios.get(
         `/api/projects/getProjectBoard/${params.id}`
       );
-      // console.log(response)
+      console.log(response.data);
       setProject(response.data);
-      
+      setUpcomingTasks(
+        response.data.tasks.map((task) => {
+          return {
+            id: task.id,
+            title: task.name,
+            tags: task.tags.map(
+              (taskTag) =>
+                response.data.tags.find(
+                  (projectTag) => projectTag.id === taskTag.tagId
+                ).name
+            ),
+            description: task.description,
+            subTasks: task.subTasks.map((subtask) => subtask.name),
+            date: format(new Date(task.due_date), "PP"),
+            members: task.assignees.map(
+              (assignee) =>
+                response.data.team.find(
+                  (projectMember) => projectMember.user.id === assignee.userId
+                ).user.image
+            ),
+            files: task.files.length,
+            comments: task.comments,
+            status: task.status,
+          };
+        })
+      );
     } catch (error) {
       console.log("Error al obtener el proyecto:", error);
     }
@@ -809,9 +731,9 @@ export const BoardTab = () => {
       <Drawer
         title={
           selectedTask
-            ? selectedTask.status === "upcoming"
+            ? selectedTask.status == "proximo"
               ? "Próximo"
-              : selectedTask.status === "inProgress"
+              : selectedTask.status == "en progreso"
               ? "En progreso"
               : "Terminadas"
             : ""
@@ -861,9 +783,9 @@ export const BoardTab = () => {
                     Estado
                   </td>
                   <td className="font-medium py-2">
-                    {selectedTask.status === "upcoming"
+                    {selectedTask.status === "proximo"
                       ? "Próximo"
-                      : selectedTask.status === "inProgress"
+                      : selectedTask.status === "en progreso"
                       ? "En progreso"
                       : "Terminadas"}
                   </td>
@@ -876,7 +798,7 @@ export const BoardTab = () => {
                         return (
                           <img
                             key={index}
-                            src={img}
+                            src={`http://localhost:5000/${img}`}
                             className={` ${
                               index === 1
                                 ? " right-2"
@@ -969,7 +891,7 @@ export const BoardTab = () => {
                 >
                   <p className="">Comentarios</p>
                   <div className="w-6 h-6 grid place-content-center text-white text-[.75rem] bg-blue-500 rounded-full">
-                    5
+                    {selectedTask.comments.length}
                   </div>
                 </div>
               </div>
@@ -1056,7 +978,7 @@ export const BoardTab = () => {
       </Drawer>
       <div className="mx-5 my-9 lg:mx-11 lg:my-16 space-y-10 lg:flex lg:space-y-0 lg:justify-around">
         <ColTasks title={"Próximo"} numCards={12} index={1} project={project}>
-          {data.map((task, index) => (
+          {upcomingTasks.map((task, index) => (
             <TaskCardProject
               index={task.id}
               taskData={task}
@@ -1065,8 +987,13 @@ export const BoardTab = () => {
             />
           ))}
         </ColTasks>
-        <ColTasks title={"En proceso"} numCards={12} index={2} project={project}>
-          {data2.map((task, index) => (
+        <ColTasks
+          title={"En proceso"}
+          numCards={12}
+          index={2}
+          project={project}
+        >
+          {upcomingTasks.map((task, index) => (
             <TaskCardProject
               index={task.id}
               taskData={task}
@@ -1075,8 +1002,13 @@ export const BoardTab = () => {
             />
           ))}
         </ColTasks>
-        <ColTasks title={"Terminadas"} numCards={12} index={3} project={project}>
-          {data3.map((task, index) => (
+        <ColTasks
+          title={"Terminadas"}
+          numCards={12}
+          index={3}
+          project={project}
+        >
+          {upcomingTasks.map((task, index) => (
             <TaskCardProject
               index={task.id}
               taskData={task}

@@ -4,6 +4,7 @@ import multer from 'multer';
 import userRoutes from "./src/routes/register-route.js";
 import loginRoutes from "./src/routes/login-route.js";  
 import projectRoutes from "./src/routes/project-route.js";
+import tasksRoutes from "./src/routes/tasks-route.js"
 import { auth } from "./middleware/auth.js";
 import { getAllProjects } from "./src/controllers/project-controller.js";
 import path from "path"
@@ -34,6 +35,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", loginRoutes);  
 
 app.use("/api/projects", projectRoutes);
+app.use("/api/tasks", tasksRoutes)
 
 
 
