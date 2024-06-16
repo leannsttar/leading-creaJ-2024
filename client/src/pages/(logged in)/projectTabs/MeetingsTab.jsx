@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import { useParams } from "react-router-dom";
 import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
 
@@ -12,6 +12,8 @@ import dayjs from "dayjs";
 const format = "HH:mm";
 
 const { TextArea } = Input;
+
+
 
 const MeetingsSection = ({ icon, title, numMeetings }) => {
   return (
@@ -37,9 +39,9 @@ export const MeetingsList = ({ meetings }) => {
         <p className="text-[1.5rem] font-semibold">Reuniones próximas</p>
         <div className="bg-[#5B5B5B] w-[6rem] h-[5px] rounded-full" />
       </div>
-      {meetings.map((meeting) => {
+     <div className="mt-5 lg:mt-8 space-y-6 md:grid md:grid-cols-2 md:space-y-0 md:gap-4 lg:grid-cols-3 xl:gap-[3rem] 3xl:grid-cols-4">
+     {meetings.map((meeting) => {
         return (
-          <div className="mt-5 lg:mt-8 space-y-6 md:grid md:grid-cols-2 md:space-y-0 md:gap-4 lg:grid-cols-3 xl:gap-[3rem] 3xl:grid-cols-4">
             <MeetingCard
               userName={meeting.author.name}
               userPicture={
@@ -55,9 +57,9 @@ export const MeetingsList = ({ meetings }) => {
                 "https://i.pinimg.com/736x/7c/d1/ab/7cd1abc221a4ad00720a989ac89a6218.jpg",
               ]}
             />
-          </div>
         );
       })}
+     </div>
     </>
   );
 };
@@ -121,6 +123,7 @@ const MeetingCard = ({
 };
 
 export const MeetingsTab = () => {
+  
   const { logout, usuario, userToken } = useSession();
 
   const [meetings, setMeetings] = useState([]);
@@ -144,7 +147,7 @@ export const MeetingsTab = () => {
 
   const [meetingDate, setMeetingDate] = useState();
   const [meetingLink, setMeetingLink] = useState();
-
+  const params = useParams()
   const [modal1Open, setModal1Open] = useState(false);
 
   const onFinish = async () => {
@@ -153,7 +156,7 @@ export const MeetingsTab = () => {
 
       formData.append("fecha", meetingDate);
       formData.append("enlace", meetingLink);
-      formData.append("proyectoId", 13);
+      formData.append("proyectoId", params.id);
       formData.append("usuarioId", usuario.id);
 
       const response = await clienteAxios.postForm(
