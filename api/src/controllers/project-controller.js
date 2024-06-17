@@ -1,4 +1,6 @@
 import { prisma } from "../../config/prisma.js";
+import { processImage } from "../../uploadImage.js";
+import cloudinary from "../../cloudinaryConfig.js";
 
 export const createProject = async (req, res) => {
   const { nombre, descripcion } = req.body;
@@ -9,13 +11,15 @@ export const createProject = async (req, res) => {
 
   const imagePath = req.file.path;
 
+  const imageUrl = await processImage(imagePath);
+
   try {
     const result = await prisma.$transaction(async (prisma) => {
       const newProject = await prisma.projects.create({
         data: {
           name: nombre,
           description: descripcion,
-          imagen: imagePath,
+          imagen: imageUrl,
         },
       });
 
@@ -295,19 +299,53 @@ export const getProjectBoard = async (req, res) => {
 
 export const updateProject = async (req, res) => {
   const { nombre, descripcion, id } = req.body;
-  const imagePath = req.file?.path; // si req.file no existe, imagePath será undefined
+  const imagePath = req.file?.path;
+
+  let dataToUpdate = {};
+  let oldImagePublicId;
+
+  if (nombre !== undefined) {
+    dataToUpdate.name = nombre;
+  }
+
+  if (descripcion !== undefined) {
+    dataToUpdate.description = descripcion;
+  }
+
+  if (imagePath) {
+    const imageUrl = await processImage(imagePath);
+    dataToUpdate.imagen = imageUrl;
+
+    const currentProject = await prisma.projects.findUnique({
+      where: { id: +id },
+      select: { imagen: true },
+    });
+
+    if (currentProject?.imagen) {
+      const urlParts = currentProject.imagen.split("/");
+      const publicIdWithExtension = urlParts[urlParts.length - 1];
+      const publicId = publicIdWithExtension.split(".")[0];
+      oldImagePublicId = publicId;
+    }
+  }
 
   try {
     const updatedProject = await prisma.projects.update({
       where: {
         id: +id,
       },
-      data: {
-        name: nombre ?? undefined, // si nombre no se envía, se asignará undefined
-        description: descripcion ?? undefined, // si descripcion no se envía, se asignará undefined
-        imagen: imagePath ?? undefined, // si imagePath no se envía, se asignará undefined
-      },
+      data: dataToUpdate,
     });
+
+    if (oldImagePublicId) {
+      await cloudinary.uploader.destroy(oldImagePublicId, (error, result) => {
+        if (error) {
+          console.error("Error deleting old image:", error);
+        } else {
+          console.log("Old image deleted:", result);
+        }
+      });
+    }
 
     res.status(200).json(updatedProject);
   } catch (error) {

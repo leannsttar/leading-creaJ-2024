@@ -182,9 +182,10 @@ const LayoutProject = () => {
       if (projectFound) {
         setProject(projectFound);
       } else {
-        setProject(null); // o algún otro valor que indique que no se encontró el proyecto
+        setProject(null);
       }
     }
+    console.log('log')
   }, [params.id, proyectos]);
 
   // useEffect(() => {
@@ -270,8 +271,9 @@ const LayoutProject = () => {
                 
                 <Image
                   width={35}
-                  src={`http://localhost:5000/${project.imagen}`}
-                  className="rounded-md"
+                  height={35}
+                  src={project.imagen}
+                  className="rounded-md object-cover"
                   
                 />
                 <p className="text-[1.8rem] font-semibold">{project.name}</p>
@@ -286,7 +288,7 @@ const LayoutProject = () => {
                       {project.users.slice(0, 3).map((user, index) => (
                         <AvatarMember
                           key={index}
-                          img={`http://localhost:5000/${user.image}`}
+                          img={user.image}
                         />
                       ))}
                       {project.users.length > 3 && (

@@ -15,7 +15,7 @@ export const signup = async (req, res) => {
         name,
         email,
         password: hashedPassword,
-        image: 'uploads/avatarDefault.jpg'
+        image: 'https://res.cloudinary.com/dv79d6y4e/image/upload/f_auto,q_auto/avatarDefault'
       },
     });
     res.status(201).json({ message: 'Usuario creado' });

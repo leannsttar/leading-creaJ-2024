@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext, memo  } from "react";
 
 import { ProyectosContext } from "@/config/ProyectosContext";
 import { useSession } from "@/config/useSession";
@@ -111,7 +111,7 @@ const props = {
   ],
 };
 
-const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
+const HeaderTaskCards = memo(({ title, numCards, hidden, project }) => {
   const { usuario, userToken } = useSession();
 
   const params = useParams();
@@ -179,8 +179,6 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
           }
         );
 
-        console.log(response);
-
         const newTagData = {
           title: newTag,
           value: response.data.id,
@@ -217,7 +215,7 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
             title: (
               <div className="flex items-center gap-2">
                 <img
-                  src={`http://localhost:5000/${member.user.image}`}
+                  src={member.user.image}
                   className="w-4 h-4 rounded-full object-cover"
                 />
                 <p>{member.user.name}</p>
@@ -228,10 +226,6 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
       );
     }
   }, [project]);
-
-  // if (project != "loading") {
-  //   console.log(treeDataMembers);
-  // }
 
   const showDrawer = () => {
     setOpen(true);
@@ -268,7 +262,6 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
   };
 
   const onChangeDate = (date, dateString) => {
-    // console.log(date, dateString);
     setDateTask(dateString);
   };
 
@@ -314,13 +307,6 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
         return;
       }
 
-      console.log("title", titleTask);
-      console.log("date", dateTask);
-      console.log("members", valueMembers);
-      console.log("tags", valueTags);
-      console.log("description", descriptionTask);
-      console.log("subtasks", subtasks);
-
       const formData = new FormData();
 
       const filteredSubtasks = subtasks.filter(
@@ -347,14 +333,6 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
           },
         }
       );
-
-      console.log(response);
-
-      // const formDataTasksAssignees = new FormData();
-
-      // valueMembers.map((member) => {
-      //   formDataTasksAssignees.append("assigneeId", member.id);
-      // })
 
       messageApi.open({
         type: "success",
@@ -575,7 +553,7 @@ const HeaderTaskCards = ({ title, numCards, hidden, project }) => {
       </div>
     </>
   );
-};
+})
 
 const ColTasks = ({ title, numCards, children, index, project }) => {
   return (
@@ -637,7 +615,7 @@ const CommentComponent = ({ userName, userPicture, message, timeAgo }) => {
   );
 };
 
-export const BoardTab = () => {
+export const BoardTab = React.memo(() => {
   const params = useParams();
 
   const timerRef = useRef();
@@ -657,7 +635,6 @@ export const BoardTab = () => {
       const response = await clienteAxios.get(
         `/api/projects/getProjectBoard/${params.id}`
       );
-      console.log(response.data);
       setProject(response.data);
       setUpcomingTasks(
         response.data.tasks.map((task) => {
@@ -692,6 +669,7 @@ export const BoardTab = () => {
 
   useEffect(() => {
     getProject();
+    console.log('pr')
   }, [params.id]);
 
   const clearTimer = () => {
@@ -718,11 +696,6 @@ export const BoardTab = () => {
   };
 
   useEffect(() => clearTimer, []);
-
-  // const handleSubmit = (values) => {
-  //   console.log("Received values:", values);
-
-  // };
 
   if (project == "loading" || project == undefined) return <Loader screen />;
 
@@ -798,7 +771,7 @@ export const BoardTab = () => {
                         return (
                           <img
                             key={index}
-                            src={`http://localhost:5000/${img}`}
+                            src={img}
                             className={` ${
                               index === 1
                                 ? " right-2"
@@ -1020,4 +993,4 @@ export const BoardTab = () => {
       </div>
     </>
   );
-};
+})

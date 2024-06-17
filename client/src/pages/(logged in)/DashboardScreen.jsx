@@ -105,7 +105,7 @@ export const DashboardScreen = () => {
           </div>
           <div className="rounded-full shadow-xl w-[13rem] h-[13rem]">
             <img
-              src={`http://localhost:5000/${usuario.image}`}
+              src={usuario.image}
               alt=""
               className="rounded-full w-full h-full object-cover p-3"
             />
@@ -176,6 +176,7 @@ export const DashboardScreen = () => {
         <div className="mt-[4rem] lg:mt-[2.2rem] lg:w-[90%] lg:ml-12 lg:mr-12 xl:ml-14 xl:mr-0 lg:overflow-auto lg:h-screen lg:pb-[15rem] " style={{scrollbarColor: 'transparent transparent'}}>
           <div className="space-y-6">
             <TitleSection title={"Projectos recientes"} />
+            
             <div className="flex flex-col gap-3 mt-7 md:mt-0 lg:gap-5 lg:w-full lg:flex-row lg:flex-wrap ">
               <ProjectCard
                 title={"Web Designing"}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { Button, Drawer, Radio, Space } from "antd";
 
 import threeDots from "../../assets/threeDotsSmaller.svg";
@@ -14,7 +14,6 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
 
   useEffect(() => {
     if (taskData) {
-      console.log(taskData)
       setData(taskData);
       setLoading(false);
     }
@@ -68,7 +67,7 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
               return (
                 <img
                   key={index}
-                  src={`http://localhost:5000/${member}`}
+                  src={member}
                   className={` ${
                     index === 1 ? " right-2" : index === 2 ? "right-4" : ""
                   } relative rounded-full min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem]`}
