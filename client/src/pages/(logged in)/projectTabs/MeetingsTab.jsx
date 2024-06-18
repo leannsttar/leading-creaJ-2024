@@ -13,8 +13,6 @@ const format = "HH:mm";
 
 const { TextArea } = Input;
 
-
-
 const MeetingsSection = ({ icon, title, numMeetings }) => {
   return (
     <div className="flex items-center gap-7 ">
@@ -39,13 +37,13 @@ export const MeetingsList = ({ meetings }) => {
         <p className="text-[1.5rem] font-semibold">Reuniones próximas</p>
         <div className="bg-[#5B5B5B] w-[6rem] h-[5px] rounded-full" />
       </div>
-     <div className="mt-5 lg:mt-8 space-y-6 md:grid md:grid-cols-2 md:space-y-0 md:gap-4 lg:grid-cols-3 xl:gap-[3rem] 3xl:grid-cols-4">
-     {meetings.map((meeting) => {
-        return (
+      <div className="mt-5 lg:mt-8 space-y-6 md:grid md:grid-cols-2 md:space-y-0 md:gap-4 lg:grid-cols-3 xl:gap-[3rem] 3xl:grid-cols-4">
+        {meetings.map((meeting) => {
+          return (
             <MeetingCard
               userName={meeting.author.name}
               userPicture={
-                "https://i.pinimg.com/564x/ab/a6/bb/aba6bb42cb08e35ac0d71e6044566b0a.jpg"
+                meeting.author.image
               }
               time={meeting.event_time}
               going={11}
@@ -57,9 +55,9 @@ export const MeetingsList = ({ meetings }) => {
                 "https://i.pinimg.com/736x/7c/d1/ab/7cd1abc221a4ad00720a989ac89a6218.jpg",
               ]}
             />
-        );
-      })}
-     </div>
+          );
+        })}
+      </div>
     </>
   );
 };
@@ -72,6 +70,19 @@ const MeetingCard = ({
   pending,
   teamPictures,
 }) => {
+  const [modal2Open, setModal2Open] = useState(false);
+  const [form] = Form.useForm();
+
+  const onFinishConfirm = async (values) => {
+    try {
+      const response = await clienteAxios.post("/api/meetings/attendance", values);
+      console.log("Pasa esto:", response.data);
+      setModal2Open(false);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <div className="bg-[#f7f7f7] p-7 rounded-2xl space-y-10 ">
       <div className=" flex items-center gap-3">
@@ -88,7 +99,7 @@ const MeetingCard = ({
       <div className="space-y-8">
         <div className="flex flex-wrap justify-between">
           <p className="text-[#3694FF]">{going} confirmados</p>
-          <p className="text-[#E95050]">{pending} pendientes</p>
+          <button className="text-[#7866e0] underline text-lg">Ver enlace</button>
         </div>
         <div className="flex items-center">
           <div className="flex">
@@ -110,20 +121,35 @@ const MeetingCard = ({
               );
             })}
           </div>
-          <p className="whitespace-nowrap relative right-9 text-[#8A8A8A]">
+          {/* <p className="whitespace-nowrap relative right-9 text-[#8A8A8A]">
             + {going - 4} más
-          </p>
+          </p> */}
         </div>
-        <button className="bg-[#202020] w-full text-white py-2 rounded-lg">
-          Ver detalles
-        </button>
+        <button
+        className="bg-[#202020] w-full text-white py-2 rounded-lg"
+        onClick={() => setModal2Open(true)}
+      >
+        Confirmar asistencia
+      </button>
+      <Modal
+        title="Confirmar asistencia"
+        okButtonProps={{
+          style: { backgroundColor: "black", color: "white" },
+        }}
+        okText="Confirmar"
+        centered
+        open={modal2Open}
+        onOk={onFinishConfirm}
+        onCancel={() => setModal2Open(false)}
+      >
+        <p>¿Estás seguro de que deseas confirmar tu asistencia a esta reunión?</p>
+      </Modal>
       </div>
     </div>
   );
 };
 
 export const MeetingsTab = () => {
-  
   const { logout, usuario, userToken } = useSession();
 
   const [meetings, setMeetings] = useState([]);
@@ -131,7 +157,7 @@ export const MeetingsTab = () => {
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
-        const response = await clienteAxios.get("/api/projects/meetings", {
+        const response = await clienteAxios.get(`/api/projects/meetings/${params.id}`, {
           headers: {
             Authorization: "Bearer " + userToken,
           },
@@ -147,7 +173,7 @@ export const MeetingsTab = () => {
 
   const [meetingDate, setMeetingDate] = useState();
   const [meetingLink, setMeetingLink] = useState();
-  const params = useParams()
+  const params = useParams();
   const [modal1Open, setModal1Open] = useState(false);
 
   const onFinish = async () => {
@@ -180,45 +206,7 @@ export const MeetingsTab = () => {
     console.log("Fallo:", errorInfo);
   };
 
-  // const [formData, setFormData] = useState({
-  //   date: null,
-  //   time: null,
-  //   meetLink: "",
-  //   description: "",
-  // });
-
-  // const onDateChange = (date) => {
-  //   setFormData({
-  //     ...formData,
-  //     date,
-  //   });
-  // };
-
-  // const onTimeChange = (time) => {
-  //   setFormData({
-  //     ...formData,
-  //     time,
-  //   });
-  // };
-
-  // const onLinkChange = (event) => {
-  //   setFormData({
-  //     ...formData,
-  //     meetLink: event.target.value,
-  //   });
-  // };
-
-  // const onDescriptionChange = (event) => {
-  //   setFormData({
-  //     ...formData,
-  //     description: event.target.value,
-  //   });
-  // };
-
-  // const handleSubmit = () => {
-  //   // Submit the form data to your server or perform other actions
-  //   console.log("Submitting form data:", formData);
-  // };
+//algo había acá 
   return (
     <div className="m-5 lg:m-16">
       <div className="bg-[#f5f5f5] lg:w-fit p-8 rounded-2xl space-y-5  lg:flex lg:space-y-0 lg:gap-5">
@@ -332,7 +320,55 @@ export const MeetingsTab = () => {
           </Form>
         </div>
       </Modal>
+
       <MeetingsList meetings={meetings} />
     </div>
   );
 };
+
+
+
+
+
+
+
+
+  // const [formData, setFormData] = useState({
+  //   date: null,
+  //   time: null,
+  //   meetLink: "",
+  //   description: "",
+  // });
+
+  // const onDateChange = (date) => {
+  //   setFormData({
+  //     ...formData,
+  //     date,
+  //   });
+  // };
+
+  // const onTimeChange = (time) => {
+  //   setFormData({
+  //     ...formData,
+  //     time,
+  //   });
+  // };
+
+  // const onLinkChange = (event) => {
+  //   setFormData({
+  //     ...formData,
+  //     meetLink: event.target.value,
+  //   });
+  // };
+
+  // const onDescriptionChange = (event) => {
+  //   setFormData({
+  //     ...formData,
+  //     description: event.target.value,
+  //   });
+  // };
+
+  // const handleSubmit = () => {
+  //   // Submit the form data to your server or perform other actions
+  //   console.log("Submitting form data:", formData);
+  // };
