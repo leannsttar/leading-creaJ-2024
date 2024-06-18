@@ -119,7 +119,7 @@ export const SideBar = () => {
       uid: "-1",
       name: "image.png",
       status: "done",
-      url: `http://localhost:5000/${usuario.image}`,
+      url: usuario.image,
     },
   ]);
 
@@ -162,7 +162,7 @@ export const SideBar = () => {
         uid: "-1",
         name: "image.png",
         status: "done",
-        url: `http://localhost:5000/${usuario.image}`,
+        url: usuario.image,
       },
     ]);
   };
@@ -175,7 +175,7 @@ export const SideBar = () => {
         uid: "-1",
         name: "image.png",
         status: "done",
-        url: `http://localhost:5000/${usuario.image}`,
+        url: usuario.image,
       },
     ]);
   };
@@ -432,7 +432,7 @@ export const SideBar = () => {
                         <SideBarLink
                           key={proyecto.id}
                           name={proyecto.name}
-                          img={`http://localhost:5000/${proyecto.imagen}`}
+                          img={proyecto.imagen}
                           isProject
                           isShrinked={isShrinked}
                           href={`/dashboard/project/${proyecto.id}`}
@@ -515,7 +515,7 @@ export const SideBar = () => {
           <div className="flex items-center justify-between mb-1 2xl:mb-5">
             <div className="flex gap-2 items-center justify-between">
               <img
-                src={`http://localhost:5000/${usuario.image}`}
+                src={usuario.image}
                 alt=""
                 className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
               />

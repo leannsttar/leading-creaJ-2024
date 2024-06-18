@@ -1,4 +1,6 @@
 import { prisma } from "../../config/prisma.js";
+import { processImage } from "../../uploadImage.js";
+import cloudinary from "../../cloudinaryConfig.js";
 
 export const createProject = async (req, res) => {
   const { nombre, descripcion } = req.body;
@@ -9,24 +11,30 @@ export const createProject = async (req, res) => {
 
   const imagePath = req.file.path;
 
+  const imageUrl = await processImage(imagePath);
+
   try {
-    const newProject = await prisma.projects.create({
-      data: {
-        name: nombre,
-        description: descripcion,
-        imagen: imagePath,
-      },
+    const result = await prisma.$transaction(async (prisma) => {
+      const newProject = await prisma.projects.create({
+        data: {
+          name: nombre,
+          description: descripcion,
+          imagen: imageUrl,
+        },
+      });
+
+      const newMember = await prisma.teamProject.create({
+        data: {
+          userId: +usuarioId,
+          role: "leader",
+          projectId: newProject.id,
+        },
+      });
+
+      return { newProject, newMember };
     });
 
-    const newMember = await prisma.teamProject.create({
-      data: {
-        userId: +usuarioId,
-        role: "leader",
-        projectId: newProject.id,
-      },
-    });
-
-    res.status(200).json(newProject);
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error al crear el proyecto:", error);
     res.status(500).json({ error: "Error al crear el proyecto" });
@@ -100,7 +108,7 @@ export const getMeetings = async (req, res) => {
       },
       include: {
         project: true, 
-        author: true,   
+        author: true,  
       },
     });
 
@@ -111,25 +119,6 @@ export const getMeetings = async (req, res) => {
   }
 };
 
-
-//confirmar la asistencia de las reuniones
-
-export const confirmAttendance = async (req, res) => {
-  const { meetingId, userId } = req.body;
-
-  try {
-    const attendance = await prisma.meetingsAttendance.create({
-      data: {
-        meetingId,
-        userId: +userId,
-      },
-    });
-    return res.status(200).json(attendance);
-  } catch (error) {
-    console.error("Error:", error);
-    return res.status(500).json({ error: "Error interno del servidor" });
-  }
-};
 
 
 //AQUÍ DE PROYECTOS
@@ -157,7 +146,7 @@ export const getAllProjects = async (req, res) => {
           include: {
             user: {
               select: { image: true, name: true, id: true },
-            }
+            },
           },
         });
 
@@ -187,7 +176,7 @@ export const getProject = async (req, res) => {
         team: {
           include: {
             user: {
-              select: { id: false, name: true, email: false, image: true } 
+              select: { id: false, name: true, email: false, image: true },
             },
           },
         },
@@ -220,7 +209,6 @@ export const getProjectOverview = async (req, res) => {
       where: {
         id: +id,
       },
-      
     });
 
     if (!project) {
@@ -245,7 +233,7 @@ export const getProjectConfig = async (req, res) => {
       include: {
         team: {
           include: {
-            user: true
+            user: true,
           },
         },
       },
@@ -254,14 +242,14 @@ export const getProjectConfig = async (req, res) => {
     const leader = await prisma.teamProject.findFirst({
       where: {
         projectId: project.id,
-        role: 'leader'
+        role: "leader",
       },
       include: {
         user: {
-          select: {name: true, image: true}
-        }
-      }
-    })
+          select: { name: true, image: true },
+        },
+      },
+    });
 
     if (!project) {
       return res.status(404).json({ error: "Project not found" });
@@ -270,8 +258,10 @@ export const getProjectConfig = async (req, res) => {
     const users = project.team.map((teamMember) => teamMember.user);
 
     const response = {
-      ...project, leader, users
-    }
+      ...project,
+      leader,
+      users,
+    };
 
     res.status(200).json(response);
   } catch (error) {
@@ -291,14 +281,22 @@ export const getProjectBoard = async (req, res) => {
       include: {
         team: {
           include: {
-            user: true
+            user: true,
           },
         },
         tags: true,
-        tasks: true
+        tasks: {
+          include: {
+            subTasks: true,
+            assignees: true,
+            tags: true,
+            comments: true,
+            files: true,
+            links: true,
+          },
+        },
       },
     });
-
 
     res.status(200).json(project);
   } catch (error) {
@@ -309,19 +307,53 @@ export const getProjectBoard = async (req, res) => {
 
 export const updateProject = async (req, res) => {
   const { nombre, descripcion, id } = req.body;
-  const imagePath = req.file?.path; // si req.file no existe, imagePath será undefined
+  const imagePath = req.file?.path;
+
+  let dataToUpdate = {};
+  let oldImagePublicId;
+
+  if (nombre !== undefined) {
+    dataToUpdate.name = nombre;
+  }
+
+  if (descripcion !== undefined) {
+    dataToUpdate.description = descripcion;
+  }
+
+  if (imagePath) {
+    const imageUrl = await processImage(imagePath);
+    dataToUpdate.imagen = imageUrl;
+
+    const currentProject = await prisma.projects.findUnique({
+      where: { id: +id },
+      select: { imagen: true },
+    });
+
+    if (currentProject?.imagen) {
+      const urlParts = currentProject.imagen.split("/");
+      const publicIdWithExtension = urlParts[urlParts.length - 1];
+      const publicId = publicIdWithExtension.split(".")[0];
+      oldImagePublicId = publicId;
+    }
+  }
 
   try {
     const updatedProject = await prisma.projects.update({
       where: {
         id: +id,
       },
-      data: {
-        name: nombre?? undefined, // si nombre no se envía, se asignará undefined
-        description: descripcion?? undefined, // si descripcion no se envía, se asignará undefined
-        imagen: imagePath?? undefined, // si imagePath no se envía, se asignará undefined
-      },
+      data: dataToUpdate,
     });
+
+    if (oldImagePublicId) {
+      await cloudinary.uploader.destroy(oldImagePublicId, (error, result) => {
+        if (error) {
+          console.error("Error deleting old image:", error);
+        } else {
+          console.log("Old image deleted:", result);
+        }
+      });
+    }
 
     res.status(200).json(updatedProject);
   } catch (error) {
@@ -329,21 +361,3 @@ export const updateProject = async (req, res) => {
     res.status(500).json({ error: "Error al actualizar el proyecto" });
   }
 };
-
-export const createTag = async (req, res) => {
-  const { projectoId, tag } = req.body;
-
-  try {
-    const newTag = await prisma.tags.create({
-      data: {
-        name: tag,
-        projectId: +projectoId
-      }
-    })
-
-    res.status(200).json(newTag);
-  } catch (error) {
-    console.error("Error al crear la tag:", error);
-    res.status(500).json({ error: "Error al crear la tag" });
-  }
-}

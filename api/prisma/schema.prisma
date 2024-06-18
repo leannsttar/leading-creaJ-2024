@@ -70,8 +70,9 @@ model Tasks {
 }
 
 model SubTasks {
-  id     Int    @id @default(autoincrement())
+  id     Int    @id @default(autoincrement()) 
   name   String
+  status String
   taskId Int
   task   Tasks  @relation(fields: [taskId], references: [id])
 }

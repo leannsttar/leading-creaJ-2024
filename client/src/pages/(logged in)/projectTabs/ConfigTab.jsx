@@ -125,7 +125,7 @@ export const ConfigTab = () => {
             key: user.id,
             picture: (
               <img
-                src={`http://localhost:5000/${user.image}`}
+                src={user.image}
                 className="rounded-full min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem]"
                 alt=""
               />
@@ -253,7 +253,7 @@ export const ConfigTab = () => {
         <div className="flex gap-3 lg:gap-1 mb-1 lg:flex-col lg:min-w-[17rem] lg:max-w-[17rem] lg:h-[624px] lg:bg-[#ffffff] lg:p-2 lg:rounded-xl">
           <div className="hidden lg:flex items-center gap-3 m-2">
             <img
-              src={`http://localhost:5000/${project.imagen}`}
+              src={project.imagen}
               alt=""
               className="rounded-md min-w-[2.5rem] min-h-[2.5rem] max-w-[2.5rem] max-h-[2.5rem] object-cover"
             />
@@ -287,7 +287,7 @@ export const ConfigTab = () => {
                         />
                       ) : (
                         <img
-                          src={`http://localhost:5000/${project.imagen}`}
+                          src={project.imagen}
                           alt=""
                           className="w-[60%] rounded-lg lg:max-w-[10rem] lg:min-w-[10rem] lg:min-h-[10rem] lg:max-h-[10rem] object-cover"
                         />
@@ -339,7 +339,7 @@ export const ConfigTab = () => {
                       Líder del proyecto
                     </label>
                     <img
-                      src={`http://localhost:5000/${leader.image || ""}`}
+                      src={leader.image || ""}
                       alt=""
                       className="w-8 h-8 object-cover rounded-full absolute top-9 left-2.5"
                     />

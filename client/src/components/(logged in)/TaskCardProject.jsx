@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { Button, Drawer, Radio, Space } from "antd";
 
 import threeDots from "../../assets/threeDotsSmaller.svg";
@@ -8,6 +8,22 @@ import fileTaskIcon from "../../assets/fileTaskIcon.svg";
 import commentTaskIcon from "../../assets/commentTaskIcon.svg";
 
 export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
+
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    if (taskData) {
+      setData(taskData);
+      setLoading(false);
+    }
+  }, [taskData]);
+
+  if (loading) {
+    return <p>Cargando...</p>;
+  }
+
+
   return (
     <>
       <div
@@ -19,7 +35,7 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
       >
         <div className="flex justify-between">
           <div className="flex gap-2">
-            {taskData.tags.map((tag, index) => {
+            {data.tags.map((tag, index) => {
               return (
                 <p
                   key={index}
@@ -32,22 +48,22 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
           </div>
           <img src={threeDots} alt="" />
         </div>
-        <p className="text-[1.3rem]">{taskData.title}</p>
+        <p className="text-[1.3rem]">{data.title}</p>
         <div className="flex justify-between text-[#959595]">
           <div className="flex items-center gap-3">
             <img src={flagTaskIcon} alt="Icon" className="w-7" />
-            <p>{taskData.date}</p>
+            <p>{data.date}</p>
           </div>
           <div className="flex items-center gap-4">
             <img src={linesTaskIcon} alt="Icon" className="w-6" />
             <p>
-              {0}/{taskData.subTasks.length}
+              {0}/{data.subTasks.length}
             </p>
           </div>
         </div>
         <div className="flex justify-between pt-6 text-[#959595]">
           <div className="flex">
-            {taskData.members.map((member, index) => {
+            {data.members.map((member, index) => {
               return (
                 <img
                   key={index}
@@ -62,11 +78,11 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
           <div className="flex gap-10">
             <div className="flex items-center gap-2">
               <img src={fileTaskIcon} alt="Icon" />
-              <p>{taskData.files}</p>
+              <p>{data.files}</p>
             </div>
             <div className="flex items-center gap-2">
               <img src={commentTaskIcon} alt="Icon" />
-              <p>{taskData.comments}</p>
+              <p>{data.comments}</p>
             </div>
           </div>
         </div>

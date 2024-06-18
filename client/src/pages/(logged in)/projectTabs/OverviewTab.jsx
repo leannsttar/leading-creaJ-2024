@@ -143,7 +143,7 @@ export const OverviewTab = () => {
           <div className="space-y-3">
             <div className="flex">
               <img
-                src={`http://localhost:5000/${project.imagen}`}
+                src={project.imagen}
                 alt="Imagen proyecto"
                 className="rounded-xl object-cover w-[8rem] h-[8rem] float-left mr-3 flex-shrink-0"
               />
