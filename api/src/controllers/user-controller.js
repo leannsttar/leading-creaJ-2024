@@ -19,7 +19,8 @@ export const editUser = async (req, res) => {
     if (imagePath) {
       imageUrl = await processImage(imagePath);
 
-      if (currentProfile?.image) {
+      if (currentProfile?.image && currentProfile.image ==! "https://res.cloudinary.com/dv79d6y4e/image/upload/f_auto,q_auto/avatarDefault") {
+
         const urlParts = currentProfile.image.split('/');
         const publicIdWithExtension = urlParts[urlParts.length - 1];
         const publicId = publicIdWithExtension.split('.')[0];
