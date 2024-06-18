@@ -88,14 +88,19 @@ export const createMeeting = async (req, res) => {
   }
 };
 
-
-//tomar las reuniones 
+//tomar las reuniones
 export const getMeetings = async (req, res) => {
+  console.log(req.params, "xd");
+  const { id } = req.params;
+
   try {
     const meetings = await prisma.meetings.findMany({
+      where: {
+        projectId: +id,  
+      },
       include: {
         project: true, 
-        author: true,  
+        author: true,   
       },
     });
 
@@ -106,6 +111,25 @@ export const getMeetings = async (req, res) => {
   }
 };
 
+
+//confirmar la asistencia de las reuniones
+
+export const confirmAttendance = async (req, res) => {
+  const { meetingId, userId } = req.body;
+
+  try {
+    const attendance = await prisma.meetingsAttendance.create({
+      data: {
+        meetingId,
+        userId: +userId,
+      },
+    });
+    return res.status(200).json(attendance);
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
 
 
 //AQUÍ DE PROYECTOS

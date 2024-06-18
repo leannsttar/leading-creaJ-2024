@@ -1,6 +1,6 @@
 import express from 'express';
 import { createProject, getAllProjects, getProject, getProjectConfig, getProjectOverview, updateProject } from '../controllers/project-controller.js';
-import { addTeamMember, createMeeting, createTag, getProjectBoard, getMeetings } from '../controllers/project-controller.js';
+import { addTeamMember, createMeeting, createTag, getProjectBoard, getMeetings, confirmAttendance } from '../controllers/project-controller.js';
 import { auth } from '../../middleware/auth.js';
 import multer from 'multer'; 
 
@@ -18,7 +18,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 router.post('/', auth, upload.single('imagen'), createProject);
-router.get('/meetings', getMeetings); 
+router.get('/meetings/:id', getMeetings); 
+router.post('/attendance', confirmAttendance);
+
 router.get('/:usuarioId', getAllProjects);
 
 router.post('/addMember', upload.single(), addTeamMember)
