@@ -1,9 +1,9 @@
 import express from 'express';
 import { createProject, getAllProjects, getProject, getProjectConfig, getProjectOverview, updateProject } from '../controllers/project-controller.js';
-import { addTeamMember, createMeeting, createTag, getProjectBoard, getMeetings } from '../controllers/project-controller.js';
+import { addTeamMember, createMeeting, getProjectBoard, getMeetings } from '../controllers/project-controller.js';
 import { auth } from '../../middleware/auth.js';
 import multer from 'multer'; 
-
+import { createTask, createTag } from '../controllers/tasks-controller.js';
 const router = express.Router();
 
 const storage = multer.diskStorage({
