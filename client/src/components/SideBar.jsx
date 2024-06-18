@@ -593,14 +593,15 @@ export const SideBar = () => {
                     },
                   ]}
                 >
-                  <ImgCrop
+                  {/* <ImgCrop
                     rotationSlider
                     modalTitle="Editar imagen"
                     showReset={true}
+                    resetText="Resetear"
                     modalClassName={{
                       style: { backgroundColor: "black", color: "white" },
                     }}
-                  >
+                  > */}
                     <Upload
                       listType="picture-card"
                       onChange={onChange}
@@ -609,7 +610,8 @@ export const SideBar = () => {
                     >
                       {"+ Subir"}
                     </Upload>
-                  </ImgCrop>
+                    
+                  {/* </ImgCrop> */}
                 </Form.Item>
                 <Form.Item
                   name="nombreProject"
@@ -638,6 +640,7 @@ export const SideBar = () => {
                     onChange={(e) =>
                       setCreateProjectDescription(e.target.value)
                     }
+                    rows={6}
                     placeholder="Ingrese una descripción"
                   />
                 </Form.Item>

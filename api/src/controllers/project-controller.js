@@ -264,7 +264,7 @@ export const getProjectConfig = async (req, res) => {
 
 export const getProjectBoard = async (req, res) => {
   const { id } = req.params;
-
+  console.log(req.params)
   try {
     const project = await prisma.projects.findFirst({
       where: {
