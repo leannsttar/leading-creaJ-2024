@@ -9,9 +9,15 @@ import "../../../index.css";
 
 import { useParams } from "react-router-dom";
 
-import { format } from "date-fns";
+import { format, formatDistanceToNow, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 
 import { clienteAxios } from "@/config/clienteAxios";
+
+import LinkPreview from "@ashwamegh/react-link-preview";
+
+// If you're using built in layout, you will need to import this css
+import "@ashwamegh/react-link-preview/dist/index.css";
 
 import { FaPlus } from "react-icons/fa6";
 import { TbEdit } from "react-icons/tb";
@@ -24,6 +30,8 @@ import plusTasksIcon from "../../../assets/plusTasksIcon.svg";
 import avatar from "../../../assets/Avatar.jpg";
 
 import Microlink from "@microlink/react";
+import styled, { StyleSheetManager } from "styled-components";
+import isPropValid from "@emotion/is-prop-valid";
 
 import {
   Button,
@@ -618,7 +626,12 @@ const SubTask = ({ name, index, taskId, isChecked, refreshProject }) => {
   return (
     <>
       {contextHolder}
-      <div key={index} className={`flex items-center gap-2 w-full ${isChecked ? 'true' : 'false'}`}>
+      <div
+        key={index}
+        className={`flex items-center gap-2 w-full ${
+          isChecked ? "true" : "false"
+        }`}
+      >
         <PiList size={22} className="pb-2" />
         <Checkbox
           onChange={onChange}
@@ -632,16 +645,16 @@ const SubTask = ({ name, index, taskId, isChecked, refreshProject }) => {
   );
 };
 
-const CommentComponent = ({ userName, userPicture, message, timeAgo }) => {
+const CommentComponent = ({ userName, userPicture, message, timeAgo, key }) => {
   return (
-    <div className="space-y-1">
+    <div key={key} className="space-y-1">
       <div className="flex items-center gap-3">
         <img
           src={userPicture}
           alt=""
           className="min-h-8 min-w-8 max-h-8 max-w-8 rounded-full object-cover"
         />
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <p className="font-medium">{userName}</p>
           <div className="rounded-full bg-gray-600 w-1 h-1"></div>
           <p className="text-[.8rem] text-gray-500">{timeAgo}</p>
@@ -654,6 +667,8 @@ const CommentComponent = ({ userName, userPicture, message, timeAgo }) => {
 };
 
 export const BoardTab = () => {
+  const { usuario, userToken } = useSession();
+
   const params = useParams();
 
   const timerRef = useRef();
@@ -665,6 +680,8 @@ export const BoardTab = () => {
   const [section, setSection] = useState("progreso");
 
   const [project, setProject] = useState("loading");
+  const [taskUrl, setTaskUrl] = useState("");
+  const [taskComment, setTaskComment] = useState("");
 
   const [upcomingTasks, setUpcomingTasks] = useState([]);
 
@@ -702,7 +719,32 @@ export const BoardTab = () => {
                 ).user.image
             ),
             files: task.files,
-            comments: task.comments,
+            links: task.links,
+            comments: task.comments.map((comment) => {
+              const creator = response.data.team.find(
+                (member) => member.user.id === comment.authorId
+              );
+
+              let timeAgo = "Invalid date";
+              try {
+                const commentDate = parseISO(comment.createdAt);
+                timeAgo = formatDistanceToNow(commentDate, {
+                  addSuffix: true,
+                  locale: es,
+                });
+              } catch (error) {
+                console.error("Error parsing comment date:", error);
+              }
+
+              return {
+                id: comment.id,
+                text: comment.content,
+                timeAgo: timeAgo, // Calculating time ago
+                creatorId: creator.user.id,
+                creatorImage: creator.user.image,
+                creatorName: creator.user.name,
+              };
+            }),
             status: task.status,
           };
         })
@@ -733,7 +775,32 @@ export const BoardTab = () => {
               ).user.image
           ),
           files: task.files,
-          comments: task.comments,
+          links: task.links,
+          comments: task.comments.map((comment) => {
+            const creator = response.data.team.find(
+              (member) => member.user.id === comment.authorId
+            );
+
+            let timeAgo = "Invalid date";
+            try {
+              const commentDate = parseISO(comment.createdAt);
+              timeAgo = formatDistanceToNow(commentDate, {
+                addSuffix: true,
+                locale: es,
+              });
+            } catch (error) {
+              console.error("Error parsing comment date:", error);
+            }
+
+            return {
+              id: comment.id,
+              text: comment.content,
+              timeAgo: timeAgo, // Calculating time ago
+              creatorId: creator.user.id,
+              creatorImage: creator.user.image,
+              creatorName: creator.user.name,
+            };
+          }),
           status: task.status,
         };
         setSelectedTask(updatedSelectedTask);
@@ -741,7 +808,6 @@ export const BoardTab = () => {
       } else {
         setLoading(false);
       }
-      
     } catch (error) {
       console.log("Error al obtener el proyecto:", error);
     }
@@ -751,6 +817,86 @@ export const BoardTab = () => {
     getProject();
     console.log("pr");
   }, [params.id]);
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const createLink = async () => {
+    try {
+      const formData = new FormData();
+
+      formData.append("authorId", usuario.id);
+      formData.append("taskId", selectedTask.id);
+      formData.append("link", taskUrl);
+
+      const response = await clienteAxios.postForm(
+        `/api/tasks/createLink`,
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
+
+      getProject();
+
+      messageApi.open({
+        type: "success",
+        content: "Link agregado exitosamente",
+      });
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Hubo un error al guardar el link",
+      });
+      console.error("Error al enviar los datos", error);
+    }
+  };
+
+  const handleKeyDownLink = (e) => {
+    if (e.key === "Enter") {
+      createLink();
+    }
+  };
+
+  const createComment = async () => {
+    try {
+      const formData = new FormData();
+
+      formData.append("authorId", usuario.id);
+      formData.append("taskId", selectedTask.id);
+      formData.append("comment", taskComment);
+
+      const response = await clienteAxios.postForm(
+        `/api/tasks/createComment`,
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
+
+      getProject();
+
+      messageApi.open({
+        type: "success",
+        content: "Comentario agregado exitosamente",
+      });
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Hubo un error al guardar el comentario",
+      });
+      console.error("Error al enviar los datos", error);
+    }
+  };
+
+  const handleKeyDownComment = (e) => {
+    if (e.key === "Enter") {
+      createComment();
+    }
+  };
 
   const clearTimer = () => {
     if (timerRef.current) {
@@ -781,6 +927,7 @@ export const BoardTab = () => {
 
   return (
     <>
+      {contextHolder}
       <Drawer
         title={
           selectedTask
@@ -805,24 +952,44 @@ export const BoardTab = () => {
             } m-2 flex items-center gap-3 relative`}
           >
             <img
-              src={avatar}
+              src={usuario.image}
               alt=""
               className="min-w-10 min-h-10 max-w-10 max-h-10 rounded-full object-cover"
             />
-            <input
-              className="rounded-2xl bg-[#f7f7f7] px-3 py-2 outline-none w-full mr-4"
-              type="text"
-              placeholder={
-                section === "archivos"
-                  ? "Copia el link aquí ..."
-                  : section === "comentarios"
-                  ? "Comenta aquí ..."
-                  : ""
-              }
-              name=""
-              id=""
-            />
-            <SendOutlined className="absolute right-8" />
+
+            {section === "archivos" ? (
+              <>
+                <input
+                  onChange={(e) => setTaskUrl(e.target.value)}
+                  onKeyDown={handleKeyDownLink}
+                  className="rounded-2xl bg-[#f0f0f0] px-3 py-2 outline-none w-full mr-4"
+                  type="text"
+                  placeholder={"Copia el link aquí"}
+                  name=""
+                  id=""
+                />
+                <SendOutlined
+                  className="absolute right-8"
+                  onClick={createLink}
+                />
+              </>
+            ) : (
+              <>
+                <input
+                  onChange={(e) => setTaskComment(e.target.value)}
+                  onKeyDown={handleKeyDownComment}
+                  className="rounded-2xl bg-[#f0f0f0] px-3 py-2 outline-none w-full mr-4"
+                  type="text"
+                  placeholder={"Comenta aquí"}
+                  name=""
+                  id=""
+                />
+                <SendOutlined
+                  className="absolute right-8"
+                  onClick={createComment}
+                />
+              </>
+            )}
           </div>
         }
       >
@@ -914,9 +1081,9 @@ export const BoardTab = () => {
                   }}
                   className={`${
                     section === "progreso"
-                      ? "border-black font-medium"
-                      : "border-white"
-                  } px-2 lg:px-4 pb-1 border-b-[3px]  hover:border-black cursor-pointer`}
+                      ? "border-black text-black"
+                      : "border-white text-gray-500 hover:text-black"
+                  }  px-2 lg:px-4 pb-1 border-b-[3px] hover:border-black cursor-pointer`}
                 >
                   Progreso
                 </p>
@@ -926,9 +1093,9 @@ export const BoardTab = () => {
                   }}
                   className={`${
                     section === "archivos"
-                      ? "border-black font-medium"
-                      : "border-white"
-                  } px-2 lg:px-4 pb-1 border-b-[3px] border-white hover:border-black cursor-pointer`}
+                      ? "border-black text-black"
+                      : "border-white text-gray-500 hover:text-black"
+                  } px-2 lg:px-4 pb-1 border-b-[3px] hover:border-black cursor-pointer`}
                 >
                   Archivos
                 </p>
@@ -938,9 +1105,9 @@ export const BoardTab = () => {
                   }}
                   className={`${
                     section === "comentarios"
-                      ? "border-black font-medium"
-                      : "border-white"
-                  } flex items-center gap-1 px-2 lg:px-4 pb-1 border-b-[3px] border-white hover:border-black cursor-pointer`}
+                      ? "border-black text-black"
+                      : "border-white text-gray-500 hover:text-black"
+                  } flex items-center gap-1 px-2 lg:px-4 pb-1 border-b-[3px] hover:border-black cursor-pointer`}
                 >
                   <p className="">Comentarios</p>
                   <div className="w-6 h-6 grid place-content-center text-white text-[.75rem] bg-black rounded-full">
@@ -1013,34 +1180,28 @@ export const BoardTab = () => {
                     </Upload>
                     <p className="text-lg font-medium mt-6">Adjuntar links</p>
                     <div className="mt-1 space-y-1">
-                      <Microlink url="https://www.figma.com/design/MQs0tlEU38XBzoq4COQa6I/Creaj?node-id=25%3A623&t=ZbGb0NlJWaQJdxUR-1" />
-                      <Microlink url="https://mockapi.io/projects/6643d55c6c6a656587087600" />
+                      <StyleSheetManager shouldForwardProp={isPropValid}>
+                        {selectedTask.links.map((link) => {
+                          return <Microlink url={link.url} />;
+                        })}
+                      </StyleSheetManager>
                     </div>
                   </div>
                 ) : section === "comentarios" ? (
                   <div className="mt-4">
                     <p className="text-lg font-medium mt-6">Comentar</p>
                     <div className="space-y-5 mt-3">
-                      <CommentComponent
-                        userPicture={
-                          "https://i.pinimg.com/564x/68/45/5d/68455dc2b7f16699bc422ac3ce3f684f.jpg"
-                        }
-                        userName={"Ji Chang-wook"}
-                        timeAgo={"2m ago"}
-                        message={
-                          "Hi @Liz! I checked the results, there are some comments in figma, can you check it now, thanks."
-                        }
-                      />
-                      <CommentComponent
-                        userPicture={
-                          "https://i.pinimg.com/564x/68/45/5d/68455dc2b7f16699bc422ac3ce3f684f.jpg"
-                        }
-                        userName={"Ji Chang-wook"}
-                        timeAgo={"2m ago"}
-                        message={
-                          "Hi @Liz! I checked the results, there are some comments in figma, can you check it now, thanks."
-                        }
-                      />
+                      {selectedTask.comments.map((comment) => {
+                        return (
+                          <CommentComponent
+                            key={comment.id}
+                            userPicture={comment.creatorImage}
+                            userName={comment.creatorName}
+                            timeAgo={comment.timeAgo}
+                            message={comment.text}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 ) : (

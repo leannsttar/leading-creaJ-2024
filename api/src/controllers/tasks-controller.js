@@ -127,3 +127,41 @@ export const updateSubtaskStatus = async(req, res) => {
     res.status(500).json({ error: "Error al actualizar la subtarea" });
   }
 }
+
+export const addLinkToTask = async(req, res) => {
+  const { taskId, authorId, link } = req.body
+
+  try {
+    const newLink = await prisma.links.create({
+      data: {
+        url: link,
+        taskId: +taskId,
+        authorId: +authorId
+      },
+    });
+
+    res.status(200).json(newLink);
+  } catch (error) {
+    console.error("Error al agregar el link:", error);
+    res.status(500).json({ error: "Error al agregar el link" });
+  }
+}
+
+export const createComment = async(req, res) => {
+  const { taskId, authorId, comment } = req.body
+
+  try {
+    const newComment = await prisma.comments.create({
+      data: {
+        content: comment,
+        taskId: +taskId,
+        authorId: +authorId
+      },
+    });
+
+    res.status(200).json(newComment);
+  } catch (error) {
+    console.error("Error al crear el comentario:", error);
+    res.status(500).json({ error: "Error al crear el comentario" });
+  }
+}
