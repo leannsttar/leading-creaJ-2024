@@ -107,3 +107,23 @@ export const createTask = async (req, res) => {
     res.status(500).json({ error: "Error al crear la tag" });
   }
 };
+
+export const updateSubtaskStatus = async(req, res) => {
+  const { taskId, status } = req.body
+  console.log(req.body)
+  try {
+    const updatedSubtask = await prisma.subTasks.update({
+      where: {
+        id: +taskId
+      },
+      data: {
+        status,
+      },
+    });
+
+    res.status(200).json(updatedSubtask);
+  } catch (error) {
+    console.error("Error al actualizar la subtarea:", error);
+    res.status(500).json({ error: "Error al actualizar la subtarea" });
+  }
+}

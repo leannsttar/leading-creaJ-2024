@@ -1,5 +1,5 @@
 import express from "express";
-import { getTasks, createTag, createTask } from "../controllers/tasks-controller.js";
+import { getTasks, createTag, createTask, updateSubtaskStatus } from "../controllers/tasks-controller.js";
 
 import { auth } from "../../middleware/auth.js";
 import multer from "multer";
@@ -20,5 +20,6 @@ const upload = multer({ storage: storage });
 router.get("/getTasks", upload.single(), getTasks)
 router.post("/createTag", upload.single(), createTag);
 router.post("/createTask", upload.single(), createTask);
+router.put("/updateSubtask", upload.single(), updateSubtaskStatus)
 
 export default router;

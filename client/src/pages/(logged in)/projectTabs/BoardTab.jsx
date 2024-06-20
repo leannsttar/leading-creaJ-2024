@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext, memo  } from "react";
+import React, { useState, useRef, useEffect, useContext, memo } from "react";
 
 import { ProyectosContext } from "@/config/ProyectosContext";
 import { useSession } from "@/config/useSession";
@@ -553,7 +553,7 @@ const HeaderTaskCards = memo(({ title, numCards, hidden, project }) => {
       </div>
     </>
   );
-})
+});
 
 const ColTasks = ({ title, numCards, children, index, project }) => {
   return (
@@ -576,21 +576,59 @@ const ColTasks = ({ title, numCards, children, index, project }) => {
   );
 };
 
-const SubTask = ({ name, index }) => {
-  const onChange = (e) => {
-    console.log(`checked = ${e.target.checked}`);
+const SubTask = ({ name, index, taskId, isChecked, refreshProject }) => {
+  const { userToken } = useSession();
+
+  const [check, setCheck] = useState(isChecked);
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const onChange = async (e) => {
+    try {
+      setCheck(!check);
+      const formData = new FormData();
+
+      formData.append("taskId", taskId);
+      if (check) {
+        formData.append("status", "pendiente");
+      } else if (!check) {
+        formData.append("status", "terminado");
+      }
+
+      const response = await clienteAxios.putForm(
+        `/api/tasks/updateSubtask`,
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
+
+      refreshProject();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Hubo un error al marcar la tarea",
+      });
+      console.error("Error al enviar los datos", error);
+    }
   };
 
   return (
-    <div key={index} className="flex items-center gap-2 w-full">
-      <PiList size={22} className="pb-2" />
-      <Checkbox
-        onChange={onChange}
-        className="text-[1rem] pb-2 border-b-[1px] border-gray-300 w-full mr-6"
-      >
-        {name}
-      </Checkbox>
-    </div>
+    <>
+      {contextHolder}
+      <div key={index} className={`flex items-center gap-2 w-full ${isChecked ? 'true' : 'false'}`}>
+        <PiList size={22} className="pb-2" />
+        <Checkbox
+          onChange={onChange}
+          className="text-[1rem] pb-2 border-b-[1px] border-gray-300 w-full mr-6"
+          checked={check}
+        >
+          {name}
+        </Checkbox>
+      </div>
+    </>
   );
 };
 
@@ -615,7 +653,7 @@ const CommentComponent = ({ userName, userPicture, message, timeAgo }) => {
   );
 };
 
-export const BoardTab = React.memo(() => {
+export const BoardTab = () => {
   const params = useParams();
 
   const timerRef = useRef();
@@ -631,13 +669,17 @@ export const BoardTab = React.memo(() => {
   const [upcomingTasks, setUpcomingTasks] = useState([]);
 
   const getProject = async () => {
+    console.log("yes");
     try {
+      setLoading(true);
       const response = await clienteAxios.get(
         `/api/projects/getProjectBoard/${params.id}`
       );
       setProject(response.data);
       setUpcomingTasks(
         response.data.tasks.map((task) => {
+          let progressList = 0;
+
           return {
             id: task.id,
             title: task.name,
@@ -648,7 +690,10 @@ export const BoardTab = React.memo(() => {
                 ).name
             ),
             description: task.description,
-            subTasks: task.subTasks.map((subtask) => subtask.name),
+            subTasks: task.subTasks,
+            progressList: task.subTasks.filter(
+              (subTask) => subTask.status == "terminado"
+            ).length,
             date: format(new Date(task.due_date), "PP"),
             members: task.assignees.map(
               (assignee) =>
@@ -656,12 +701,47 @@ export const BoardTab = React.memo(() => {
                   (projectMember) => projectMember.user.id === assignee.userId
                 ).user.image
             ),
-            files: task.files.length,
+            files: task.files,
             comments: task.comments,
             status: task.status,
           };
         })
       );
+      if (selectedTask) {
+        const task = response.data.tasks.find(
+          (task) => task.id === selectedTask.id
+        );
+        const updatedSelectedTask = {
+          id: task.id,
+          title: task.name,
+          tags: task.tags.map(
+            (taskTag) =>
+              response.data.tags.find(
+                (projectTag) => projectTag.id === taskTag.tagId
+              ).name
+          ),
+          description: task.description,
+          subTasks: task.subTasks,
+          progressList: task.subTasks.filter(
+            (subTask) => subTask.status == "terminado"
+          ).length,
+          date: format(new Date(task.due_date), "PP"),
+          members: task.assignees.map(
+            (assignee) =>
+              response.data.team.find(
+                (projectMember) => projectMember.user.id === assignee.userId
+              ).user.image
+          ),
+          files: task.files,
+          comments: task.comments,
+          status: task.status,
+        };
+        setSelectedTask(updatedSelectedTask);
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+      
     } catch (error) {
       console.log("Error al obtener el proyecto:", error);
     }
@@ -669,7 +749,7 @@ export const BoardTab = React.memo(() => {
 
   useEffect(() => {
     getProject();
-    console.log('pr')
+    console.log("pr");
   }, [params.id]);
 
   const clearTimer = () => {
@@ -681,10 +761,10 @@ export const BoardTab = React.memo(() => {
   const showDrawer = (task) => {
     setSelectedTask(task);
     setOpen(true);
-    setLoading(true);
-    timerRef.current = setTimeout(() => {
-      setLoading(false);
-    }, 600);
+    // setLoading(true);
+    // timerRef.current = setTimeout(() => {
+    //   setLoading(false);
+    // }, 600);
   };
 
   const onClose = () => {
@@ -746,7 +826,7 @@ export const BoardTab = React.memo(() => {
           </div>
         }
       >
-        {selectedTask && (
+        {selectedTask ? (
           <>
             <p className="text-5xl font-semibold">{selectedTask.title}</p>
             <table className="w-full my-5">
@@ -834,9 +914,9 @@ export const BoardTab = React.memo(() => {
                   }}
                   className={`${
                     section === "progreso"
-                      ? "border-blue-500 font-medium"
+                      ? "border-black font-medium"
                       : "border-white"
-                  } px-2 lg:px-4 pb-1 border-b-[3px]  hover:border-blue-500 cursor-pointer`}
+                  } px-2 lg:px-4 pb-1 border-b-[3px]  hover:border-black cursor-pointer`}
                 >
                   Progreso
                 </p>
@@ -846,9 +926,9 @@ export const BoardTab = React.memo(() => {
                   }}
                   className={`${
                     section === "archivos"
-                      ? "border-blue-500 font-medium"
+                      ? "border-black font-medium"
                       : "border-white"
-                  } px-2 lg:px-4 pb-1 border-b-[3px] border-white hover:border-blue-500 cursor-pointer`}
+                  } px-2 lg:px-4 pb-1 border-b-[3px] border-white hover:border-black cursor-pointer`}
                 >
                   Archivos
                 </p>
@@ -858,12 +938,12 @@ export const BoardTab = React.memo(() => {
                   }}
                   className={`${
                     section === "comentarios"
-                      ? "border-blue-500 font-medium"
+                      ? "border-black font-medium"
                       : "border-white"
-                  } flex items-center gap-1 px-2 lg:px-4 pb-1 border-b-[3px] border-white hover:border-blue-500 cursor-pointer`}
+                  } flex items-center gap-1 px-2 lg:px-4 pb-1 border-b-[3px] border-white hover:border-black cursor-pointer`}
                 >
                   <p className="">Comentarios</p>
-                  <div className="w-6 h-6 grid place-content-center text-white text-[.75rem] bg-blue-500 rounded-full">
+                  <div className="w-6 h-6 grid place-content-center text-white text-[.75rem] bg-black rounded-full">
                     {selectedTask.comments.length}
                   </div>
                 </div>
@@ -876,15 +956,37 @@ export const BoardTab = React.memo(() => {
                       <p className="text-lg font-medium">Lista de progreso</p>
                       <div className="flex items-center gap-2">
                         <PiListChecks size={20} />
-                        <p>3/4</p>
+                        <p>
+                          {selectedTask.progressList}/
+                          {selectedTask.subTasks.length}
+                        </p>
                       </div>
                     </div>
                     <Flex gap="small" vertical>
-                      <Progress percent={75} showInfo={false} />
+                      <Progress
+                        percent={
+                          selectedTask.subTasks.length > 0
+                            ? (selectedTask.progressList /
+                                selectedTask.subTasks.length) *
+                              100
+                            : 0
+                        }
+                        showInfo={false}
+                        strokeColor={"black"}
+                      />
                     </Flex>
                     <div className="mt-6 space-y-3">
                       {selectedTask.subTasks.map((task, index) => {
-                        return <SubTask name={task} index={index} />;
+                        return (
+                          <SubTask
+                            key={task.id}
+                            index={index}
+                            taskId={task.id}
+                            name={task.name}
+                            isChecked={task.status == "terminado"}
+                            refreshProject={getProject}
+                          />
+                        );
                       })}
                     </div>
                   </div>
@@ -947,6 +1049,8 @@ export const BoardTab = React.memo(() => {
               </div>
             </div>
           </>
+        ) : (
+          "hi"
         )}
       </Drawer>
       <div className="mx-5 my-9 lg:mx-11 lg:my-16 space-y-10 lg:flex lg:space-y-0 lg:justify-around">
@@ -966,14 +1070,14 @@ export const BoardTab = React.memo(() => {
           index={2}
           project={project}
         >
-          {upcomingTasks.map((task, index) => (
+          {/* {upcomingTasks.map((task, index) => (
             <TaskCardProject
               index={task.id}
               taskData={task}
               onClick={() => showDrawer(task)}
               mobile
             />
-          ))}
+          ))} */}
         </ColTasks>
         <ColTasks
           title={"Terminadas"}
@@ -981,16 +1085,16 @@ export const BoardTab = React.memo(() => {
           index={3}
           project={project}
         >
-          {upcomingTasks.map((task, index) => (
+          {/* {upcomingTasks.map((task, index) => (
             <TaskCardProject
               index={task.id}
               taskData={task}
               onClick={() => showDrawer(task)}
               mobile
             />
-          ))}
+          ))} */}
         </ColTasks>
       </div>
     </>
   );
-})
+};

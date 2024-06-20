@@ -57,7 +57,7 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
           <div className="flex items-center gap-4">
             <img src={linesTaskIcon} alt="Icon" className="w-6" />
             <p>
-              {0}/{data.subTasks.length}
+              {data.progressList}/{data.subTasks.length}
             </p>
           </div>
         </div>
@@ -78,11 +78,11 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
           <div className="flex gap-10">
             <div className="flex items-center gap-2">
               <img src={fileTaskIcon} alt="Icon" />
-              <p>{data.files}</p>
+              <p>{data.files.length}</p>
             </div>
             <div className="flex items-center gap-2">
               <img src={commentTaskIcon} alt="Icon" />
-              <p>{data.comments}</p>
+              <p>{data.comments.length}</p>
             </div>
           </div>
         </div>
