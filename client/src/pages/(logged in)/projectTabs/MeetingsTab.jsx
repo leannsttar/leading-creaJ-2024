@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
 
@@ -42,12 +42,11 @@ export const MeetingsList = ({ meetings }) => {
           return (
             <MeetingCard
               userName={meeting.author.name}
-              userPicture={
-                meeting.author.image
-              }
+              userPicture={meeting.author.image}
               time={meeting.event_time}
               going={11}
               pending={2}
+              link={meeting.id}
               teamPictures={[
                 "https://i.pinimg.com/564x/5e/c5/99/5ec599c89cd988a416d361a123c14faa.jpg",
                 "https://i.pinimg.com/736x/01/4d/59/014d59542d152dd54e9c94091c3d8dd4.jpg",
@@ -63,20 +62,29 @@ export const MeetingsList = ({ meetings }) => {
 };
 
 const MeetingCard = ({
+  
   userName,
   userPicture,
   time,
   going,
   pending,
   teamPictures,
+  link,
 }) => {
+  const params = useParams();
+  const { logout, usuario, userToken } = useSession();
   const [modal2Open, setModal2Open] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState("");
   const [form] = Form.useForm();
 
-  const onFinishConfirm = async (values) => {
+  const onFinishConfirm = async () => {
     try {
-      const response = await clienteAxios.post("/api/meetings/attendance", values);
-      console.log("Pasa esto:", response.data);
+      const response = await clienteAxios.post("/api/projects/meetings/attendance", {
+        meetingId: link,
+        userId: usuario.id,
+      });
+      console.log("Asistencia confirmada:", response.data);
+      setConfirmationMessage("Asistencia confirmada");
       setModal2Open(false);
     } catch (error) {
       console.error("Error:", error);
@@ -99,7 +107,9 @@ const MeetingCard = ({
       <div className="space-y-8">
         <div className="flex flex-wrap justify-between">
           <p className="text-[#3694FF]">{going} confirmados</p>
-          <button className="text-[#7866e0] underline text-lg">Ver enlace</button>
+          <Link className="text-[#7866e0] underline text-lg" to={link}>
+            Ir a la reunión
+          </Link>
         </div>
         <div className="flex items-center">
           <div className="flex">
@@ -126,24 +136,27 @@ const MeetingCard = ({
           </p> */}
         </div>
         <button
-        className="bg-[#202020] w-full text-white py-2 rounded-lg"
-        onClick={() => setModal2Open(true)}
-      >
-        Confirmar asistencia
-      </button>
-      <Modal
-        title="Confirmar asistencia"
-        okButtonProps={{
-          style: { backgroundColor: "black", color: "white" },
-        }}
-        okText="Confirmar"
-        centered
-        open={modal2Open}
-        onOk={onFinishConfirm}
-        onCancel={() => setModal2Open(false)}
-      >
-        <p>¿Estás seguro de que deseas confirmar tu asistencia a esta reunión?</p>
-      </Modal>
+          className="bg-[#202020] w-full text-white py-2 rounded-lg"
+          onClick={() => setModal2Open(true)}
+        >
+          Confirmar asistencia
+        </button>
+        <Modal
+          title="Confirmar asistencia"
+          okButtonProps={{
+            style: { backgroundColor: "black", color: "white" },
+          }}
+          okText="Confirmar"
+          centered
+          open={modal2Open}
+          onOk={onFinishConfirm}
+          onCancel={() => setModal2Open(false)}
+        >
+          <p>
+            ¿Estás seguro de que deseas confirmar tu asistencia a esta reunión?
+          </p>
+        </Modal>
+        {confirmationMessage && <p>{confirmationMessage}</p>}
       </div>
     </div>
   );
@@ -154,20 +167,22 @@ export const MeetingsTab = () => {
 
   const [meetings, setMeetings] = useState([]);
 
-  useEffect(() => {
-    const fetchMeetings = async () => {
-      try {
-        const response = await clienteAxios.get(`/api/projects/meetings/${params.id}`, {
+  const fetchMeetings = async () => {
+    try {
+      const response = await clienteAxios.get(
+        `/api/projects/meetings/${params.id}`,
+        {
           headers: {
             Authorization: "Bearer " + userToken,
           },
-        });
-        setMeetings(response.data);
-      } catch (error) {
-        console.error("Error al obtener las reuniones:", error);
-      }
-    };
-
+        }
+      );
+      setMeetings(response.data);
+    } catch (error) {
+      console.error("Error al obtener las reuniones:", error);
+    }
+  };
+  useEffect(() => {
     fetchMeetings();
   }, []);
 
@@ -194,7 +209,8 @@ export const MeetingsTab = () => {
           },
         }
       );
-
+      setModal1Open(false);
+      fetchMeetings();
       console.log("Respuesta del backend:", response.data);
       // setModal2Open(false);
     } catch (error) {
@@ -206,7 +222,7 @@ export const MeetingsTab = () => {
     console.log("Fallo:", errorInfo);
   };
 
-//algo había acá 
+  //algo había acá
   return (
     <div className="m-5 lg:m-16">
       <div className="bg-[#f5f5f5] lg:w-fit p-8 rounded-2xl space-y-5  lg:flex lg:space-y-0 lg:gap-5">
@@ -326,49 +342,42 @@ export const MeetingsTab = () => {
   );
 };
 
+// const [formData, setFormData] = useState({
+//   date: null,
+//   time: null,
+//   meetLink: "",
+//   description: "",
+// });
 
+// const onDateChange = (date) => {
+//   setFormData({
+//     ...formData,
+//     date,
+//   });
+// };
 
+// const onTimeChange = (time) => {
+//   setFormData({
+//     ...formData,
+//     time,
+//   });
+// };
 
+// const onLinkChange = (event) => {
+//   setFormData({
+//     ...formData,
+//     meetLink: event.target.value,
+//   });
+// };
 
+// const onDescriptionChange = (event) => {
+//   setFormData({
+//     ...formData,
+//     description: event.target.value,
+//   });
+// };
 
-
-
-  // const [formData, setFormData] = useState({
-  //   date: null,
-  //   time: null,
-  //   meetLink: "",
-  //   description: "",
-  // });
-
-  // const onDateChange = (date) => {
-  //   setFormData({
-  //     ...formData,
-  //     date,
-  //   });
-  // };
-
-  // const onTimeChange = (time) => {
-  //   setFormData({
-  //     ...formData,
-  //     time,
-  //   });
-  // };
-
-  // const onLinkChange = (event) => {
-  //   setFormData({
-  //     ...formData,
-  //     meetLink: event.target.value,
-  //   });
-  // };
-
-  // const onDescriptionChange = (event) => {
-  //   setFormData({
-  //     ...formData,
-  //     description: event.target.value,
-  //   });
-  // };
-
-  // const handleSubmit = () => {
-  //   // Submit the form data to your server or perform other actions
-  //   console.log("Submitting form data:", formData);
-  // };
+// const handleSubmit = () => {
+//   // Submit the form data to your server or perform other actions
+//   console.log("Submitting form data:", formData);
+// };
