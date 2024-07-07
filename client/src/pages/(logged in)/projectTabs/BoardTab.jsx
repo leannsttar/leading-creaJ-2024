@@ -686,7 +686,6 @@ export const BoardTab = () => {
   const [upcomingTasks, setUpcomingTasks] = useState([]);
 
   const getProject = async () => {
-    console.log("yes");
     try {
       setLoading(true);
       const response = await clienteAxios.get(
@@ -917,13 +916,13 @@ export const BoardTab = () => {
     setOpen(false);
   };
 
-  const changeSection = (newSection) => {
+  function changeSection(newSection) {
     setSection(newSection);
-  };
+  }
 
   useEffect(() => clearTimer, []);
 
-  if (project == "loading" || project == undefined) return <Loader screen />;
+  if (project == "loading" || project == undefined) return <Loader />;
 
   return (
     <>
