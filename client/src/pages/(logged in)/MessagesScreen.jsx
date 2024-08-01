@@ -10,7 +10,7 @@ import messageIcon from "../../assets/message.svg";
 import paperClip from "../../assets/paperclip.svg";
 import paperPlane from "../../assets/paper-plane.svg";
 
-import { Loader } from "@/components/Loader"; // Importa tu componente Loader
+import { Loader } from "@/components/Loader"; 
 
 const socket = io("http://localhost:5000");
 
@@ -50,7 +50,7 @@ export const MessagesScreen = () => {
   const [message, setMessage] = useState("");
   const [currentProject, setCurrentProject] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false); // Estado para el loader
+  const [loading, setLoading] = useState(false); 
 
   const scrollRef = useRef();
 
@@ -90,17 +90,22 @@ export const MessagesScreen = () => {
 
   useEffect(() => {
     if (currentProject?.id) {
-      setLoading(true); // Activar el loader
+      setLoading(true); 
       socket.emit("joinProject", currentProject.id);
 
-      socket.on("loadMessages", (loadedMessages) => {
+      const handleLoadMessages = (loadedMessages) => {
         setMessages(loadedMessages);
-        setLoading(false); // Desactivar el loader
-      });
+        setLoading(false); 
+      };
+
+      socket.on("loadMessages", handleLoadMessages);
 
       return () => {
-        socket.off("loadMessages");
+        socket.off("loadMessages", handleLoadMessages);
       };
+    } else {
+      setMessages([]); 
+      setLoading(false);
     }
   }, [currentProject]);
 
@@ -159,7 +164,6 @@ export const MessagesScreen = () => {
                 onClick={() => {
                   setChatOpened(true);
                   setCurrentProject(project);
-                  setMessages([]);
                 }}
               />
             ))}
@@ -193,7 +197,7 @@ export const MessagesScreen = () => {
               }}
               ref={scrollRef}
             >
-              {loading ? (  // Mostrar el loader mientras se carga
+              {loading ? (  
                 <div className="flex justify-center items-center h-full">
                   <Loader />
                 </div>
@@ -245,6 +249,7 @@ export const MessagesScreen = () => {
     </div>
   );
 };
+
 
 // import { useState, useRef, useEffect, useContext } from "react";
 // import io from "socket.io-client";
