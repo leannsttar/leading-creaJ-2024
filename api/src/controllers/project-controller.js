@@ -6,38 +6,40 @@ export const createProject = async (req, res) => {
   const { nombre, descripcion } = req.body;
   const usuarioId = req.usuario.id;
   if (!req.file || !nombre || !descripcion) {
-    return res.status(400).json({ error: "Faltan campos" });
+      return res.status(400).json({ error: "Faltan campos" });
   }
 
   const imagePath = req.file.path;
-
   const imageUrl = await processImage(imagePath);
 
   try {
-    const result = await prisma.$transaction(async (prisma) => {
-      const newProject = await prisma.projects.create({
-        data: {
-          name: nombre,
-          description: descripcion,
-          imagen: imageUrl,
-        },
+      const result = await prisma.$transaction(async (prisma) => {
+          const newProject = await prisma.projects.create({
+              data: {
+                  name: nombre,
+                  description: descripcion,
+                  imagen: imageUrl,
+              },
+          });
+
+          const newMember = await prisma.teamProject.create({
+              data: {
+                  userId: +usuarioId,
+                  role: "leader",
+                  projectId: newProject.id,
+              },
+          });
+
+          // Emit event to join the new project room
+          // req.io.to(usuarioId).emit('joinProject', newProject.id);
+
+          return { newProject, newMember };
       });
 
-      const newMember = await prisma.teamProject.create({
-        data: {
-          userId: +usuarioId,
-          role: "leader",
-          projectId: newProject.id,
-        },
-      });
-
-      return { newProject, newMember };
-    });
-
-    res.status(200).json(result);
+      res.status(200).json(result);
   } catch (error) {
-    console.error("Error al crear el proyecto:", error);
-    res.status(500).json({ error: "Error al crear el proyecto" });
+      console.error("Error al crear el proyecto:", error);
+      res.status(500).json({ error: "Error al crear el proyecto" });
   }
 };
 
@@ -46,32 +48,35 @@ export const addTeamMember = async (req, res) => {
   console.log(req.body);
 
   if (!correo) {
-    return res.status(400).json({ error: "Faltan campos" });
+      return res.status(400).json({ error: "Faltan campos" });
   }
 
   try {
-    const existingUser = await prisma.users.findUnique({
-      where: {
-        email: correo,
-      },
-    });
+      const existingUser = await prisma.users.findUnique({
+          where: {
+              email: correo,
+          },
+      });
 
-    if (!existingUser) {
-      return res.status(404).json({ error: "Usuario no encontrado" });
-    }
+      if (!existingUser) {
+          return res.status(404).json({ error: "Usuario no encontrado" });
+      }
 
-    const newMember = await prisma.teamProject.create({
-      data: {
-        userId: existingUser.id,
-        role: "member",
-        projectId: +proyectoId,
-      },
-    });
+      const newMember = await prisma.teamProject.create({
+          data: {
+              userId: existingUser.id,
+              role: "member",
+              projectId: +proyectoId,
+          },
+      });
 
-    return res.status(200).json(newMember);
+      // Emit event to join the project room
+      // req.io.to(existingUser.id).emit('joinProject', proyectoId);
+
+      return res.status(200).json(newMember);
   } catch (error) {
-    console.error("Error:", error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+      console.error("Error:", error);
+      return res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
