@@ -109,11 +109,8 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [section, setSection] = useState("progreso");
 
-  const [project, setProject] = useState("loading");
   const [taskUrl, setTaskUrl] = useState("");
   const [taskComment, setTaskComment] = useState("");
-
-  const [upcomingTasks, setUpcomingTasks] = useState([]);
 
   useEffect(() => {
     setOpen(isOpen);
@@ -193,10 +190,6 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
     }
   };
 
-  // useEffect(() => {
-  //   // getProject();
-  //   console.log("pr");
-  // }, [params.id]);
 
   const [messageApi, contextHolder] = message.useMessage();
 

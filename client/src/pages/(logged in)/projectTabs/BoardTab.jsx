@@ -590,22 +590,14 @@ const ColTasks = ({ title, numCards, children, index, project }) => {
 };
 
 export const BoardTab = () => {
-  const { usuario, userToken } = useSession();
 
   const params = useParams();
-
-  const timerRef = useRef();
 
   const [open, setOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [section, setSection] = useState("progreso");
-
   const [project, setProject] = useState("loading");
-  const [taskUrl, setTaskUrl] = useState("");
-  const [taskComment, setTaskComment] = useState("");
-
   const [upcomingTasks, setUpcomingTasks] = useState([]);
 
   const getProject = async () => {
@@ -671,65 +663,7 @@ export const BoardTab = () => {
           };
         })
       );
-      if (selectedTask) {
-        const task = response.data.tasks.find(
-          (task) => task.id === selectedTask.id
-        );
-        const updatedSelectedTask = {
-          id: task.id,
-          title: task.name,
-          tags: task.tags.map(
-            (taskTag) =>
-              response.data.tags.find(
-                (projectTag) => projectTag.id === taskTag.tagId
-              ).name
-          ),
-          description: task.description,
-          subTasks: task.subTasks,
-          progressList: task.subTasks.filter(
-            (subTask) => subTask.status == "terminado"
-          ).length,
-          date: format(new Date(task.due_date), "PP"),
-          members: task.assignees.map(
-            (assignee) =>
-              response.data.team.find(
-                (projectMember) => projectMember.user.id === assignee.userId
-              ).user.image
-          ),
-          files: task.files,
-          links: task.links,
-          comments: task.comments.map((comment) => {
-            const creator = response.data.team.find(
-              (member) => member.user.id === comment.authorId
-            );
-
-            let timeAgo = "Invalid date";
-            try {
-              const commentDate = parseISO(comment.createdAt);
-              timeAgo = formatDistanceToNow(commentDate, {
-                addSuffix: true,
-                locale: es,
-              });
-            } catch (error) {
-              console.error("Error parsing comment date:", error);
-            }
-
-            return {
-              id: comment.id,
-              text: comment.content,
-              timeAgo: timeAgo,
-              creatorId: creator.user.id,
-              creatorImage: creator.user.image,
-              creatorName: creator.user.name,
-            };
-          }),
-          status: task.status,
-        };
-        setSelectedTask(updatedSelectedTask);
-        setLoading(false);
-      } else {
-        setLoading(false);
-      }
+      setLoading(false)
     } catch (error) {
       console.log("Error al obtener el proyecto:", error);
     }
@@ -737,113 +671,19 @@ export const BoardTab = () => {
 
   useEffect(() => {
     getProject();
-    console.log("pr");
   }, [params.id]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const createLink = async () => {
-    try {
-      const formData = new FormData();
-
-      formData.append("authorId", usuario.id);
-      formData.append("taskId", selectedTask.id);
-      formData.append("link", taskUrl);
-
-      const response = await clienteAxios.postForm(
-        `/api/tasks/createLink`,
-        formData,
-        {
-          headers: {
-            Authorization: "Bearer " + userToken,
-          },
-        }
-      );
-
-      getProject();
-
-      messageApi.open({
-        type: "success",
-        content: "Link agregado exitosamente",
-      });
-    } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Hubo un error al guardar el link",
-      });
-      console.error("Error al enviar los datos", error);
-    }
-  };
-
-  const handleKeyDownLink = (e) => {
-    if (e.key === "Enter") {
-      createLink();
-    }
-  };
-
-  const createComment = async () => {
-    try {
-      const formData = new FormData();
-
-      formData.append("authorId", usuario.id);
-      formData.append("taskId", selectedTask.id);
-      formData.append("comment", taskComment);
-
-      const response = await clienteAxios.postForm(
-        `/api/tasks/createComment`,
-        formData,
-        {
-          headers: {
-            Authorization: "Bearer " + userToken,
-          },
-        }
-      );
-
-      getProject();
-
-      messageApi.open({
-        type: "success",
-        content: "Comentario agregado exitosamente",
-      });
-    } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Hubo un error al guardar el comentario",
-      });
-      console.error("Error al enviar los datos", error);
-    }
-  };
-
-  const handleKeyDownComment = (e) => {
-    if (e.key === "Enter") {
-      createComment();
-    }
-  };
-
-  const clearTimer = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  };
-
   const showDrawer = (task) => {
     setSelectedTask(task);
     setOpen(true);
-    // setLoading(true);
-    // timerRef.current = setTimeout(() => {
-    //   setLoading(false);
-    // }, 600);
   };
 
   const onClose = () => {
     setOpen(false);
   };
 
-  function changeSection(newSection) {
-    setSection(newSection);
-  }
-
-  useEffect(() => clearTimer, []);
 
   if (project == "loading" || project == undefined) return <Loader />;
 
@@ -854,7 +694,9 @@ export const BoardTab = () => {
       <div className="mx-5 my-9 lg:mx-11 lg:my-16 space-y-10 lg:flex lg:space-y-0 lg:justify-around">
         <ColTasks title={"Próximo"} numCards={12} index={1} project={project}>
           {upcomingTasks.map((task, index) => (
+            
             <TaskCardProject
+            key={task.id}
               index={task.id}
               taskData={task}
               onClick={() => showDrawer(task)}
