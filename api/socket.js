@@ -14,12 +14,12 @@ const createSocketServer = (server) => {
   });
 
   io.on('connection', (socket) => {
-    console.log('New client connected');
+    // console.log('New client connected');
 
     // Unirse a un proyecto
     socket.on('joinProject', async (projectId) => {
       socket.join(projectId.toString());
-      console.log(`Client joined project room: ${projectId}`);
+      // console.log(`Client joined project room: ${projectId}`);
       
       // Cargar mensajes existentes cuando el usuario se una a un proyecto
       const messages = await getMessagesByProjectId(projectId);
@@ -29,11 +29,11 @@ const createSocketServer = (server) => {
     // Enviar un mensaje
     socket.on('message', async (message) => {
         try {
-            console.log('Mensaje recibido:', message);
+            // console.log('Mensaje recibido:', message);
     
             // Guardar mensaje en la base de datos
             const savedMessage = await saveMessage(message);
-            console.log('Mensaje guardado:', savedMessage);
+            // console.log('Mensaje guardado:', savedMessage);
             
             // Enviar el mensaje a todos los miembros del proyecto
             io.to(message.projectId.toString()).emit('message', message);
@@ -56,7 +56,7 @@ const createSocketServer = (server) => {
         });
         userProjects.forEach((project) => {
           socket.join(project.id.toString());
-          console.log(`Client joined project room: ${project.id}`);
+          // console.log(`Client joined project room: ${project.id}`);
         });
       } catch (err) {
         console.error('Error fetching user projects:', err);

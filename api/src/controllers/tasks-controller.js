@@ -49,7 +49,7 @@ export const createTask = async (req, res) => {
 
   const membersArray = JSON.parse(members);
   const tagsArray = JSON.parse(tags);
-  const subtasksArray = JSON.parse(subtasks);
+  const subtasksArray = subtasks ? JSON.parse(subtasks) : [];
 
   try {
     await prisma.$transaction(async (prisma) => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { clienteAxios } from "@/config/clienteAxios";
-import { TaskCardProject } from "../../../components/(logged in)/TaskCardProject.jsx";
+import { TaskCardProject } from "../../../components/(logged in)/tasks/TaskCardProject.jsx";
 import { ReplyComponent } from "@/components/(logged in)/messages/ReplyComponent.jsx";
 import { useParams } from "react-router-dom";
 
@@ -9,6 +9,9 @@ import projectImage from "../../../assets/projectImage.jpg";
 import { ProyectosContext } from "@/config/ProyectosContext";
 
 import { Loader } from "@/components/Loader.jsx";
+import { useSession } from "@/config/useSession";
+import io from "socket.io-client";
+const socket = io("http://localhost:5000");
 
 const ActivityRecord = ({ img, message, date }) => {
   return (
@@ -27,10 +30,6 @@ const ActivityRecord = ({ img, message, date }) => {
 };
 
 export const OverviewTab = () => {
-  let messages1 = ["just ideas for next time", "I'll be there in 2 mins ⏰"];
-  let messages2 = ["woohoooo", "Haha oh man", "Haha that's terrifying 😂"];
-  let messages3 = ["aww", "omg, this is amazing", "woohoooo 🔥"];
-
   const [data, setData] = useState([
     {
       title: "Payment method via e-commerce",
@@ -113,8 +112,12 @@ export const OverviewTab = () => {
     },
   ]);
 
+  const { usuario } = useSession();
+
   const params = useParams();
   const [project, setProject] = useState("loading");
+
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -131,10 +134,28 @@ export const OverviewTab = () => {
     // console.log(project)
   }, [params.id]);
 
-  if (project == "loading")
-    return (
-      <Loader />
-    );
+  let lastSenderId = null;
+
+  useEffect(() => {
+    if (project?.id) {
+      socket.emit("joinProject", project.id);
+
+      const handleLoadMessages = (loadedMessages) => {
+        setMessages(loadedMessages);
+        console.log(loadedMessages);
+      };
+
+      socket.on("loadMessages", handleLoadMessages);
+
+      return () => {
+        socket.off("loadMessages", handleLoadMessages);
+      };
+    } else {
+      setMessages([]);
+    }
+  }, [project]);
+
+  if (project == "loading") return <Loader />;
 
   return (
     <div className="m-5 lg:m-12 lg:flex lg:gap-8">
@@ -157,9 +178,7 @@ export const OverviewTab = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-justify">
-                    {project.description} 
-                  </p>
+                  <p className="text-justify">{project.description}</p>
                 </div>
               </div>
             </div>
@@ -257,26 +276,27 @@ export const OverviewTab = () => {
             />
           </div>
         </div>
-        <div className="bg-[#F7F7F7] px-3 py-5 rounded-xl space-y-1 hidden lg:block">
-          <ReplyComponent
-            img={
-              "https://i.pinimg.com/564x/29/2d/df/292ddf14e631b318991cf7b6908a337c.jpg"
-            }
-            messages={messages1}
-          />
-          <ReplyComponent
-            img={
-              "https://i.pinimg.com/736x/e8/7b/33/e87b335fec272ea9359703b8f98d71db.jpg"
-            }
-            messages={messages2}
-            me
-          />
-          <ReplyComponent
-            img={
-              "https://i.pinimg.com/564x/53/09/ee/5309eed4c9ce7c7396390de9525cad29.jpg"
-            }
-            messages={messages3}
-          />
+        <div className="bg-[#F7F7F7] px-3 py-5 rounded-xl hidden lg:block h-[20rem] overflow-y-scroll">
+          <div className="space-y-1 mt-4">
+            {messages.length === 0 ? (
+              <div className="text-center text-gray-500">No hay mensajes</div>
+            ) : (
+              messages.map((msg, index) => {
+                const showImage = msg.sender.id !== lastSenderId;
+                lastSenderId = msg.sender.id;
+
+                return (
+                  <ReplyComponent
+                    key={index}
+                    messages={[msg.content]}
+                    img={showImage ? msg.sender.image : null}
+                    name={msg.sender.name}
+                    me={msg.sender.id === usuario.id}
+                  />
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
     </div>

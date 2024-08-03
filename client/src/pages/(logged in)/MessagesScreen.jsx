@@ -10,7 +10,7 @@ import messageIcon from "../../assets/message.svg";
 import paperClip from "../../assets/paperclip.svg";
 import paperPlane from "../../assets/paper-plane.svg";
 
-import { Loader } from "@/components/Loader"; 
+import { Loader } from "@/components/Loader";
 
 const socket = io("http://localhost:5000");
 
@@ -50,20 +50,22 @@ export const MessagesScreen = () => {
   const [message, setMessage] = useState("");
   const [currentProject, setCurrentProject] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+
+  let lastSenderId = null;
 
   const scrollRef = useRef();
 
   const handleSumbit = () => {
     if (currentProject && message) {
-      const newMessage = {  
+      const newMessage = {
         content: message,
         projectId: currentProject.id,
         sender: { id: usuario.id, name: usuario.name, image: usuario.image },
-        senderId: usuario.id
+        senderId: usuario.id,
       };
       socket.emit("message", newMessage);
-      console.log('Enviando mensaje:', newMessage);
+      console.log("Enviando mensaje:", newMessage);
       setMessage("");
     }
   };
@@ -90,12 +92,12 @@ export const MessagesScreen = () => {
 
   useEffect(() => {
     if (currentProject?.id) {
-      setLoading(true); 
+      setLoading(true);
       socket.emit("joinProject", currentProject.id);
 
       const handleLoadMessages = (loadedMessages) => {
         setMessages(loadedMessages);
-        setLoading(false); 
+        setLoading(false);
       };
 
       socket.on("loadMessages", handleLoadMessages);
@@ -104,7 +106,7 @@ export const MessagesScreen = () => {
         socket.off("loadMessages", handleLoadMessages);
       };
     } else {
-      setMessages([]); 
+      setMessages([]);
       setLoading(false);
     }
   }, [currentProject]);
@@ -197,19 +199,27 @@ export const MessagesScreen = () => {
               }}
               ref={scrollRef}
             >
-              {loading ? (  
+              {loading ? (
                 <div className="flex justify-center items-center h-full">
                   <Loader />
                 </div>
               ) : (
-                messages.map((msg, index) => (
-                  <ReplyComponent
-                    key={index}
-                    messages={[msg.content]}
-                    img={msg.sender.image}
-                    me={msg.sender.id === usuario.id}
-                  />
-                ))
+                <div className="mt-10 space-y-2">
+                  {messages.map((msg, index) => {
+                    const showImage = msg.sender.id !== lastSenderId;
+                    lastSenderId = msg.sender.id;
+
+                    return (
+                      <ReplyComponent
+                        key={index}
+                        messages={[msg.content]}
+                        img={showImage ? msg.sender.image : null}
+                        name={msg.sender.name}
+                        me={msg.sender.id === usuario.id}
+                      />
+                    );
+                  })}
+                </div>
               )}
             </div>
             <div className="w-full flex gap-4 px-6">
@@ -249,7 +259,6 @@ export const MessagesScreen = () => {
     </div>
   );
 };
-
 
 // import { useState, useRef, useEffect, useContext } from "react";
 // import io from "socket.io-client";

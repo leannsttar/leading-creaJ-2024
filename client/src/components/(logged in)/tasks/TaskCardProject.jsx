@@ -1,11 +1,11 @@
 import React, { useState, useEffect, memo } from "react";
 import { Button, Drawer, Radio, Space } from "antd";
 
-import threeDots from "../../assets/threeDotsSmaller.svg";
-import flagTaskIcon from "../../assets/flagTaskIcon.svg";
-import linesTaskIcon from "../../assets/LinesTaskIcon.svg";
-import fileTaskIcon from "../../assets/fileTaskIcon.svg";
-import commentTaskIcon from "../../assets/commentTaskIcon.svg";
+import threeDots from "../../../assets/threeDotsSmaller.svg";
+import flagTaskIcon from "../../../assets/flagTaskIcon.svg";
+import linesTaskIcon from "../../../assets/LinesTaskIcon.svg";
+import fileTaskIcon from "../../../assets/fileTaskIcon.svg";
+import commentTaskIcon from "../../../assets/commentTaskIcon.svg";
 
 export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
 

@@ -7,7 +7,6 @@ import threeDotsProfile from "../../assets/threeDotsProfile.svg"
 import { TitleSection } from "../../components/ui/TitleSection";
 import { useSession } from "@/config/useSession";
 
-import { Loader } from "@/components/Loader";
 
 const MessageComponent = ({ img, name, message }) => {
   return (
