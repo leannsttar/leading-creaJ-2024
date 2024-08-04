@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+
 import threeLinesMenu from "../assets/3linesMenu.svg";
 import bellNotification from "../assets/bellNotification.svg";
 import avatar from "../assets/Avatar.jpg";
 
 export const HeaderMobileWorkspace = ({ onToggle }) => {
-
   const [prevScrollPos, setPrevScrollPos] = useState(window.scrollY);
   const [visible, setVisible] = useState(true);
 
@@ -65,10 +66,11 @@ export const HeaderMobileWorkspace = ({ onToggle }) => {
                 </svg>
               </label>
             </div>
-            <div className="w-12 h-12 grid place-content-center rounded-xl bg-[#F5F5F5]">
-              <img src={bellNotification} alt="" className="w-5" />
-            </div>
-
+            <Link to={'/dashboard/notifications'}>
+              <div className="w-12 h-12 grid place-content-center rounded-xl bg-[#F5F5F5]">
+                <img src={bellNotification} alt="" className="w-5" />
+              </div>
+            </Link>
             <img
               src={avatar}
               alt=""

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, memo } from "react";
 import { Button, Drawer, Radio, Space } from "antd";
 
+import { FiLink } from "react-icons/fi";
+
 import threeDots from "../../../assets/threeDotsSmaller.svg";
 import flagTaskIcon from "../../../assets/flagTaskIcon.svg";
 import linesTaskIcon from "../../../assets/LinesTaskIcon.svg";
@@ -8,7 +10,6 @@ import fileTaskIcon from "../../../assets/fileTaskIcon.svg";
 import commentTaskIcon from "../../../assets/commentTaskIcon.svg";
 
 export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
-
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
 
@@ -22,7 +23,6 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
   if (loading) {
     return <p>Cargando...</p>;
   }
-
 
   return (
     <>
@@ -75,7 +75,11 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
               );
             })}
           </div>
-          <div className="flex gap-10">
+          <div className="flex gap-5">
+            <div className="flex items-center gap-2">
+              <FiLink />
+              <p>{data.links.length}</p>
+            </div>
             <div className="flex items-center gap-2">
               <img src={fileTaskIcon} alt="Icon" />
               <p>{data.files.length}</p>

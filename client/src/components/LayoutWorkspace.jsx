@@ -185,7 +185,6 @@ const LayoutProject = () => {
         setProject(null);
       }
     }
-    console.log('log')
   }, [params.id, proyectos]);
 
   // useEffect(() => {
@@ -268,13 +267,11 @@ const LayoutProject = () => {
           <div className="flex flex-col h-full justify-between">
             <div className="flex flex-col gap-1 justify-center w-full lg:mt-[1rem]">
               <div className="flex gap-2 items-center">
-                
                 <Image
                   width={35}
                   height={35}
                   src={project.imagen}
                   className="rounded-md object-cover"
-                  
                 />
                 <p className="text-[1.8rem] font-semibold">{project.name}</p>
                 <img src={editIcon} alt="" className="w-6 h-6 ml-3" />
@@ -286,10 +283,7 @@ const LayoutProject = () => {
                   {project !== "loading" && project.users && (
                     <div className="flex">
                       {project.users.slice(0, 3).map((user, index) => (
-                        <AvatarMember
-                          key={index}
-                          img={user.image}
-                        />
+                        <AvatarMember key={index} img={user.image} />
                       ))}
                       {project.users.length > 3 && (
                         <div className="bg-[#D9D9D9] w-8 h-8 flex justify-center items-center rounded-full relative right-6 font-semibold">
@@ -524,12 +518,14 @@ export const LayoutWorkspace = () => {
               onClick={closeSidebar}
             ></div>
           )}
-          <HeaderMobileWorkspace
-            isOpen={isSidebarOpen}
-            onToggle={toggleSidebar}
-          />
-          <MobileSideBar isOpen={isSidebarOpen} onClose={closeSidebar} />
-          {renderComponentBasedOnPath()}
+          <ProyectosProvider>
+            <HeaderMobileWorkspace
+              isOpen={isSidebarOpen}
+              onToggle={toggleSidebar}
+            />
+            <MobileSideBar isOpen={isSidebarOpen} onClose={closeSidebar} />
+            {renderComponentBasedOnPath()}
+          </ProyectosProvider>
         </div>
       )}
     </>
