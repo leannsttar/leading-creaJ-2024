@@ -2,80 +2,45 @@ import { prisma } from "../../config/prisma.js";
 import { processImage } from "../../uploadImage.js";
 import cloudinary from "../../cloudinaryConfig.js";
 
+
 export const createProject = async (req, res) => {
   const { nombre, descripcion } = req.body;
   const usuarioId = req.usuario.id;
   if (!req.file || !nombre || !descripcion) {
-      return res.status(400).json({ error: "Faltan campos" });
+    return res.status(400).json({ error: "Faltan campos" });
   }
 
   const imagePath = req.file.path;
   const imageUrl = await processImage(imagePath);
 
   try {
-      const result = await prisma.$transaction(async (prisma) => {
-          const newProject = await prisma.projects.create({
-              data: {
-                  name: nombre,
-                  description: descripcion,
-                  imagen: imageUrl,
-              },
-          });
-
-          const newMember = await prisma.teamProject.create({
-              data: {
-                  userId: +usuarioId,
-                  role: "leader",
-                  projectId: newProject.id,
-              },
-          });
-
-          return { newProject, newMember };
+    const result = await prisma.$transaction(async (prisma) => {
+      const newProject = await prisma.projects.create({
+        data: {
+          name: nombre,
+          description: descripcion,
+          imagen: imageUrl,
+        },
       });
-
-      res.status(200).json(result);
-  } catch (error) {
-      console.error("Error al crear el proyecto:", error);
-      res.status(500).json({ error: "Error al crear el proyecto" });
-  }
-};
-
-export const addTeamMember = async (req, res) => {
-  const { correo, proyectoId } = req.body;
-  console.log(req.body);
-
-  if (!correo) {
-      return res.status(400).json({ error: "Faltan campos" });
-  }
-
-  try {
-      const existingUser = await prisma.users.findUnique({
-          where: {
-              email: correo,
-          },
-      });
-
-      if (!existingUser) {
-          return res.status(404).json({ error: "Usuario no encontrado" });
-      }
 
       const newMember = await prisma.teamProject.create({
-          data: {
-              userId: existingUser.id,
-              role: "member",
-              projectId: +proyectoId,
-          },
+        data: {
+          userId: +usuarioId,
+          role: "leader",
+          projectId: newProject.id,
+        },
       });
 
-      // Emit event to join the project room
-      // req.io.to(existingUser.id).emit('joinProject', proyectoId);
+      return { newProject, newMember };
+    });
 
-      return res.status(200).json(newMember);
+    res.status(200).json(result);
   } catch (error) {
-      console.error("Error:", error);
-      return res.status(500).json({ error: "Error interno del servidor" });
+    console.error("Error al crear el proyecto:", error);
+    res.status(500).json({ error: "Error al crear el proyecto" });
   }
 };
+
 
 //TODA ESTA PARTE ES EL CONTROLADOR DE LA MEETING
 export const createMeeting = async (req, res) => {
@@ -144,6 +109,30 @@ export const confirmAttendance = async (req, res) => {
 };
 
 //AQUÍ DE PROYECTOS
+export const getProjectInvitations = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    if (!projectId) {
+      return res.status(400).json({ message: 'El ID del proyecto es requerido.' });
+    }
+
+    const invitations = await prisma.invitations.findMany({
+      where: {
+        projectId: parseInt(projectId),
+      },
+    });
+
+    if (!invitations.length) {
+      return res.status(404).json({ message: 'No se encontraron invitaciones para este proyecto.' });
+    }
+
+    return res.status(200).json(invitations);
+  } catch (error) {
+    console.error('Error al obtener las invitaciones del proyecto:', error);
+    return res.status(500).json({ message: 'Error al obtener las invitaciones del proyecto.' });
+  }
+};
 
 export const getAllProjects = async (req, res) => {
   const { usuarioId } = req.params;
@@ -167,7 +156,7 @@ export const getAllProjects = async (req, res) => {
           },
           include: {
             user: {
-              select: { image: true, name: true, id: true },
+              select: { image: true, name: true, id: true, email: true },
             },
           },
         });

@@ -11,7 +11,6 @@ import { Loader } from "./Loader";
 
 import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
-
 import configIcon from "../assets/configIcon.svg";
 import threeDotsSmaller from "../assets/threeDotsSmaller.svg";
 import plusIcon from "../assets/plusIcon.svg";
@@ -71,12 +70,12 @@ export const LayoutHome = () => {
   const [openModal, setOpenModal] = useState(false);
 
   const onClose = () => {
-    setOpenModal(false)
-  }
+    setOpenModal(false);
+  };
 
   return (
     <div className="w-full md:max-h-screen lg:overflow-y-hidden md:pt-[5rem] lg:pt-0">
-      <CreateProjectModal openModal={openModal} onClose={onClose}/>
+      <CreateProjectModal openModal={openModal} onClose={onClose} />
       <div className="h-[10rem] px-10 w-full items-center hidden lg:flex">
         <div className="flex justify-between items-center w-full">
           <div>
@@ -181,6 +180,7 @@ const LayoutProject = () => {
 
   const { logout, usuario, userToken } = useSession();
   const params = useParams();
+  console.log(params)
   const [project, setProject] = useState("loading");
   const [projectt, setProjectt] = useState("loading");
   const [modal1Open, setModal1Open] = useState(false);
@@ -193,11 +193,28 @@ const LayoutProject = () => {
       );
       if (projectFound) {
         setProject(projectFound);
+        console.log(project);
       } else {
         setProject(null);
       }
     }
   }, [params.id, proyectos]);
+
+  const checkExistingInvitation = async (projectId, email) => {
+    try {
+      const response = await clienteAxios.get(
+        `/api/projects/getProjectInvitations/${projectId}`,
+        
+      );
+      const invitations = response.data;
+      console.log(invitations)
+
+      return invitations.some((invitation) => invitation.email === email);
+    } catch (error) {
+      console.error("Error al verificar las invitaciones existentes:", error);
+      return false;
+    }
+  };
 
   // useEffect(() => {
   //   const fetchProject = async () => {
@@ -242,6 +259,27 @@ const LayoutProject = () => {
         messageApi.open({
           type: "error",
           content: "Por favor, ingresa un correo válido.",
+        });
+        return;
+      }
+
+      if (project.users.some((user) => user.email === newMemberEmail)) {
+        messageApi.open({
+          type: "error",
+          content: "El usuario ya está en el proyecto.",
+        });
+        return;
+      }
+
+      const invitationExists = await checkExistingInvitation(
+        params.id,
+        newMemberEmail,
+      );
+
+      if (invitationExists) {
+        messageApi.open({
+          type: "error",
+          content: "Ya existe una invitación para este correo.",
         });
         return;
       }

@@ -7,8 +7,9 @@ import { LoginPage } from "../pages/LoginPage.jsx";
 import { SignUpPage } from "../pages/SignUpPage.jsx";
 import { Header } from "../components/Header.jsx";
 import { Footer } from "../components/Footer.jsx";
-import { NotFoundPage } from "../pages/NotFoundPage.jsx"
+import { NotFoundPage } from "../pages/NotFoundPage.jsx";
 import { VerifyAccount } from "@/pages/VerifyAccount.jsx";
+import { AcceptInvitation } from "@/pages/AcceptInvitation.jsx";
 
 const publicRoutes = [
   {
@@ -72,8 +73,12 @@ const publicRoutes = [
   },
   {
     path: "/verifyAccount",
-    element: <VerifyAccount />
-  }
+    element: <VerifyAccount />,
+  },
+  {
+    path: "/acceptInvitation/:id",
+    element: <AcceptInvitation />,
+  },
 ];
 
 export default publicRoutes;

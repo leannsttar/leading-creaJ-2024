@@ -35,7 +35,6 @@ const ActivityRecord = ({ img, message, date }) => {
 };
 
 export const OverviewTab = () => {
-
   const { usuario } = useSession();
   const params = useParams();
 
@@ -232,14 +231,18 @@ export const OverviewTab = () => {
               <div className="bg-[#5B5B5B] w-[6rem] h-[5px] rounded-full" />
             </div>
             <div className="flex flex-col gap-3 lg:grid lg:grid-cols-2 2xl:grid-cols-3">
-              {upcomingTasks.map((task, index) => (
-                <TaskCardProject
-                  key={task.id}
-                  index={task.id}
-                  taskData={task}
-                  onClick={() => showDrawer(task)}
-                />
-              ))}
+              {upcomingTasks.length === 0 ? (
+                <p className="text-gray-500">No hay tareas próximas por ahora.</p>
+              ) : (
+                upcomingTasks.map((task) => (
+                  <TaskCardProject
+                    key={task.id}
+                    index={task.id}
+                    taskData={task}
+                    onClick={() => showDrawer(task)}
+                  />
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -280,7 +283,10 @@ export const OverviewTab = () => {
               />
             </div>
           </div>
-          <div className="bg-[#F7F7F7] px-3 py-5 rounded-xl hidden lg:block h-[20rem] overflow-y-scroll " ref={scrollRef}>
+          <div
+            className="bg-[#F7F7F7] px-3 py-5 rounded-xl hidden lg:block h-[20rem] overflow-y-scroll "
+            ref={scrollRef}
+          >
             <div className="space-y-1 mt-4">
               {messages.length === 0 ? (
                 <div className="text-center text-gray-500">No hay mensajes</div>
