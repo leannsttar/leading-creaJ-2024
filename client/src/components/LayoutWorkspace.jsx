@@ -5,6 +5,8 @@ import { Link, useLocation, Outlet, useParams } from "react-router-dom";
 import { ProyectosProvider } from "@/config/ProyectosContext";
 import { ProyectosContext } from "@/config/ProyectosContext";
 
+import { CreateProjectModal } from "@/components/modal/CreateProjectModal";
+
 import { Loader } from "./Loader";
 
 import { clienteAxios } from "@/config/clienteAxios";
@@ -66,8 +68,15 @@ const AvatarMember = ({ img, className, index }) => {
 export const LayoutHome = () => {
   const { logout, usuario } = useSession(); //datos del usuario y función para el login y cerrar sesión
 
+  const [openModal, setOpenModal] = useState(false);
+
+  const onClose = () => {
+    setOpenModal(false)
+  }
+
   return (
     <div className="w-full md:max-h-screen lg:overflow-y-hidden md:pt-[5rem] lg:pt-0">
+      <CreateProjectModal openModal={openModal} onClose={onClose}/>
       <div className="h-[10rem] px-10 w-full items-center hidden lg:flex">
         <div className="flex justify-between items-center w-full">
           <div>
@@ -85,7 +94,10 @@ export const LayoutHome = () => {
             <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
               <img src={threeDotsSmaller} alt="" />
             </div>
-            <div className="bg-black rounded-md text-white flex gap-3 items-center py-2 px-3 cursor-pointer">
+            <div
+              onClick={() => setOpenModal(true)}
+              className="bg-black rounded-md text-white flex gap-3 items-center py-2 px-3 cursor-pointer"
+            >
               <img src={plusIcon} alt="" className="w-4" />
               <p className="hidden xl:block">Nuevo proyecto</p>
             </div>

@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import nodemailer from "nodemailer";
-import { v4 as uuidv4 } from "uuid"; // Importa v4 desde uuid
+import { v4 as uuidv4 } from "uuid"; 
 
 const prisma = new PrismaClient();
 
@@ -22,7 +22,7 @@ export const signup = async (req, res) => {
   console.log(name, email, password);
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const confirmationToken = uuidv4(); // Genera el token de confirmación
+  const confirmationToken = uuidv4(); 
 
   try {
     const user = await prisma.users.create({

@@ -30,9 +30,6 @@ export const createProject = async (req, res) => {
               },
           });
 
-          // Emit event to join the new project room
-          // req.io.to(usuarioId).emit('joinProject', newProject.id);
-
           return { newProject, newMember };
       });
 

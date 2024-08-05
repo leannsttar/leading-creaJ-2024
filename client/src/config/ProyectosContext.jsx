@@ -25,7 +25,9 @@ const ProyectosProvider = ({ children }) => {
   }, []);
 
   const addProject = (newProject) => {
-    setProyectos([...proyectos, newProject]);
+    // console.log(newProject)
+    // setProyectos([...proyectos, newProject]);
+    obtenerProyectos()
   };
 
   const editProject = (updatedProject) => {

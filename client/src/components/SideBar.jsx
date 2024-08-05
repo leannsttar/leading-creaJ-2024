@@ -410,8 +410,10 @@ export const SideBar = () => {
               <hr className="w-[87%] m-auto" />
               <div className="mt-7">
                 <div
-                  onClick={isShrinked ? () => setModal2Open(true) : ""}
-                  className={`flex justify-end px-4 ${isShrinked ? 'cursor-pointer' : ''}`}
+                  onClick={isShrinked ? () => setModal2Open(true) : null}
+                  className={`flex justify-end px-4 ${
+                    isShrinked ? "cursor-pointer" : ""
+                  }`}
                 >
                   <p
                     className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${
@@ -530,7 +532,9 @@ export const SideBar = () => {
                 style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
               >
                 <p className="font-semibold">{usuario.name}</p>
-                <p className="text-[.7rem] text-[#667085]">{usuario.email}</p>
+                <p className="text-[.7rem] text-[#667085] overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[8rem]">
+                  {usuario.email}
+                </p>
               </div>
             </div>
             <Dropdown

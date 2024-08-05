@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSession } from "@/config/useSession";
 
@@ -10,7 +10,11 @@ export const LoginPage = () => {
   const { login } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [messageApi, contextHolder] = message.useMessage();
+  const [messageType, setMessageType] = useState(""); // Success or error message type
+  const [messageContent, setMessageContent] = useState(""); // Message content
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -28,20 +32,25 @@ export const LoginPage = () => {
     if (data.token) {
       await login(data);
       localStorage.setItem("token", data.token);
-      messageApi.open({
-        type: "success",
-        content: "Inicio de sesión exitoso",
-      });
+      setMessageType("success");
+      setMessageContent("Inicio de sesión exitoso");
       navigate("/dashboard");
     } else {
-      messageApi.open({
-        type: "error",
-        content: data.error,
-      });
+      setMessageType("error");
+      setMessageContent(data.error);
     }
   };
 
-  const [messageApi, contextHolder] = message.useMessage();
+  useEffect(() => {
+    if (messageType && messageContent) {
+      messageApi.open({
+        type: messageType,
+        content: messageContent,
+      });
+    }
+  }, [messageType, messageContent, messageApi]);
+
+  
 
   return (
     <>
