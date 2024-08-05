@@ -15,7 +15,7 @@ import { es } from "date-fns/locale";
 import { clienteAxios } from "@/config/clienteAxios";
 
 import LinkPreview from "@ashwamegh/react-link-preview";
-
+  
 // If you're using built in layout, you will need to import this css
 import "@ashwamegh/react-link-preview/dist/index.css";
 

@@ -8,6 +8,7 @@ import { SignUpPage } from "../pages/SignUpPage.jsx";
 import { Header } from "../components/Header.jsx";
 import { Footer } from "../components/Footer.jsx";
 import { NotFoundPage } from "../pages/NotFoundPage.jsx"
+import { VerifyAccount } from "@/pages/VerifyAccount.jsx";
 
 const publicRoutes = [
   {
@@ -69,6 +70,10 @@ const publicRoutes = [
       </>
     ),
   },
+  {
+    path: "/verifyAccount",
+    element: <VerifyAccount />
+  }
 ];
 
 export default publicRoutes;

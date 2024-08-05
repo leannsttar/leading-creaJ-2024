@@ -409,7 +409,10 @@ export const SideBar = () => {
               </div>
               <hr className="w-[87%] m-auto" />
               <div className="mt-7">
-                <div className="flex justify-end px-4">
+                <div
+                  onClick={isShrinked ? () => setModal2Open(true) : ""}
+                  className={`flex justify-end px-4 ${isShrinked ? 'cursor-pointer' : ''}`}
+                >
                   <p
                     className={`text-[.75rem] font-semibold text-[#787486] mr-auto ${
                       isShrinked ? "opacity-0 absolute left-0" : ""
@@ -534,24 +537,32 @@ export const SideBar = () => {
               menu={{
                 items,
               }}
-              placement="top"
+              placement="topLeft"
             >
               <Button
                 className={`px-2 py-4 flex items-center ${
                   isShrinked ? "opacity-0 absolute" : ""
                 } `}
               >
-                <img
-                  src={threeDots}
-                  alt=""
-                  className={`cursor-pointer  ${
-                    isShrinked ? "opacity-0 absolute" : ""
-                  }`}
-                  style={{
-                    transition: "opacity 150ms ease",
-                    transition: "position 300ms ease",
-                  }}
-                />
+                {isShrinked ? (
+                  <img
+                    src={usuario.image}
+                    alt=""
+                    className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={threeDots}
+                    alt=""
+                    className={`cursor-pointer  ${
+                      isShrinked ? "opacity-0 absolute" : ""
+                    }`}
+                    style={{
+                      transition: "opacity 150ms ease",
+                      transition: "position 300ms ease",
+                    }}
+                  />
+                )}
               </Button>
             </Dropdown>
             <Modal
@@ -1086,7 +1097,7 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
               menu={{
                 items,
               }}
-              placement="top"
+              placement="topRight"
             >
               <Button
                 className={`px-2 py-4 flex items-center ${

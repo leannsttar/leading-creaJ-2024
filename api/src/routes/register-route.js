@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { signup } from "../controllers/register-controller.js";
+import { resendEmail, signup } from "../controllers/register-controller.js";
+import { confirmEmail } from "../controllers/confirm-controller.js";
 import { auth, perfil } from "../../middleware/auth.js";
 
 import multer from "multer";
@@ -19,8 +20,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.post("/signup", signup);
+router.post("/resendConfirmation", resendEmail)
+router.get("/confirm", confirmEmail); 
 router.get("/", auth, perfil);
-
 router.post("/editUser", upload.single("imagen"), editUser);
 
 export default router;

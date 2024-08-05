@@ -1,10 +1,112 @@
-import React from 'react';
-import { Calendar } from 'antd';
+import React from "react";
+import { Badge, Calendar } from "antd";
+const getListData = (value) => {
+  let listData = []; // Specify the type of listData
+  switch (value.date()) {
+    case 8:
+      listData = [
+        {
+          type: "",
+          content: (
+            <div className="absolute bottom-0 left-0 items-center flex gap-1">
+              <img className="w-7 h-7 object-cover rounded-sm" src="https://i.pinimg.com/564x/45/3f/4c/453f4cfeb410db675c4411fcb135ad12.jpg" alt="" />
+              <p
+                onClick={() => alert("holfjasd")}
+                className=""
+              >
+                Agregar 
+              </p>
+            </div>
+          ),
+        },
+        {
+          type: "success",
+          content: "This is usual event.",
+        },
+      ];
+      break;
+    case 10:
+      listData = [
+        {
+          type: "warning",
+          content: "This is warning event.",
+        },
+        {
+          type: "success",
+          content: "This is usual event.",
+        },
+        {
+          type: "error",
+          content: "This is error event.",
+        },
+      ];
+      break;
+    case 15:
+      listData = [
+        {
+          type: "warning",
+          content: "This is warning event",
+        },
+        {
+          type: "success",
+          content: "This is very long usual event......",
+        },
+        {
+          type: "error",
+          content: "This is error event 1.",
+        },
+        {
+          type: "error",
+          content: "This is error event 2.",
+        },
+        {
+          type: "error",
+          content: "This is error event 3.",
+        },
+        {
+          type: "error",
+          content: "This is error event 4.",
+        },
+      ];
+      break;
+    default:
+  }
+  return listData || [];
+};
+const getMonthData = (value) => {
+  if (value.month() === 8) {
+    return 1394;
+  }
+};
 
 export const TasksCalendarTab = (value, mode) => {
-  const onPanelChange = (value, mode) => {
-    console.log(value.format('YYYY-MM-DD'), mode);
-  }; return <Calendar onPanelChange={onPanelChange} />;
+  const monthCellRender = (value) => {
+    const num = getMonthData(value);
+    return num ? (
+      <div className="notes-month">
+        <section>{num}</section>
+        <span>Backlog number</span>
+      </div>
+    ) : null;
+  };
+  const dateCellRender = (value) => {
+    const listData = getListData(value);
+    return (
+      <ul className="events">
+        {listData.map((item) => (
+          <li key={item.content}>
+            <Badge status={item.type} text={item.content} />
+          </li>
+        ))}
+      </ul>
+    );
+  };
+  const cellRender = (current, info) => {
+    if (info.type === "date") return dateCellRender(current);
+    if (info.type === "month") return monthCellRender(current);
+    return info.originNode;
+  };
+  return <Calendar cellRender={cellRender} />;
 };
 
 //   // Estado para almacenar el mes actual y el día actual

@@ -17,6 +17,10 @@ export const login = async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
+    if (!user.confirmed) {
+      return res.status(403).json({ error: 'Correo electrónico no confirmado' });
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -27,7 +31,7 @@ export const login = async (req, res) => {
 
     res.status(200).json({ message: 'Inicio de sesión exitoso', token });
   } catch (error) {
-    res.status(500).json({ error: 'Algo pasó' });
+    res.status(500).json({ error: 'Error al iniciar sesion' });
     console.log(error);
   }
 };

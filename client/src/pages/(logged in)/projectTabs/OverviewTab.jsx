@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { clienteAxios } from "@/config/clienteAxios";
 import { TaskCardProject } from "../../../components/(logged in)/tasks/TaskCardProject.jsx";
 import { ReplyComponent } from "@/components/(logged in)/messages/ReplyComponent.jsx";
@@ -148,6 +148,13 @@ export const OverviewTab = () => {
     }
   }, [project]);
 
+  const scrollRef = useRef();
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   if (loading) return <Loader />;
 
   return (
@@ -273,7 +280,7 @@ export const OverviewTab = () => {
               />
             </div>
           </div>
-          <div className="bg-[#F7F7F7] px-3 py-5 rounded-xl hidden lg:block h-[20rem] overflow-y-scroll">
+          <div className="bg-[#F7F7F7] px-3 py-5 rounded-xl hidden lg:block h-[20rem] overflow-y-scroll " ref={scrollRef}>
             <div className="space-y-1 mt-4">
               {messages.length === 0 ? (
                 <div className="text-center text-gray-500">No hay mensajes</div>

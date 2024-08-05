@@ -13,6 +13,8 @@ model Users {
   name              String?
   password          String?
   image             String
+  confirmed         Boolean              @default(false)
+  confirmationToken String?              // null después de confirmar
   comments          Comments[]
   files             Files[]
   links             Links[]
