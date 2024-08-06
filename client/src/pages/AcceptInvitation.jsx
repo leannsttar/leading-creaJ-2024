@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import { clienteAxios } from "@/config/clienteAxios";
 import { useSession } from "@/config/useSession";
 import { Loader } from "@/components/Loader";
 
@@ -22,8 +22,8 @@ export const AcceptInvitation = () => {
       if (hasAccepted) return
 
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/projects/acceptInvitation/${id}`
+        const response = await clienteAxios.get(
+          `/api/projects/acceptInvitation/${id}`
         );
         setMessage(response.data.message);
         if (response.ok) {

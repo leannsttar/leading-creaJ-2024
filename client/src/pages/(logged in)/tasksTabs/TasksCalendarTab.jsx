@@ -1,113 +1,155 @@
-import React from "react";
-import { Badge, Calendar } from "antd";
+import React, { useState } from 'react';
+import { Badge, Calendar, Popover, Modal } from 'antd';
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+import locale from 'antd/es/date-picker/locale/es_ES';
+
+const tasks = [
+  { id: 1, title: 'Tarea 1', dueDate: '2024-08-10', status: 'warning' },
+  { id: 2, title: 'Tarea 2', dueDate: '2024-08-15', status: 'success' },
+  { id: 3, title: 'Tarea 3', dueDate: '2024-08-10', status: 'warning' },
+  { id: 4, title: 'Tarea 4', dueDate: '2024-08-10', status: 'warning' },
+  { id: 5, title: 'Tarea 5', dueDate: '2024-08-10', status: 'warning' },
+  { id: 6, title: 'Tarea 6', dueDate: '2024-08-10', status: 'warning' },
+];
+
 const getListData = (value) => {
-  let listData = []; // Specify the type of listData
-  switch (value.date()) {
-    case 8:
-      listData = [
-        {
-          type: "",
-          content: (
-            <div className="absolute bottom-0 left-0 items-center flex gap-1">
-              <img className="w-7 h-7 object-cover rounded-sm" src="https://i.pinimg.com/564x/45/3f/4c/453f4cfeb410db675c4411fcb135ad12.jpg" alt="" />
-              <p
-                onClick={() => alert("holfjasd")}
-                className=""
-              >
-                Agregar 
-              </p>
-            </div>
-          ),
-        },
-        {
-          type: "success",
-          content: "This is usual event.",
-        },
-      ];
-      break;
-    case 10:
-      listData = [
-        {
-          type: "warning",
-          content: "This is warning event.",
-        },
-        {
-          type: "success",
-          content: "This is usual event.",
-        },
-        {
-          type: "error",
-          content: "This is error event.",
-        },
-      ];
-      break;
-    case 15:
-      listData = [
-        {
-          type: "warning",
-          content: "This is warning event",
-        },
-        {
-          type: "success",
-          content: "This is very long usual event......",
-        },
-        {
-          type: "error",
-          content: "This is error event 1.",
-        },
-        {
-          type: "error",
-          content: "This is error event 2.",
-        },
-        {
-          type: "error",
-          content: "This is error event 3.",
-        },
-        {
-          type: "error",
-          content: "This is error event 4.",
-        },
-      ];
-      break;
-    default:
-  }
-  return listData || [];
-};
-const getMonthData = (value) => {
-  if (value.month() === 8) {
-    return 1394;
-  }
+  const formattedDate = value.format('YYYY-MM-DD');
+  return tasks.filter(task => task.dueDate === formattedDate);
 };
 
-export const TasksCalendarTab = (value, mode) => {
-  const monthCellRender = (value) => {
-    const num = getMonthData(value);
-    return num ? (
-      <div className="notes-month">
-        <section>{num}</section>
-        <span>Backlog number</span>
+const getMonthData = (value) => {
+  const formattedMonth = value.format('YYYY-MM');
+  return tasks.filter(task => dayjs(task.dueDate).format('YYYY-MM') === formattedMonth);
+};
+
+export const TasksCalendarTab = () => {
+  const [value, setValue] = useState(dayjs());
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+
+  const showMonthTasksModal = (value) => {
+    const listData = getMonthData(value);
+    setModalContent(
+      <div className="p-4 max-h-96 overflow-y-auto">
+        {listData.length > 0 ? (
+          <ul className="events space-y-2">
+            {listData.map((item) => (
+              <li key={item.id}>
+                <Badge status={item.status} text={item.title} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No hay tareas para este mes.</p>
+        )}
       </div>
-    ) : null;
+    );
+    setModalVisible(true);
   };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+  };
+
+  const onSelect = (newValue) => {
+    setValue(newValue);
+  };
+
+  const onPanelChange = (newValue, mode) => {
+    setValue(newValue);
+  };
+
+  const monthCellRender = (value) => {
+    const listData = getMonthData(value);
+    return (
+      <div
+        className="h-full w-full cursor-pointer relative overflow-hidden"
+        onClick={() => showMonthTasksModal(value)}
+      >
+        <div className="p-2 max-h-full overflow-y-auto flex flex-col items-start justify-start box-border">
+          {listData.length > 0 && (
+            listData.map((item) => (
+              <Badge key={item.id} status={item.status} text={item.title} className="block mb-1" />
+            ))
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const dateCellRender = (value) => {
     const listData = getListData(value);
     return (
-      <ul className="events">
-        {listData.map((item) => (
-          <li key={item.content}>
-            <Badge status={item.type} text={item.content} />
-          </li>
-        ))}
-      </ul>
+      <Popover
+        content={
+          <div className="max-h-24 overflow-y-auto">
+            {listData.length > 0 ? (
+              listData.map((item) => (
+                <Badge key={item.id} status={item.status} text={item.title} className="block mb-1" />
+              ))
+            ) : (
+              <p>No hay tareas para este día.</p>
+            )}
+          </div>
+        }
+        title={`Tareas del ${value.format('DD-MM-YYYY')}`}
+        trigger="click"
+      >
+        <div className="h-full w-full">
+          {listData.length > 0 && (
+            <div className="p-2">
+              {listData.map((item) => (
+                <Badge key={item.id} status={item.status} text={item.title} className="block mb-1" />
+              ))}
+            </div>
+          )}
+        </div>
+      </Popover>
     );
   };
-  const cellRender = (current, info) => {
-    if (info.type === "date") return dateCellRender(current);
-    if (info.type === "month") return monthCellRender(current);
-    return info.originNode;
-  };
-  return <Calendar cellRender={cellRender} />;
+
+  return (
+    <>
+      <Calendar
+        value={value}
+        onSelect={onSelect}
+        onPanelChange={onPanelChange}
+        dateCellRender={dateCellRender}
+        monthCellRender={monthCellRender}
+        locale={locale}
+      />
+      <Modal
+        visible={modalVisible}
+        title={`Tareas del mes ${value.format('MM-YYYY')}`}
+        onCancel={handleModalClose}
+        footer={null}
+        width={800}
+      >
+        {modalContent}
+      </Modal>
+    </>
+  );
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //   // Estado para almacenar el mes actual y el día actual
 //   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());

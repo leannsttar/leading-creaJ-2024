@@ -97,17 +97,7 @@ const ProjectCard = ({
           <div className="w-full">
             <p className="text-left font-bold">Progress</p>
             <progress
-              className={`progress w-full bg-white ${
-                background === "bg-[#FEE4CB]"
-                  ? "progress-warning"
-                  : background === "bg-[#FFD3E2]"
-                  ? "progress-secondary"
-                  : background === "bg-[#E9E7FD]"
-                  ? "progress-primary"
-                  : background === "bg-[#C8F7DC]"
-                  ? "progress-accent"
-                  : ""
-              }`}
+              className={`progress w-full bg-white progress-black`}
               value={progress}
               max="100"
             ></progress>

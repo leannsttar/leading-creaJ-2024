@@ -80,7 +80,7 @@ export const LayoutHome = () => {
         <div className="flex justify-between items-center w-full">
           <div>
             <p className="text-[2rem] font-semibold">
-              Bienvenido {usuario.name}
+              Bienvenida/o {usuario.name}
             </p>
             <p className="text-[1.1rem]">
               Comienza a trabajar en equipo y organizar proyectos juntos!
