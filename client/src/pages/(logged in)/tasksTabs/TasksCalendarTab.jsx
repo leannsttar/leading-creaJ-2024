@@ -1,45 +1,106 @@
-import React, { useState } from 'react';
-import { Badge, Calendar, Popover, Modal } from 'antd';
-import dayjs from 'dayjs';
-import 'dayjs/locale/es';
-import locale from 'antd/es/date-picker/locale/es_ES';
-
-const tasks = [
-  { id: 1, title: 'Tarea 1', dueDate: '2024-08-10', status: 'warning' },
-  { id: 2, title: 'Tarea 2', dueDate: '2024-08-15', status: 'success' },
-  { id: 3, title: 'Tarea 3', dueDate: '2024-08-10', status: 'warning' },
-  { id: 4, title: 'Tarea 4', dueDate: '2024-08-10', status: 'warning' },
-  { id: 5, title: 'Tarea 5', dueDate: '2024-08-10', status: 'warning' },
-  { id: 6, title: 'Tarea 6', dueDate: '2024-08-10', status: 'warning' },
-];
-
-const getListData = (value) => {
-  const formattedDate = value.format('YYYY-MM-DD');
-  return tasks.filter(task => task.dueDate === formattedDate);
-};
-
-const getMonthData = (value) => {
-  const formattedMonth = value.format('YYYY-MM');
-  return tasks.filter(task => dayjs(task.dueDate).format('YYYY-MM') === formattedMonth);
-};
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Badge, Calendar, Popover, Modal } from "antd";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+import locale from "antd/es/date-picker/locale/es_ES";
+import { useSession } from "@/config/useSession";
+import useProject from "@/hooks/useProject";
+import { clienteAxios } from "@/config/clienteAxios";
 
 export const TasksCalendarTab = () => {
+  const { usuario } = useSession();
+  const { proyectos } = useProject();
+
+  const [tasks, setTasks] = useState([]);
   const [value, setValue] = useState(dayjs());
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalContent, setModalContent] = useState('');
+  const [modalContent, setModalContent] = useState("");
+
+  const getUserTasks = async () => {
+    try {
+      const response = await clienteAxios.get(
+        `/api/tasks/getUserTasks/${usuario.id}`
+      );
+      setTasks(response.data);
+    } catch (error) {
+      console.log("Error al obtener las tareas:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserTasks();
+  }, [usuario.id]);
+
+  const getListData = (value) => {
+    const formattedDate = value.format("YYYY-MM-DD");
+    return tasks.filter(
+      (task) => dayjs(task.due_date).format("YYYY-MM-DD") === formattedDate
+    );
+  };
+
+  const getMonthData = (value) => {
+    const formattedMonth = value.format("YYYY-MM");
+    return tasks.filter(
+      (task) => dayjs(task.due_date).format("YYYY-MM") === formattedMonth
+    );
+  };
+
+  const getProjectImage = (projectId) => {
+    const project = proyectos.find((proj) => proj.id === projectId);
+    return project ? project.imagen : "";
+  };
+
+  const getProjectName = (projectId) => {
+    const project = proyectos.find((proj) => proj.id === projectId);
+    return project ? project.name : "Sin proyecto";
+  };
 
   const showMonthTasksModal = (value) => {
     const listData = getMonthData(value);
+
     setModalContent(
       <div className="p-4 max-h-96 overflow-y-auto">
         {listData.length > 0 ? (
-          <ul className="events space-y-2">
-            {listData.map((item) => (
-              <li key={item.id}>
-                <Badge status={item.status} text={item.title} />
-              </li>
-            ))}
-          </ul>
+          <div className="space-y-2">
+            {listData.map((item) => {
+              const projectImage = getProjectImage(item.projectId);
+              return (
+                <Link to={`/dashboard/project/${item.projectId}/board`}>
+                  <div
+                    key={item.id}
+                    className="flex cursor-pointer items-start mb-2 p-2 border rounded-lg shadow-sm bg-white"
+                  >
+                    {projectImage && (
+                      <img
+                        src={projectImage}
+                        alt="Project"
+                        className="w-16 h-16 object-cover rounded-full mr-3"
+                      />
+                    )}
+                    <div className="flex flex-col">
+                      <p className="font-semibold">{item.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {item.description}
+                      </p>
+                      <p className="text-xs">
+                        <span className="font-semibold">Proyecto:</span>{" "}
+                        {getProjectName(item.projectId)}
+                      </p>
+                      <p className="text-xs">
+                        <span className="font-semibold">Estado:</span>{" "}
+                        {item.status === "completed"
+                          ? "Completada"
+                          : item.status === "in-progress"
+                          ? "En Progreso"
+                          : "Pendiente"}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         ) : (
           <p>No hay tareas para este mes.</p>
         )}
@@ -60,50 +121,117 @@ export const TasksCalendarTab = () => {
     setValue(newValue);
   };
 
-  const monthCellRender = (value) => {
-    const listData = getMonthData(value);
-    return (
-      <div
-        className="h-full w-full cursor-pointer relative overflow-hidden"
-        onClick={() => showMonthTasksModal(value)}
-      >
-        <div className="p-2 max-h-full overflow-y-auto flex flex-col items-start justify-start box-border">
-          {listData.length > 0 && (
-            listData.map((item) => (
-              <Badge key={item.id} status={item.status} text={item.title} className="block mb-1" />
-            ))
-          )}
-        </div>
-      </div>
-    );
-  };
+  const cellRender = (value, info) => {
+    const listData =
+      info?.type === "month" ? getMonthData(value) : getListData(value);
 
-  const dateCellRender = (value) => {
-    const listData = getListData(value);
+    const cellClass = listData.length > 0 ? "bg-[#FEE4CB] bg-opacity-0 md:bg-opacity-100" : "";
+    if (info?.type === "month") {
+      return (
+        <div
+          className="h-full w-full cursor-pointer relative overflow-hidden"
+          onClick={() => showMonthTasksModal(value)}
+        >
+          <div
+            className={`p-2 max-h-full overflow-y-auto flex flex-col items-start justify-start box-border rounded-md`}
+          >
+            {listData.length > 0 && (
+              <div className="space-y-1 w-full hidden md:block">
+                {listData.map((item) => (
+                  <p
+                    key={item.id}
+                    className={`font-semibold p-1 rounded-lg ${cellClass}`}
+                  >
+                    • {item.name}
+                  </p>
+                ))}
+              </div>
+            )}
+            <div className={`md:hidden flex items-center justify-center h-full w-full ${cellClass}`}>
+              {listData.length > 0 && (
+                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
+                  {listData.length}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <Popover
         content={
-          <div className="max-h-24 overflow-y-auto">
+          <div className="p-4">
             {listData.length > 0 ? (
-              listData.map((item) => (
-                <Badge key={item.id} status={item.status} text={item.title} className="block mb-1" />
-              ))
+              listData.map((item) => {
+                const projectImage = getProjectImage(item.projectId);
+                return (
+                  <Link to={`/dashboard/project/${item.projectId}/board`}>
+                    <div
+                      key={item.id}
+                      className="flex cursor-pointer items-start mb-2 border rounded-lg shadow-sm p-2"
+                    >
+                      {projectImage && (
+                        <img
+                          src={projectImage}
+                          alt="Project"
+                          className="w-12 h-12 object-cover rounded-full ml-1 my-auto mr-3"
+                        />
+                      )}
+                      <div className="flex flex-col mr-2 space-y-0.5">
+                        <p className="font-semibold overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[12rem] md:max-w-[20rem]">
+                          • {item.name}
+                        </p>
+                        <p className="text-xs text-gray-500 overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[12rem] md:max-w-[20rem]">
+                          {item.description}
+                        </p>
+                        <p className="text-xs">
+                          <span className="font-semibold">Proyecto:</span>{" "}
+                          {getProjectName(item.projectId)}
+                        </p>
+                        <p className="text-xs">
+                          <span className="font-semibold">Estado:</span>{" "}
+                          {item.status === "completed"
+                            ? "Completada"
+                            : item.status === "in-progress"
+                            ? "En Progreso"
+                            : "Pendiente"}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })
             ) : (
               <p>No hay tareas para este día.</p>
             )}
           </div>
         }
-        title={`Tareas del ${value.format('DD-MM-YYYY')}`}
+        title={`Tareas del ${value.format("YYYY-MM-DD")}`}
         trigger="click"
+        overlayClassName="popover-task"
       >
-        <div className="h-full w-full">
+        <div className={`h-full w-full p-2 rounded-lg `}>
           {listData.length > 0 && (
-            <div className="p-2">
+            <div className={` rounded-sm space-y-1 hidden lg:block`}>
               {listData.map((item) => (
-                <Badge key={item.id} status={item.status} text={item.title} className="block mb-1" />
+                <p
+                  key={item.id}
+                  className={`font-semibold p-1 rounded-lg ${cellClass}`}
+                >
+                  • {item.name}
+                </p>
               ))}
             </div>
           )}
+          <div className={`lg:hidden flex items-center justify-center h-full w-full bg-[#FEE4CB] bg-opacity-0 lg:bg-opacity-100`}>
+              {listData.length > 0 && (
+                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
+                  {listData.length}
+                </div>
+              )}
+            </div>
         </div>
       </Popover>
     );
@@ -115,41 +243,22 @@ export const TasksCalendarTab = () => {
         value={value}
         onSelect={onSelect}
         onPanelChange={onPanelChange}
-        dateCellRender={dateCellRender}
-        monthCellRender={monthCellRender}
+        cellRender={cellRender}
         locale={locale}
       />
       <Modal
-        visible={modalVisible}
-        title={`Tareas del mes ${value.format('MM-YYYY')}`}
+        open={modalVisible}
+        title={`Tareas del mes ${value.format("MM-YYYY")}`}
         onCancel={handleModalClose}
         footer={null}
         width={800}
+        bodyStyle={{ padding: 0 }}
       >
         {modalContent}
       </Modal>
     </>
   );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //   // Estado para almacenar el mes actual y el día actual
 //   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());

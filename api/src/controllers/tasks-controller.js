@@ -1,5 +1,6 @@
 import { prisma } from "../../config/prisma.js";
 
+//ta malo, ne, igual ni se usa
 export const getTasks = async (req, res) => {
   const { id } = req.params;
 
@@ -14,6 +15,27 @@ export const getTasks = async (req, res) => {
   } catch (error) {
     console.error("Error al obtener las tareas:", error);
     res.status(500).json({ error: "Error al obtener las tareas" });
+  }
+}
+
+export const getUserTasks = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const tasks = await prisma.tasks.findMany({
+      where: {
+        assignees:{
+          some: {
+            userId: +userId
+          }
+        }
+      }
+    })
+
+    res.status(200).json(tasks)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: "Error al obtener las tareas" })
   }
 }
 
