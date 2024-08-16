@@ -96,7 +96,7 @@ const props = {
 import { SubTask } from "./SubTask";
 import { CommentComponent } from "./CommentComponent";
 
-export const TaskDrawer = ({ isOpen, task, close }) => {
+export const TaskDrawer = ({ isOpen, task, close, reload }) => {
   const { usuario, userToken } = useSession();
 
   const params = useParams();
@@ -114,15 +114,15 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
 
   useEffect(() => {
     setOpen(isOpen);
-  }, [isOpen]);
-
-  useEffect(() => {
-    setSelectedTask(task);
-  }, [task]);
+    if (task) {
+      setSelectedTask(task);
+    }
+  }, [isOpen, task]);
 
   const getProject = async () => {
     try {
       setLoading(true);
+      reload();
       const response = await clienteAxios.get(
         `/api/projects/getProjectBoard/${params.id}`
       );
@@ -145,12 +145,16 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
             (subTask) => subTask.status == "terminado"
           ).length,
           date: format(new Date(task.due_date), "PP"),
-          members: task.assignees.map(
-            (assignee) =>
-              response.data.team.find(
-                (projectMember) => projectMember.user.id === assignee.userId
-              ).user.image
-          ),
+          members: task.assignees.map((assignee) => {
+            const member = response.data.team.find(
+              (projectMember) => projectMember.user.id === assignee.userId
+            ).user;
+            return {
+              id: member.id,
+              name: member.name,
+              image: member.image,
+            };
+          }),
           files: task.files,
           links: task.links,
           comments: task.comments.map((comment) => {
@@ -172,7 +176,7 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
             return {
               id: comment.id,
               text: comment.content,
-              timeAgo: timeAgo, 
+              timeAgo: timeAgo,
               creatorId: creator.user.id,
               creatorImage: creator.user.image,
               creatorName: creator.user.name,
@@ -189,7 +193,6 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
       console.log("Error al obtener el proyecto:", error);
     }
   };
-
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -271,6 +274,92 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
     }
   };
 
+  const taskToInProgress = async (taskId) => {
+    try {
+      const formData = new FormData();
+      formData.append("taskId", taskId);
+      formData.append("status", "en progreso");
+
+      const response = await clienteAxios.postForm(
+        `/api/tasks/changeTaskStatus`,
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
+
+      getProject();
+      return true;
+    } catch (error) {
+      console.error("Error al cambiar el estado de la tarea:", error);
+      return false;
+    }
+  };
+
+  const handleTaskToInProgress = async () => {
+    if (selectedTask) {
+      const success = await taskToInProgress(selectedTask.id);
+      if (success) {
+        messageApi.open({
+          type: "success",
+          content: "Tarea iniciada correctamente",
+        });
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Hubo un error al iniciar la tarea",
+        });
+      }
+    }
+  };
+
+  const taskToFinished = async (taskId) => {
+    try {
+      const formData = new FormData();
+
+      formData.append("taskId", taskId);
+      formData.append("status", "terminado");
+
+      const response = await clienteAxios.postForm(
+        `/api/tasks/changeTaskStatus`,
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
+
+      getProject();
+
+      // Retornamos true para indicar éxito
+      return true;
+    } catch (error) {
+      console.error("Error al enviar los datos", error);
+      // Retornamos false para indicar fallo
+      return false;
+    }
+  };
+
+  const handleTaskToFinished = async () => {
+    if (selectedTask) {
+      const success = await taskToFinished(selectedTask.id);
+      if (success) {
+        messageApi.open({
+          type: "success",
+          content: "Tarea marcada como finalizada",
+        });
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Hubo un error al marcar la tarea como finalizada",
+        });
+      }
+    }
+  };
+
   const clearTimer = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -279,7 +368,7 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
 
   const onClose = () => {
     setOpen(false);
-    close()
+    close();
   };
 
   function changeSection(newSection) {
@@ -287,7 +376,7 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
   }
 
   useEffect(() => clearTimer, []);
-
+  console.log(selectedTask);
   return (
     <Drawer
       title={
@@ -307,11 +396,7 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
       open={open}
       styles={{ body: { padding: "2rem", fontFamily: "Inter" } }}
       footer={
-        <div
-          className={`${
-            section === "progreso" && "hidden"
-          } m-2 flex items-center gap-3 relative`}
-        >
+        <div className={`m-2 flex items-center gap-3 relative`}>
           <img
             src={usuario.image}
             alt=""
@@ -331,7 +416,7 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
               />
               <SendOutlined className="absolute right-8" onClick={createLink} />
             </>
-          ) : (
+          ) : section === "comentarios" ? (
             <>
               <input
                 onChange={(e) => setTaskComment(e.target.value)}
@@ -347,6 +432,41 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
                 onClick={createComment}
               />
             </>
+          ) : (
+            selectedTask &&
+            selectedTask.members && (
+              <>
+                {selectedTask.status === "terminado" ? (
+                  <p className="text-green-600 font-semibold ml-2">
+                    ✓ Esta tarea ya está completada
+                  </p>
+                ) : selectedTask.status === "proximo" &&
+                  selectedTask.members.some(
+                    (member) => member.id === usuario.id
+                  ) ? (
+                  <button
+                    onClick={handleTaskToInProgress}
+                    className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
+                  >
+                    Empezar tarea
+                  </button>
+                ) : selectedTask.status === "en progreso" &&
+                  selectedTask.members.some(
+                    (member) => member.id === usuario.id
+                  ) ? (
+                  <button
+                    onClick={handleTaskToFinished}
+                    className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
+                  >
+                    Marcar tarea como completada
+                  </button>
+                ) : selectedTask.status !== "terminado" ? (
+                  <p className="text-gray-600 font-semibold ml-2">
+                    No estás asignado a esta tarea
+                  </p>
+                ) : null}
+              </>
+            )
           )}
         </div>
       }
@@ -372,11 +492,11 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
                 <td className="text-[#9b9b9b] font-medium py-2">Asignados</td>
                 <td className="font-medium py-2">
                   <div className="flex">
-                    {selectedTask.members.map((img, index) => {
+                    {selectedTask.members.map((member, index) => {
                       return (
                         <img
                           key={index}
-                          src={img}
+                          src={member.image}
                           className={` ${
                             index === 1
                               ? " right-2"
@@ -572,5 +692,3 @@ export const TaskDrawer = ({ isOpen, task, close }) => {
     </Drawer>
   );
 };
-
-

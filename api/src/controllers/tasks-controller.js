@@ -187,3 +187,23 @@ export const createComment = async(req, res) => {
     res.status(500).json({ error: "Error al crear el comentario" });
   }
 }
+
+export const changeTaskStatus = async (req, res) => {
+  const { taskId, status } = req.body;
+
+  try {
+    const updatedTask = await prisma.tasks.update({
+      where: {
+        id: +taskId
+      },
+      data: {
+        status
+      }
+    })
+
+    res.status(200).json(updatedTask)
+  } catch (error) {
+   console.log(error)
+    res.status(500).json({error: "Error al marcar tarea como terminada"})
+  }
+}
