@@ -67,7 +67,7 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
               return (
                 <img
                   key={index}
-                  src={member}
+                  src={member.image}
                   className={` ${
                     index === 1 ? " right-2" : index === 2 ? "right-4" : ""
                   } relative rounded-full min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem]`}

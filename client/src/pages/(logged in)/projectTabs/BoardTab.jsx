@@ -9,13 +9,13 @@ import "../../../index.css";
 
 import { useParams } from "react-router-dom";
 
-import { format, formatDistanceToNow, parseISO } from "date-fns";
+import { format, formatDistanceToNow, parseISO, addDays } from "date-fns";
 import { es } from "date-fns/locale";
 
 import { clienteAxios } from "@/config/clienteAxios";
 
 import LinkPreview from "@ashwamegh/react-link-preview";
-  
+
 // If you're using built in layout, you will need to import this css
 import "@ashwamegh/react-link-preview/dist/index.css";
 
@@ -123,7 +123,7 @@ const props = {
   ],
 };
 
-const HeaderTaskCards = memo(({ title, numCards, hidden, project }) => {
+const HeaderTaskCards = memo(({ title, numCards, hidden, project, reload }) => {
   const { usuario, userToken } = useSession();
 
   const params = useParams();
@@ -324,7 +324,7 @@ const HeaderTaskCards = memo(({ title, numCards, hidden, project }) => {
       const filteredSubtasks = subtasks.filter(
         (subtask) => subtask.trim() !== ""
       );
-      console.log(formData)
+      console.log(formData);
       if (filteredSubtasks.length > 0) {
         formData.append("subtasks", JSON.stringify(filteredSubtasks));
       }
@@ -351,6 +351,9 @@ const HeaderTaskCards = memo(({ title, numCards, hidden, project }) => {
         type: "success",
         content: "Tarea creada correctamente",
       });
+
+      reload()
+      onClose()
 
       console.log("Respuesta del backend:", response.data);
     } catch (error) {
@@ -568,17 +571,18 @@ const HeaderTaskCards = memo(({ title, numCards, hidden, project }) => {
   );
 });
 
-const ColTasks = ({ title, numCards, children, index, project }) => {
+const ColTasks = ({ title, numCards, children, index, project, reload }) => {
   return (
     <div key={index} className="space-y-3 lg:w-[30%] lg:space-y-8">
       {title === "Próximo" ? (
-        <HeaderTaskCards title={title} numCards={numCards} project={project} />
+        <HeaderTaskCards title={title} numCards={numCards} project={project} reload={reload}/>
       ) : (
         <HeaderTaskCards
           title={title}
           numCards={numCards}
           hidden
           project={project}
+          reload={reload}
         />
       )}
 
@@ -590,7 +594,6 @@ const ColTasks = ({ title, numCards, children, index, project }) => {
 };
 
 export const BoardTab = () => {
-
   const params = useParams();
 
   const [open, setOpen] = useState(false);
@@ -614,6 +617,7 @@ export const BoardTab = () => {
           return {
             id: task.id,
             title: task.name,
+            creator: task.creator,
             tags: task.tags.map(
               (taskTag) =>
                 response.data.tags.find(
@@ -625,13 +629,17 @@ export const BoardTab = () => {
             progressList: task.subTasks.filter(
               (subTask) => subTask.status == "terminado"
             ).length,
-            date: format(new Date(task.due_date), "PP"),
-            members: task.assignees.map(
-              (assignee) =>
-                response.data.team.find(
-                  (projectMember) => projectMember.user.id === assignee.userId
-                ).user.image
-            ),
+            date: format(addDays(task.due_date, 1), 'PP', { locale: es }),
+            members: task.assignees.map((assignee) => {
+              const member = response.data.team.find(
+                (projectMember) => projectMember.user.id === assignee.userId
+              ).user;
+              return {
+                id: member.id,
+                name: member.name,
+                image: member.image,
+              };
+            }),
             files: task.files,
             links: task.links,
             comments: task.comments.map((comment) => {
@@ -663,7 +671,7 @@ export const BoardTab = () => {
           };
         })
       );
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.log("Error al obtener el proyecto:", error);
     }
@@ -684,55 +692,65 @@ export const BoardTab = () => {
     setOpen(false);
   };
 
-
   if (project == "loading" || project == undefined) return <Loader />;
 
   return (
     <>
       {contextHolder}
-      <TaskDrawer isOpen={open} task={selectedTask} close={onClose}/>
+      <TaskDrawer isOpen={open} task={selectedTask} close={onClose} reload={getProject} project={project}/>
       <div className="mx-5 my-9 lg:mx-11 lg:my-16 space-y-10 lg:flex lg:space-y-0 lg:justify-around">
-        <ColTasks title={"Próximo"} numCards={12} index={1} project={project}>
-          {upcomingTasks.map((task, index) => (
-            
-            <TaskCardProject
-            key={task.id}
-              index={task.id}
-              taskData={task}
-              onClick={() => showDrawer(task)}
-              mobile
-            />
-          ))}
+        <ColTasks title={"Próximo"} numCards={12} index={1} project={project} reload={getProject}>
+          {upcomingTasks
+            .filter((task) => task.status === "proximo")
+            .map((task) => (
+              <TaskCardProject
+                key={task.id}
+                index={task.id}
+                taskData={task}
+                onClick={() => showDrawer(task)}
+                mobile
+              />
+            ))}
         </ColTasks>
+
         <ColTasks
           title={"En proceso"}
           numCards={12}
           index={2}
           project={project}
+          reload={getProject}
         >
-          {/* {upcomingTasks.map((task, index) => (
+          {upcomingTasks
+            .filter((task) => task.status === "en progreso")
+            .map((task) => (
               <TaskCardProject
+                key={task.id}
                 index={task.id}
                 taskData={task}
                 onClick={() => showDrawer(task)}
                 mobile
               />
-            ))} */}
+            ))}
         </ColTasks>
+
         <ColTasks
           title={"Terminadas"}
           numCards={12}
           index={3}
           project={project}
+          reload={getProject}
         >
-          {/* {upcomingTasks.map((task, index) => (
+          {upcomingTasks
+            .filter((task) => task.status === "terminado")
+            .map((task) => (
               <TaskCardProject
+                key={task.id}
                 index={task.id}
                 taskData={task}
                 onClick={() => showDrawer(task)}
                 mobile
               />
-            ))} */}
+            ))}
         </ColTasks>
       </div>
     </>

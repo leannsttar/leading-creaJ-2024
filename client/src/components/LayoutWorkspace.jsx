@@ -180,7 +180,6 @@ const LayoutProject = () => {
 
   const { logout, usuario, userToken } = useSession();
   const params = useParams();
-  console.log(params)
   const [project, setProject] = useState("loading");
   const [projectt, setProjectt] = useState("loading");
   const [modal1Open, setModal1Open] = useState(false);
@@ -193,7 +192,6 @@ const LayoutProject = () => {
       );
       if (projectFound) {
         setProject(projectFound);
-        console.log(project);
       } else {
         setProject(null);
       }
@@ -207,7 +205,6 @@ const LayoutProject = () => {
         
       );
       const invitations = response.data;
-      console.log(invitations)
 
       return invitations.some((invitation) => invitation.email === email);
     } catch (error) {

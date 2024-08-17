@@ -17,6 +17,9 @@
 - **Diseños Mock Ups**
   - [Enlace a los Mock Ups](https://www.figma.com/file/MQs0tlEU38XBzoq4COQa6I/Creaj?type=design&node-id=25%3A623&mode=design&t=JdZisQVHFZ4VVC1c-1)
 
+- **Manuales del proyecto**
+  - [Enlace a los manuales](https://drive.google.com/drive/folders/1V1rVgEecUX4CA96_vR4ujvzz0YscwlMG?usp=sharing)
+
 ## Licencia
 
 Este proyecto está bajo la Licencia Creative Commons [Atribución-NoComercial-CompartirIgual 4.0 Internacional](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es).

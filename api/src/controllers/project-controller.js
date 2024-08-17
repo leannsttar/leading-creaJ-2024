@@ -318,14 +318,10 @@ export const getProjectBoard = async (req, res) => {
   console.log(req.params);
   try {
     const project = await prisma.projects.findFirst({
-      where: {
-        id: +id,
-      },
+      where: { id: +id },
       include: {
         team: {
-          include: {
-            user: true,
-          },
+          include: { user: true },
         },
         tags: true,
         tasks: {
@@ -336,6 +332,14 @@ export const getProjectBoard = async (req, res) => {
             comments: true,
             files: true,
             links: true,
+            creator: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
           },
         },
       },
