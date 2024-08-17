@@ -30,7 +30,8 @@ const MeetingsSection = ({ icon, title, numMeetings }) => {
   );
 };
 
-export const MeetingsList = ({ meetings }) => {
+export const MeetingsList = ({ meetings, validatedAttendance }) => {
+  const {usuario, logout} = useSession()
   return (
     <>
       <div className="mt-14">
@@ -44,15 +45,12 @@ export const MeetingsList = ({ meetings }) => {
               userName={meeting.author.name}
               userPicture={meeting.author.image}
               time={meeting.event_time}
-              going={11}
-              pending={2}
+              going={meeting.attendance.length}
               link={meeting.id}
-              teamPictures={[
-                "https://i.pinimg.com/564x/5e/c5/99/5ec599c89cd988a416d361a123c14faa.jpg",
-                "https://i.pinimg.com/736x/01/4d/59/014d59542d152dd54e9c94091c3d8dd4.jpg",
-                "https://i.pinimg.com/736x/93/d4/ae/93d4aeb0fdf135036c70448e610dd78b.jpg",
-                "https://i.pinimg.com/736x/7c/d1/ab/7cd1abc221a4ad00720a989ac89a6218.jpg",
-              ]}
+              teamPictures={meeting.attendance}
+              validatedAttendance={meeting.attendance.some((member)=>{
+                return member.userId == usuario.id
+              })}
             />
           );
         })}
@@ -62,29 +60,57 @@ export const MeetingsList = ({ meetings }) => {
 };
 
 const MeetingCard = ({
-  
   userName,
   userPicture,
   time,
   going,
-  pending,
   teamPictures,
   link,
+  validatedAttendance,
 }) => {
   const params = useParams();
   const { logout, usuario, userToken } = useSession();
   const [modal2Open, setModal2Open] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState("");
-  const [form] = Form.useForm();
+  const [attendanceConfirmed, setAttendanceConfirmed] = useState(false);
+
+  useEffect(() => {
+    if (validatedAttendance) {
+      setConfirmationMessage("Asistencia confirmada");
+    }
+  }, []);
+
+  useEffect(() => {
+    // comprobar la asistencia
+    const checkAttendance = async () => {
+      try {
+        const response = await clienteAxios.get(
+          `/api/meetings/attendance/${link}/${usuario.id}`
+        );
+        if (response.data.attendanceConfirmed) {
+          setAttendanceConfirmed(true);
+          setConfirmationMessage("Asistencia confirmada");
+        }
+      } catch (error) {
+        console.error("Error al verificar la asistencia:", error);
+      }
+    };
+
+    checkAttendance();
+  }, [link, usuario.id]);
 
   const onFinishConfirm = async () => {
     try {
-      const response = await clienteAxios.post("/api/projects/meetings/attendance", {
-        meetingId: link,
-        userId: usuario.id,
-      });
+      const response = await clienteAxios.post(
+        "/api/projects/meetings/attendance",
+        {
+          meetingId: link,
+          userId: usuario.id,
+        }
+      );
       console.log("Asistencia confirmada:", response.data);
       setConfirmationMessage("Asistencia confirmada");
+      setAttendanceConfirmed(true);
       setModal2Open(false);
     } catch (error) {
       console.error("Error:", error);
@@ -113,11 +139,12 @@ const MeetingCard = ({
         </div>
         <div className="flex items-center">
           <div className="flex">
+            {console.log(teamPictures)}
             {teamPictures.map((picture, index) => {
               return (
                 <img
-                  key={index}
-                  src={picture}
+                  key={picture.user.id}
+                  src={picture.user.image}
                   className={`rounded-full object-cover relative ${
                     index === 1
                       ? " right-[1.25rem]"
@@ -131,32 +158,35 @@ const MeetingCard = ({
               );
             })}
           </div>
-          {/* <p className="whitespace-nowrap relative right-9 text-[#8A8A8A]">
-            + {going - 4} más
-          </p> */}
         </div>
-        <button
-          className="bg-[#202020] w-full text-white py-2 rounded-lg"
-          onClick={() => setModal2Open(true)}
-        >
-          Confirmar asistencia
-        </button>
-        <Modal
-          title="Confirmar asistencia"
-          okButtonProps={{
-            style: { backgroundColor: "black", color: "white" },
-          }}
-          okText="Confirmar"
-          centered
-          open={modal2Open}
-          onOk={onFinishConfirm}
-          onCancel={() => setModal2Open(false)}
-        >
-          <p>
-            ¿Estás seguro de que deseas confirmar tu asistencia a esta reunión?
-          </p>
-        </Modal>
-        {confirmationMessage && <p>{confirmationMessage}</p>}
+        {attendanceConfirmed || validatedAttendance ? (
+          <p className="text-lg text-center text-emerald-600 font-inter">{confirmationMessage}</p>
+        ) : (
+          <>
+            <button
+              className="bg-[#202020] w-full text-white py-2 rounded-lg"
+              onClick={() => setModal2Open(true)}
+            >
+              Confirmar asistencia
+            </button>
+            <Modal
+              title="Confirmar asistencia"
+              okButtonProps={{
+                style: { backgroundColor: "black", color: "white" },
+              }}
+              okText="Confirmar"
+              centered
+              open={modal2Open}
+              onOk={onFinishConfirm}
+              onCancel={() => setModal2Open(false)}
+            >
+              <p>
+                ¿Estás seguro de que deseas confirmar tu asistencia a esta
+                reunión?
+              </p>
+            </Modal>
+          </>
+        )}
       </div>
     </div>
   );
@@ -164,8 +194,9 @@ const MeetingCard = ({
 
 export const MeetingsTab = () => {
   const { logout, usuario, userToken } = useSession();
-
+  const params = useParams();
   const [meetings, setMeetings] = useState([]);
+  const [validatedAttendance, setValidatedAttendance] = useState();
 
   const fetchMeetings = async () => {
     try {
@@ -177,7 +208,8 @@ export const MeetingsTab = () => {
           },
         }
       );
-      setMeetings(response.data);
+      setMeetings(response.data.meetings);
+
     } catch (error) {
       console.error("Error al obtener las reuniones:", error);
     }
@@ -186,9 +218,33 @@ export const MeetingsTab = () => {
     fetchMeetings();
   }, []);
 
+  const [stats, setStats] = useState({
+    totalMeetings: 0,
+    pastMeetings: 0,
+    upcomingMeetings: 0,
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await clienteAxios.get(`/api/meetings/${params.id}`);
+        const { totalMeetings, pastMeetings, upcomingMeetings } = response.data;
+
+        setStats({
+          totalMeetings,
+          pastMeetings,
+          upcomingMeetings,
+        });
+      } catch (error) {
+        console.error("Error al obtener las estadísticas de reuniones:", error);
+      }
+    };
+
+    fetchStats();
+  }, [params.id]);
+
   const [meetingDate, setMeetingDate] = useState();
   const [meetingLink, setMeetingLink] = useState();
-  const params = useParams();
   const [modal1Open, setModal1Open] = useState(false);
 
   const onFinish = async () => {
@@ -222,15 +278,14 @@ export const MeetingsTab = () => {
     console.log("Fallo:", errorInfo);
   };
 
-  //algo había acá
   return (
     <div className="m-5 lg:m-16">
-      <div className="bg-[#f5f5f5] lg:w-fit p-8 rounded-2xl space-y-5  lg:flex lg:space-y-0 lg:gap-5">
+      <div className="bg-[#f5f5f5] lg:w-fit p-8 rounded-2xl space-y-5 lg:flex lg:space-y-0 lg:gap-5">
         <div className="lg:border-r-[2px] lg:pr-5 border-[#e0e0e0]">
           <MeetingsSection
             icon={allMeetingsIcon}
             title={"No. de Reuniones"}
-            numMeetings={36}
+            numMeetings={stats.totalMeetings}
           />
         </div>
         <hr className="border-[1px] border-[#e0e0e0] lg:hidden" />
@@ -239,7 +294,7 @@ export const MeetingsTab = () => {
           <MeetingsSection
             icon={upcomingMeetingsIcon}
             title={"Reuniones próximas"}
-            numMeetings={15}
+            numMeetings={stats.upcomingMeetings}
           />
         </div>
         <hr className="border-[1px] border-[#e0e0e0] lg:hidden" />
@@ -247,7 +302,7 @@ export const MeetingsTab = () => {
           <MeetingsSection
             icon={pastMeetingsIcon}
             title={"Reuniones pasadas"}
-            numMeetings={21}
+            numMeetings={stats.pastMeetings}
           />
         </div>
       </div>
@@ -337,7 +392,10 @@ export const MeetingsTab = () => {
         </div>
       </Modal>
 
-      <MeetingsList meetings={meetings} />
+      <MeetingsList
+        meetings={meetings}
+        validatedAttendance={validatedAttendance}
+      />
     </div>
   );
 };

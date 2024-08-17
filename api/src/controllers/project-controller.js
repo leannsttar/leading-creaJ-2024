@@ -2,7 +2,6 @@ import { prisma } from "../../config/prisma.js";
 import { processImage } from "../../uploadImage.js";
 import cloudinary from "../../cloudinaryConfig.js";
 
-
 export const createProject = async (req, res) => {
   const { nombre, descripcion } = req.body;
   const usuarioId = req.usuario.id;
@@ -40,7 +39,6 @@ export const createProject = async (req, res) => {
     res.status(500).json({ error: "Error al crear el proyecto" });
   }
 };
-
 
 //TODA ESTA PARTE ES EL CONTROLADOR DE LA MEETING
 export const createMeeting = async (req, res) => {
@@ -81,20 +79,46 @@ export const getMeetings = async (req, res) => {
           },
         },
       },
+      orderBy: { event_time: "asc" },
     });
 
-    return res.status(200).json(meetings);
+    const currentDate = new Date();
+
+    // reuniones pasadas y próximas
+    const pastMeetings = meetings.filter(
+      (meeting) => new Date(meeting.event_time) < currentDate
+    );
+    const upcomingMeetings = meetings.filter(
+      (meeting) => new Date(meeting.event_time) >= currentDate
+    );
+
+    return res.status(200).json({
+      totalMeetings: meetings.length,
+      pastMeetings: pastMeetings.length,
+      upcomingMeetings: upcomingMeetings.length,
+      meetings,
+    });
   } catch (error) {
     console.error("Error al obtener las reuniones:", error);
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 };
-
-//confirmar la asistencia
 export const confirmAttendance = async (req, res) => {
   const { meetingId, userId } = req.body;
+  console.log;
 
   try {
+    const existingAttendance = await prisma.meetingsAttendance.findFirst({
+      where: {
+        meetingId: meetingId,
+        userId: +userId,
+      },
+    });
+
+    if (existingAttendance) {
+      return res.status(400).json({ error: "Asistencia ya confirmada" });
+    }
+
     const attendance = await prisma.meetingsAttendance.create({
       data: {
         meetingId: meetingId,
@@ -114,7 +138,9 @@ export const getProjectInvitations = async (req, res) => {
     const { projectId } = req.params;
 
     if (!projectId) {
-      return res.status(400).json({ message: 'El ID del proyecto es requerido.' });
+      return res
+        .status(400)
+        .json({ message: "El ID del proyecto es requerido." });
     }
 
     const invitations = await prisma.invitations.findMany({
@@ -124,13 +150,19 @@ export const getProjectInvitations = async (req, res) => {
     });
 
     if (!invitations.length) {
-      return res.status(404).json({ message: 'No se encontraron invitaciones para este proyecto.' });
+      return res
+        .status(404)
+        .json({
+          message: "No se encontraron invitaciones para este proyecto.",
+        });
     }
 
     return res.status(200).json(invitations);
   } catch (error) {
-    console.error('Error al obtener las invitaciones del proyecto:', error);
-    return res.status(500).json({ message: 'Error al obtener las invitaciones del proyecto.' });
+    console.error("Error al obtener las invitaciones del proyecto:", error);
+    return res
+      .status(500)
+      .json({ message: "Error al obtener las invitaciones del proyecto." });
   }
 };
 
