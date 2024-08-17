@@ -9,7 +9,7 @@ import "../../../index.css";
 
 import { useParams } from "react-router-dom";
 
-import { format, formatDistanceToNow, parseISO } from "date-fns";
+import { format, formatDistanceToNow, parseISO, addDays } from "date-fns";
 import { es } from "date-fns/locale";
 
 import { clienteAxios } from "@/config/clienteAxios";
@@ -617,6 +617,7 @@ export const BoardTab = () => {
           return {
             id: task.id,
             title: task.name,
+            creator: task.creator,
             tags: task.tags.map(
               (taskTag) =>
                 response.data.tags.find(
@@ -628,7 +629,7 @@ export const BoardTab = () => {
             progressList: task.subTasks.filter(
               (subTask) => subTask.status == "terminado"
             ).length,
-            date: format(new Date(task.due_date), "PP"),
+            date: format(addDays(task.due_date, 1), 'PP', { locale: es }),
             members: task.assignees.map((assignee) => {
               const member = response.data.team.find(
                 (projectMember) => projectMember.user.id === assignee.userId
@@ -696,7 +697,7 @@ export const BoardTab = () => {
   return (
     <>
       {contextHolder}
-      <TaskDrawer isOpen={open} task={selectedTask} close={onClose} reload={getProject}/>
+      <TaskDrawer isOpen={open} task={selectedTask} close={onClose} reload={getProject} project={project}/>
       <div className="mx-5 my-9 lg:mx-11 lg:my-16 space-y-10 lg:flex lg:space-y-0 lg:justify-around">
         <ColTasks title={"Próximo"} numCards={12} index={1} project={project} reload={getProject}>
           {upcomingTasks

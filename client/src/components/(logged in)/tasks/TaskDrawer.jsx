@@ -3,13 +3,15 @@ import React, { useState, useRef, useEffect, useContext, memo } from "react";
 import { ProyectosContext } from "@/config/ProyectosContext";
 import { useSession } from "@/config/useSession";
 
+import { FiEdit } from "react-icons/fi";
+
 import { Loader } from "@/components/Loader";
 
 import "../../../index.css";
 
 import { useParams } from "react-router-dom";
 
-import { format, formatDistanceToNow, parseISO } from "date-fns";
+import { format, formatDistanceToNow, parseISO, addDays } from "date-fns";
 import { es } from "date-fns/locale";
 
 import { clienteAxios } from "@/config/clienteAxios";
@@ -96,7 +98,7 @@ const props = {
 import { SubTask } from "./SubTask";
 import { CommentComponent } from "./CommentComponent";
 
-export const TaskDrawer = ({ isOpen, task, close, reload }) => {
+export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
   const { usuario, userToken } = useSession();
 
   const params = useParams();
@@ -112,10 +114,64 @@ export const TaskDrawer = ({ isOpen, task, close, reload }) => {
   const [taskUrl, setTaskUrl] = useState("");
   const [taskComment, setTaskComment] = useState("");
 
+  const [treeDataMembers, setTreeDataMembers] = useState([]);
+  const [valueMembers, setValueMembers] = useState([]);
+
+  const [treeDataTags, setTreeDataTags] = useState([]);
+  const [valueTags, setValueTags] = useState([]);
+
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [editedDescription, setEditedDescription] = useState("");
+
+  const [editingMembers, setEditingMembers] = useState(false);
+  const [editingTags, setEditingTags] = useState(false);
+
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+
+  const [editingDate, setEditingDate] = useState(false);
+  const [editedDate, setEditedDate] = useState("");
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  const onChangeDate = (date, dateString) => {
+    setEditedDate(dateString);
+  };
+
   useEffect(() => {
     setOpen(isOpen);
     if (task) {
       setSelectedTask(task);
+      setTreeDataMembers(
+        project.team
+          .filter(
+            (member) =>
+              !task.members.some((assignee) => assignee.id === member.user.id)
+          )
+          .map((member) => {
+            return {
+              value: member.user.id,
+              title: (
+                <div className="flex items-center gap-2">
+                  <img
+                    src={member.user.image}
+                    className="w-4 h-4 rounded-full object-cover"
+                  />
+                  <p>{member.user.name}</p>
+                </div>
+              ),
+            };
+          })
+      );
+      setEditedTitle(task.title);
+      setEditedDescription(task.description);
+      if (project.tags) {
+        setTreeDataTags(
+          project.tags
+            .filter((tag) => !task.tags.includes(tag.name))
+            .map((tag) => ({ value: tag.id, title: tag.name }))
+        );
+      }
     }
   }, [isOpen, task]);
 
@@ -133,6 +189,7 @@ export const TaskDrawer = ({ isOpen, task, close, reload }) => {
         const updatedSelectedTask = {
           id: task.id,
           title: task.name,
+          creator: task.creator,
           tags: task.tags.map(
             (taskTag) =>
               response.data.tags.find(
@@ -144,7 +201,7 @@ export const TaskDrawer = ({ isOpen, task, close, reload }) => {
           progressList: task.subTasks.filter(
             (subTask) => subTask.status == "terminado"
           ).length,
-          date: format(new Date(task.due_date), "PP"),
+          date: format(addDays(task.due_date, 1), 'PP', { locale: es }),
           members: task.assignees.map((assignee) => {
             const member = response.data.team.find(
               (projectMember) => projectMember.user.id === assignee.userId
@@ -195,6 +252,232 @@ export const TaskDrawer = ({ isOpen, task, close, reload }) => {
   };
 
   const [messageApi, contextHolder] = message.useMessage();
+
+  // const createTask = async () => {
+  //   try {
+  //     if (!titleTask.trim()) {
+  //       messageApi.open({
+  //         type: "error",
+  //         content: "El título de la tarea es obligatorio",
+  //       });
+  //       return;
+  //     }
+
+  //     if (!dateTask) {
+  //       messageApi.open({
+  //         type: "error",
+  //         content: "La fecha de entrega es obligatoria",
+  //       });
+  //       return;
+  //     }
+
+  //     if (valueMembers.length === 0) {
+  //       messageApi.open({
+  //         type: "error",
+  //         content: "Debes seleccionar al menos un miembro",
+  //       });
+  //       return;
+  //     }
+
+  //     if (valueTags.length === 0) {
+  //       messageApi.open({
+  //         type: "error",
+  //         content: "Debes seleccionar al menos una etiqueta",
+  //       });
+  //       return;
+  //     }
+
+  //     if (!descriptionTask.trim()) {
+  //       messageApi.open({
+  //         type: "error",
+  //         content: "La descripción de la tarea es obligatoria",
+  //       });
+  //       return;
+  //     }
+
+  //     const formData = new FormData();
+
+  //     const filteredSubtasks = subtasks.filter(
+  //       (subtask) => subtask.trim() !== ""
+  //     );
+  //     console.log(formData);
+  //     if (filteredSubtasks.length > 0) {
+  //       formData.append("subtasks", JSON.stringify(filteredSubtasks));
+  //     }
+
+  //     formData.append("projectId", params.id);
+  //     formData.append("authorId", usuario.id);
+  //     formData.append("title", titleTask);
+  //     formData.append("date", dateTask);
+  //     formData.append("members", JSON.stringify(valueMembers));
+  //     formData.append("tags", JSON.stringify(valueTags));
+  //     formData.append("description", descriptionTask);
+
+  //     const response = await clienteAxios.postForm(
+  //       "/api/tasks/createTask",
+  //       formData,
+  //       {
+  //         headers: {
+  //           Authorization: "Bearer " + userToken,
+  //         },
+  //       }
+  //     );
+
+  //     messageApi.open({
+  //       type: "success",
+  //       content: "Tarea creada correctamente",
+  //     });
+
+  //     reload();
+  //     onClose();
+
+  //     console.log("Respuesta del backend:", response.data);
+  //   } catch (error) {
+  //     messageApi.open({
+  //       type: "error",
+  //       content: "Hubo un error al crear la tarea",
+  //     });
+  //     console.error("Error al enviar los datos", error);
+  //   }
+  // };
+
+  const handleSave = async () => {
+    try {
+      const formData = new FormData();
+      let hasChanges = false;
+  
+      if (editingTitle) {
+        if (!editedTitle.trim()) {
+          messageApi.error("El título de la tarea no puede estar vacío");
+          return;
+        }
+        formData.append("title", editedTitle);
+        hasChanges = true;
+      }
+  
+      if (editingDate) {
+        if (!editedDate) {
+          messageApi.error("La fecha de entrega es obligatoria");
+          return;
+        }
+        // console.log(editedDate)
+        formData.append("date", editedDate);
+        hasChanges = true;
+      }
+  
+      if (editingMembers) {
+        if (valueMembers.length === 0) {
+          messageApi.error("Debes seleccionar al menos un miembro");
+          return;
+        }
+        formData.append("members", JSON.stringify(valueMembers));
+        hasChanges = true;
+      }
+  
+      if (editingTags) {
+        if (valueTags.length === 0) {
+          messageApi.error("Debes seleccionar al menos una etiqueta");
+          return;
+        }
+        formData.append("tags", JSON.stringify(valueTags));
+        hasChanges = true;
+      }
+  
+      if (isEditingDescription) {
+        if (!editedDescription.trim()) {
+          messageApi.error("La descripción de la tarea no puede estar vacía");
+          return;
+        }
+        formData.append("description", editedDescription);
+        hasChanges = true;
+      }
+  
+      if (!hasChanges) {
+        messageApi.info("No se han realizado cambios");
+        return;
+      }
+  
+      formData.append("taskId", selectedTask.id);
+  
+      const response = await clienteAxios.postForm(
+        "/api/tasks/updateTask",
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + userToken,
+          },
+        }
+      );
+  
+      messageApi.success("Tarea actualizada correctamente");
+      getProject();
+  
+      // Resetear estados de edición
+      setEditingMembers(false);
+      setEditingTags(false);
+      setIsEditingDescription(false);
+      setEditingDate(false);
+      setEditingTitle(false);
+      setIsEditing(false);
+  
+    } catch (error) {
+      messageApi.error("Hubo un error al actualizar la tarea");
+      console.error("Error al enviar los datos", error);
+    }
+  };
+
+  useEffect(() => {
+    setIsEditing(
+      editingMembers ||
+        editingTags ||
+        isEditingDescription ||
+        editingDate ||
+        editingTitle
+    );
+  }, [
+    editingMembers,
+    editingTags,
+    isEditingDescription,
+    editingDate,
+    editingTitle,
+  ]);
+
+  const cancelEditing = () => {
+    setEditingMembers(false);
+    setEditingTags(false);
+    setEditingDate(false);
+    setEditingTitle(false);
+    setIsEditingDescription(false);
+    setIsEditing(false);
+  };
+
+  const onChangeMembers = (newValue) => {
+    setValueMembers(newValue);
+  };
+
+  const onChangeTags = (newValue) => {
+    setValueTags(newValue);
+  };
+  // const handleEditDescription = async () => {
+  //   if (editedDescription !== selectedTask.description) {
+  //     try {
+  //       const formData = new FormData();
+  //       formData.append("taskId", selectedTask.id);
+  //       formData.append("description", editedDescription);
+
+  //       await clienteAxios.postForm("/api/tasks/updateTask", formData, {
+  //         headers: { Authorization: "Bearer " + userToken },
+  //       });
+
+  //       getProject();
+  //       setIsEditingDescription(false);
+  //       messageApi.success("Descripción actualizada exitosamente");
+  //     } catch (error) {
+  //       console.error("Error al actualizar descripción:", error);
+  //       messageApi.error("Error al actualizar descripción");
+  //     }
+  //   }
+  // };
 
   const createLink = async () => {
     try {
@@ -368,6 +651,10 @@ export const TaskDrawer = ({ isOpen, task, close, reload }) => {
 
   const onClose = () => {
     setOpen(false);
+    setEditingMembers(false);
+    setEditingTags(false);
+    setIsEditingDescription(false);
+    setIsEditing(false);
     close();
   };
 
@@ -376,269 +663,396 @@ export const TaskDrawer = ({ isOpen, task, close, reload }) => {
   }
 
   useEffect(() => clearTimer, []);
-  console.log(selectedTask);
+  // console.log(selectedTask);
   return (
-    <Drawer
-      title={
-        selectedTask
-          ? selectedTask.status == "proximo"
-            ? "Próximo"
-            : selectedTask.status == "en progreso"
-            ? "En progreso"
-            : "Terminadas"
-          : ""
-      }
-      width={700}
-      height={isMobile && "85vh"}
-      placement={isMobile ? "bottom" : "right"}
-      onClose={onClose}
-      loading={loading}
-      open={open}
-      styles={{ body: { padding: "2rem", fontFamily: "Inter" } }}
-      footer={
-        <div className={`m-2 flex items-center gap-3 relative`}>
-          <img
-            src={usuario.image}
-            alt=""
-            className="min-w-10 min-h-10 max-w-10 max-h-10 rounded-full object-cover"
-          />
+    <>
+      {contextHolder}
 
-          {section === "archivos" ? (
-            <>
-              <input
-                onChange={(e) => setTaskUrl(e.target.value)}
-                onKeyDown={handleKeyDownLink}
-                className="rounded-2xl bg-[#f0f0f0] px-3 py-2 outline-none w-full mr-4"
-                type="text"
-                placeholder={"Copia el link aquí"}
-                name=""
-                id=""
-              />
-              <SendOutlined className="absolute right-8" onClick={createLink} />
-            </>
-          ) : section === "comentarios" ? (
-            <>
-              <input
-                onChange={(e) => setTaskComment(e.target.value)}
-                onKeyDown={handleKeyDownComment}
-                className="rounded-2xl bg-[#f0f0f0] px-3 py-2 outline-none w-full mr-4"
-                type="text"
-                placeholder={"Comenta aquí"}
-                name=""
-                id=""
-              />
-              <SendOutlined
-                className="absolute right-8"
-                onClick={createComment}
-              />
-            </>
-          ) : (
-            selectedTask &&
-            selectedTask.members && (
+      <Drawer
+        title={
+          <div className="flex justify-between items-center">
+            <span>
+              {selectedTask
+                ? selectedTask.status == "proximo"
+                  ? "Próximo"
+                  : selectedTask.status == "en progreso"
+                  ? "En progreso"
+                  : "Terminadas"
+                : ""}
+            </span>
+
+            {isEditing && (
+              <div className="flex gap-2">
+                <Button className="bg-black text-white" onClick={cancelEditing}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleSave}>Guardar</Button>
+              </div>
+            )}
+          </div>
+        }
+        width={700}
+        height={isMobile && "85vh"}
+        placement={isMobile ? "bottom" : "right"}
+        onClose={onClose}
+        loading={loading}
+        open={open}
+        styles={{ body: { padding: "2rem", fontFamily: "Inter" } }}
+        footer={
+          <div className={`m-2 flex items-center gap-3 relative`}>
+            <img
+              src={usuario.image}
+              alt=""
+              className="min-w-10 min-h-10 max-w-10 max-h-10 rounded-full object-cover"
+            />
+
+            {selectedTask ? (
               <>
-                {selectedTask.status === "terminado" ? (
+                {section === "archivos" &&
+                selectedTask.status !== "terminado" &&
+                selectedTask.members.some(
+                  (member) => member.id === usuario.id
+                ) ? (
+                  <>
+                    <input
+                      onChange={(e) => setTaskUrl(e.target.value)}
+                      onKeyDown={handleKeyDownLink}
+                      className="rounded-2xl bg-[#f0f0f0] px-3 py-2 outline-none w-full mr-4"
+                      type="text"
+                      placeholder={"Copia el link aquí"}
+                      name=""
+                      id=""
+                    />
+                    <SendOutlined
+                      className="absolute right-8"
+                      onClick={createLink}
+                    />
+                  </>
+                ) : section === "comentarios" ? (
+                  <>
+                    <input
+                      onChange={(e) => setTaskComment(e.target.value)}
+                      onKeyDown={handleKeyDownComment}
+                      className="rounded-2xl bg-[#f0f0f0] px-3 py-2 outline-none w-full mr-4"
+                      type="text"
+                      placeholder={"Comenta aquí"}
+                      name=""
+                      id=""
+                    />
+                    <SendOutlined
+                      className="absolute right-8"
+                      onClick={createComment}
+                    />
+                  </>
+                ) : selectedTask.status !== "terminado" &&
+                  selectedTask.members.some(
+                    (member) => member.id === usuario.id
+                  ) ? (
+                  <>
+                    {selectedTask.status === "proximo" ? (
+                      <button
+                        onClick={handleTaskToInProgress}
+                        className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
+                      >
+                        Empezar tarea
+                      </button>
+                    ) : selectedTask.status === "en progreso" ? (
+                      <button
+                        onClick={handleTaskToFinished}
+                        className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
+                      >
+                        Marcar tarea como completada
+                      </button>
+                    ) : null}
+                  </>
+                ) : selectedTask.status === "terminado" ? (
                   <p className="text-green-600 font-semibold ml-2">
                     ✓ Esta tarea ya está completada
                   </p>
-                ) : selectedTask.status === "proximo" &&
-                  selectedTask.members.some(
-                    (member) => member.id === usuario.id
-                  ) ? (
-                  <button
-                    onClick={handleTaskToInProgress}
-                    className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
-                  >
-                    Empezar tarea
-                  </button>
-                ) : selectedTask.status === "en progreso" &&
-                  selectedTask.members.some(
-                    (member) => member.id === usuario.id
-                  ) ? (
-                  <button
-                    onClick={handleTaskToFinished}
-                    className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
-                  >
-                    Marcar tarea como completada
-                  </button>
-                ) : selectedTask.status !== "terminado" ? (
+                ) : (
                   <p className="text-gray-600 font-semibold ml-2">
                     No estás asignado a esta tarea
                   </p>
-                ) : null}
+                )}
               </>
-            )
-          )}
-        </div>
-      }
-    >
-      {selectedTask ? (
-        <>
-          <p className="text-5xl font-semibold">{selectedTask.title}</p>
-          <table className="w-full my-5">
-            <tbody>
-              <tr>
-                <td className="text-[#9b9b9b] font-medium py-2 w-[7rem]">
-                  Estado
-                </td>
-                <td className="font-medium py-2">
-                  {selectedTask.status === "proximo"
-                    ? "Próximo"
-                    : selectedTask.status === "en progreso"
-                    ? "En progreso"
-                    : "Terminadas"}
-                </td>
-              </tr>
-              <tr>
-                <td className="text-[#9b9b9b] font-medium py-2">Asignados</td>
-                <td className="font-medium py-2">
-                  <div className="flex">
-                    {selectedTask.members.map((member, index) => {
-                      return (
-                        <img
-                          key={index}
-                          src={member.image}
-                          className={` ${
-                            index === 1
-                              ? " right-2"
-                              : index === 2
-                              ? "right-4"
-                              : ""
-                          } relative rounded-full min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem]`}
-                        />
-                      );
-                    })}
-                    <div className="flex items-center justify-center rounded-full w-[2rem] h-[2rem] bg-[#e6e6e6] relative right-3 cursor-pointer">
-                      <FaPlus />
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="text-[#9b9b9b] font-medium py-2">
-                  Fecha límite
-                </td>
-                <td className="font-medium py-2">{selectedTask.date}</td>
-              </tr>
-              <tr>
-                <td className="text-[#9b9b9b] font-medium py-2">Etiquetas</td>
-                <td className="font-medium py-2">
-                  <div className="flex gap-2 flex-wrap">
-                    {selectedTask.tags.map((tag, index) => {
-                      return (
-                        <p
-                          key={index}
-                          className="bg-[#f5f5f5] text-[#959595] px-2 py-1 rounded-2xl"
-                        >
-                          {tag}
-                        </p>
-                      );
-                    })}
-                    <p className="border-[1px] flex items-center gap-1 text-[#000] px-2 py-1 rounded-2xl cursor-pointer">
-                      {isMobile ? "Añadir" : "Añadir etiqueta"}
-                      <span>
-                        <FaPlus />
-                      </span>
-                    </p>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <p className="text-2xl font-semibold">Descripción</p>
-              <TbEdit size={23} opacity={0.4} className="cursor-pointer" />
-            </div>
-            <p className="text-[#5c5c5c]">{selectedTask.description}</p>
+            ) : null}
           </div>
-          <div className="mt-10">
-            <div className="flex text-[1.05rem] gap-2 lg:gap-5">
-              <p
-                onClick={() => {
-                  changeSection("progreso");
-                }}
-                className={`${
-                  section === "progreso"
-                    ? "border-black text-black"
-                    : "border-white text-gray-500 hover:text-black"
-                }  px-2 lg:px-4 pb-1 border-b-[3px] hover:border-black cursor-pointer`}
-              >
-                Progreso
-              </p>
-              <p
-                onClick={() => {
-                  changeSection("archivos");
-                }}
-                className={`${
-                  section === "archivos"
-                    ? "border-black text-black"
-                    : "border-white text-gray-500 hover:text-black"
-                } px-2 lg:px-4 pb-1 border-b-[3px] hover:border-black cursor-pointer`}
-              >
-                Archivos
-              </p>
-              <div
-                onClick={() => {
-                  changeSection("comentarios");
-                }}
-                className={`${
-                  section === "comentarios"
-                    ? "border-black text-black"
-                    : "border-white text-gray-500 hover:text-black"
-                } flex items-center gap-1 px-2 lg:px-4 pb-1 border-b-[3px] hover:border-black cursor-pointer`}
-              >
-                <p className="">Comentarios</p>
-                <div className="w-6 h-6 grid place-content-center text-white text-[.75rem] bg-black rounded-full">
-                  {selectedTask.comments.length}
+        }
+      >
+        {selectedTask ? (
+          <>
+            <div className="flex gap-1 items-center">
+              {editingTitle ? (
+                <input
+                className="outline-none border-[1px] border-gray-400 rounded-lg py-1 px-3 text-4xl font-bold"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                />
+              ) : (
+                <p className="text-5xl font-semibold">{selectedTask.title}</p>
+              )}
+              <TbEdit
+                size={30}
+                opacity={0.6}
+                className="cursor-pointer relative top-0.5"
+                onClick={() => setEditingTitle(true)}
+              />
+            </div>
+            <table className="w-full my-5">
+              <tbody>
+                <tr>
+                  <td className="text-[#9b9b9b] font-medium py-2 w-[7rem]">
+                    Estado
+                  </td>
+                  <td className="font-medium py-2">
+                    {selectedTask.status === "proximo"
+                      ? "Próximo"
+                      : selectedTask.status === "en progreso"
+                      ? "En progreso"
+                      : "Terminadas"}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="text-[#9b9b9b] font-medium py-2">Asignados</td>
+                  <td className="font-medium py-2 ">
+                    <div className="flex">
+                      {selectedTask.members.map((member, index) => {
+                        return (
+                          <img
+                            key={index}
+                            src={member.image}
+                            className={` ${
+                              index === 1
+                                ? " right-2"
+                                : index === 2
+                                ? "right-4"
+                                : ""
+                            } relative rounded-full min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem]`}
+                          />
+                        );
+                      })}
+
+                      {editingMembers ? (
+                        <div className="flex min-w-[9rem] items-center justify-center rounded-full ml-3 cursor-pointer">
+                          <TreeSelect
+                            showSearch
+                            style={{ width: "100%" }}
+                            value={valueMembers}
+                            dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+                            placeholder="Añadir miembro"
+                            allowClear
+                            multiple
+                            treeDefaultExpandAll
+                            onChange={onChangeMembers}
+                            treeData={treeDataMembers}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className="w-8 h-8 ml-2 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer"
+                          onClick={() => setEditingMembers(true)}
+                        >
+                          <FaPlus className="text-gray-500" />
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="text-[#9b9b9b] font-medium py-2">
+                    Fecha límite
+                  </td>
+                  <td className=" py-2 flex items-center gap-2">
+                    <p className="font-medium">{selectedTask.date}</p>
+                    {editingDate ? (
+                      <div className="flex min-w-[9rem] items-center justify-center rounded-full ml-3 cursor-pointer">
+                        <DatePicker
+                          style={{
+                            width: "100%",
+                          }}
+                          getPopupContainer={(trigger) => trigger.parentElement}
+                          onChange={onChangeDate}
+                          
+                          placeholder={"Selecciona fecha"}
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer"
+                        onClick={() => setEditingDate(true)}
+                      >
+                        <FiEdit opacity={0.7} />
+                      </div>
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="text-[#9b9b9b] font-medium py-2">Etiquetas</td>
+                  <td className="font-medium py-2">
+                    <div className="flex gap-2 flex-wrap">
+                      {selectedTask.tags.map((tag, index) => {
+                        return (
+                          <p
+                            key={index}
+                            className="bg-[#f5f5f5] text-[#959595] px-2 py-1 rounded-2xl"
+                          >
+                            {tag}
+                          </p>
+                        );
+                      })}
+
+                      {editingTags ? (
+                        <div className="flex min-w-[9rem] items-center justify-center rounded-full cursor-pointer">
+                          <TreeSelect
+                            showSearch
+                            style={{ width: "100%" }}
+                            value={valueTags}
+                            dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+                            placeholder="Añadir etiqueta"
+                            allowClear
+                            multiple
+                            treeDefaultExpandAll
+                            onChange={onChangeTags}
+                            treeData={treeDataTags}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer"
+                          onClick={() => setEditingTags(true)}
+                        >
+                          <FaPlus className="text-gray-500" />
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="text-[#9b9b9b] font-medium py-2">Creador</td>
+                  <td className="font-medium py-2">
+                    <div className="flex gap-1.5 flex-wrap items-center">
+                      <img
+                        src={selectedTask.creator.image}
+                        className={`relative rounded-full min-w-[1.5rem] min-h-[1.5rem] max-w-[1.5rem] max-h-[1.5rem]`}
+                      />
+                      <p>{selectedTask.creator.name}</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <p className="text-2xl font-semibold">Descripción</p>
+                {isEditingDescription ? (
+                  <Button onClick={handleSave}>Guardar</Button>
+                ) : (
+                  <TbEdit
+                    size={23}
+                    opacity={0.4}
+                    className="cursor-pointer"
+                    onClick={() => setIsEditingDescription(true)}
+                  />
+                )}
+              </div>
+              {isEditingDescription ? (
+                <Input.TextArea
+                  value={editedDescription}
+                  onChange={(e) => setEditedDescription(e.target.value)}
+                  autoSize={{ minRows: 3, maxRows: 5 }}
+                />
+              ) : (
+                <p className="text-[#5c5c5c]">{selectedTask.description}</p>
+              )}
+            </div>
+            <div className="mt-10">
+              <div className="flex text-[1.05rem] gap-2 lg:gap-5">
+                <p
+                  onClick={() => {
+                    changeSection("progreso");
+                  }}
+                  className={`${
+                    section === "progreso"
+                      ? "border-black text-black"
+                      : "border-white text-gray-500 hover:text-black"
+                  }  px-2 lg:px-4 pb-1 border-b-[3px] hover:border-black cursor-pointer`}
+                >
+                  Progreso
+                </p>
+                <p
+                  onClick={() => {
+                    changeSection("archivos");
+                  }}
+                  className={`${
+                    section === "archivos"
+                      ? "border-black text-black"
+                      : "border-white text-gray-500 hover:text-black"
+                  } px-2 lg:px-4 pb-1 border-b-[3px] hover:border-black cursor-pointer`}
+                >
+                  Archivos
+                </p>
+                <div
+                  onClick={() => {
+                    changeSection("comentarios");
+                  }}
+                  className={`${
+                    section === "comentarios"
+                      ? "border-black text-black"
+                      : "border-white text-gray-500 hover:text-black"
+                  } flex items-center gap-1 px-2 lg:px-4 pb-1 border-b-[3px] hover:border-black cursor-pointer`}
+                >
+                  <p className="">Comentarios</p>
+                  <div className="w-6 h-6 grid place-content-center text-white text-[.75rem] bg-black rounded-full">
+                    {selectedTask.comments.length}
+                  </div>
                 </div>
               </div>
-            </div>
-            <hr />
-            <div>
-              {section === "progreso" ? (
-                <div className="m-4">
-                  <div className="flex justify-between items-center">
-                    <p className="text-lg font-medium">Lista de progreso</p>
-                    <div className="flex items-center gap-2">
-                      <PiListChecks size={20} />
-                      <p>
-                        {selectedTask.progressList}/
-                        {selectedTask.subTasks.length}
-                      </p>
+              <hr />
+              <div>
+                {section === "progreso" ? (
+                  <div className="m-4">
+                    <div className="flex justify-between items-center">
+                      <p className="text-lg font-medium">Lista de progreso</p>
+                      <div className="flex items-center gap-2">
+                        <PiListChecks size={20} />
+                        <p>
+                          {selectedTask.progressList}/
+                          {selectedTask.subTasks.length}
+                        </p>
+                      </div>
+                    </div>
+                    <Flex gap="small" vertical>
+                      <Progress
+                        percent={
+                          selectedTask.subTasks.length > 0
+                            ? (selectedTask.progressList /
+                                selectedTask.subTasks.length) *
+                              100
+                            : 0
+                        }
+                        showInfo={false}
+                        strokeColor={"black"}
+                      />
+                    </Flex>
+                    <div className="mt-6 space-y-3">
+                      {selectedTask.subTasks.map((task, index) => {
+                        return (
+                          <SubTask
+                            key={task.id}
+                            index={index}
+                            taskId={task.id}
+                            name={task.name}
+                            isChecked={task.status == "terminado"}
+                            refreshProject={getProject}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
-                  <Flex gap="small" vertical>
-                    <Progress
-                      percent={
-                        selectedTask.subTasks.length > 0
-                          ? (selectedTask.progressList /
-                              selectedTask.subTasks.length) *
-                            100
-                          : 0
-                      }
-                      showInfo={false}
-                      strokeColor={"black"}
-                    />
-                  </Flex>
-                  <div className="mt-6 space-y-3">
-                    {selectedTask.subTasks.map((task, index) => {
-                      return (
-                        <SubTask
-                          key={task.id}
-                          index={index}
-                          taskId={task.id}
-                          name={task.name}
-                          isChecked={task.status == "terminado"}
-                          refreshProject={getProject}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : section === "archivos" ? (
-                <div className="m-4">
-                  <p className="text-lg font-medium mb-1">Subir archivos</p>
-                  {/* <Dragger {...props} defaultFileList={[...fileList]}>
+                ) : section === "archivos" ? (
+                  <div className="m-4">
+                    <p className="text-lg font-medium mb-1">Subir archivos</p>
+                    {/* <Dragger {...props} defaultFileList={[...fileList]}>
                       <p className="ant-upload-drag-icon">
                         <InboxOutlined />
                       </p>
@@ -651,44 +1065,47 @@ export const TaskDrawer = ({ isOpen, task, close, reload }) => {
                         otros archivos prohibidos.
                       </p>
                     </Dragger> */}
-                  <Upload {...props}>
-                    <Button icon={<UploadOutlined />}>Click para subir</Button>
-                  </Upload>
-                  <p className="text-lg font-medium mt-6">Adjuntar links</p>
-                  <div className="mt-1 space-y-1">
-                    <StyleSheetManager shouldForwardProp={isPropValid}>
-                      {selectedTask.links.map((link) => {
-                        return <Microlink url={link.url} />;
+                    <Upload {...props}>
+                      <Button icon={<UploadOutlined />}>
+                        Click para subir
+                      </Button>
+                    </Upload>
+                    <p className="text-lg font-medium mt-6">Adjuntar links</p>
+                    <div className="mt-1 space-y-1">
+                      <StyleSheetManager shouldForwardProp={isPropValid}>
+                        {selectedTask.links.map((link) => {
+                          return <Microlink url={link.url} />;
+                        })}
+                      </StyleSheetManager>
+                    </div>
+                  </div>
+                ) : section === "comentarios" ? (
+                  <div className="mt-4">
+                    <p className="text-lg font-medium mt-6">Comentar</p>
+                    <div className="space-y-5 mt-3">
+                      {selectedTask.comments.map((comment) => {
+                        return (
+                          <CommentComponent
+                            index={comment.id}
+                            userPicture={comment.creatorImage}
+                            userName={comment.creatorName}
+                            timeAgo={comment.timeAgo}
+                            message={comment.text}
+                          />
+                        );
                       })}
-                    </StyleSheetManager>
+                    </div>
                   </div>
-                </div>
-              ) : section === "comentarios" ? (
-                <div className="mt-4">
-                  <p className="text-lg font-medium mt-6">Comentar</p>
-                  <div className="space-y-5 mt-3">
-                    {selectedTask.comments.map((comment) => {
-                      return (
-                        <CommentComponent
-                          index={comment.id}
-                          userPicture={comment.creatorImage}
-                          userName={comment.creatorName}
-                          timeAgo={comment.timeAgo}
-                          message={comment.text}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                ""
-              )}
+                ) : (
+                  ""
+                )}
+              </div>
             </div>
-          </div>
-        </>
-      ) : (
-        "hi"
-      )}
-    </Drawer>
+          </>
+        ) : (
+          "hi"
+        )}
+      </Drawer>
+    </>
   );
 };

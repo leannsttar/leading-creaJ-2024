@@ -39,6 +39,89 @@ export const getUserTasks = async (req, res) => {
   }
 }
 
+export const updateTask = async (req, res) => {
+  const {
+    taskId,
+    title,
+    date,
+    members,
+    tags,
+    description,
+  } = req.body;
+  
+
+  console.log(req.body);
+
+  if (!taskId) {
+    return res.status(400).json({ error: 'El ID de la tarea es requerido' });
+  }
+
+  try {
+    const task = await prisma.tasks.findUnique({ where: { id: +taskId } });
+    if (!task) {
+      return res.status(404).json({ error: 'Tarea no encontrada' });
+    }
+
+    // Preparar los datos para actualizar
+    const updateData = {};
+
+    if (title !== undefined) updateData.name = title;
+    if (description !== undefined) updateData.description = description;
+    if (date !== undefined) updateData.due_date = new Date(date);
+
+    // Actualizar la tarea solo si hay datos para actualizar
+    if (Object.keys(updateData).length > 0) {
+      await prisma.tasks.update({
+        where: { id: +taskId },
+        data: updateData,
+      });
+    }
+
+    // Añadir nuevos miembros si se proporcionaron
+    if (members) {
+      const membersArray = JSON.parse(members);
+      if (Array.isArray(membersArray) && membersArray.length > 0) {
+        await Promise.all(membersArray.map(member => 
+          prisma.tasksAssignees.create({
+            data: {
+              taskId: +taskId,
+              userId: member,
+            },
+          })
+        ));
+      }
+    }
+
+    // Añadir nuevas etiquetas si se proporcionaron
+    if (tags) {
+      const tagsArray = JSON.parse(tags);
+      if (Array.isArray(tagsArray) && tagsArray.length > 0) {
+        await Promise.all(tagsArray.map(tag => 
+          prisma.taskTags.create({
+            data: {
+              tagId: tag,
+              taskId: +taskId,
+            },
+          })
+        ));
+      }
+    }
+
+    // Obtener la tarea actualizada con sus relaciones
+    const updatedTaskWithRelations = await prisma.tasks.findUnique({
+      where: { id: +taskId },
+      include: {
+        assignees: true,
+        tags: true,
+      },
+    });
+
+    res.status(200).json(updatedTaskWithRelations);
+  } catch (error) {
+    console.error('Error al actualizar la tarea:', error);
+    res.status(500).json({ error: 'Error al actualizar la tarea' });
+  }
+};
 export const createTag = async (req, res) => {
   const { projectoId, tag } = req.body;
 

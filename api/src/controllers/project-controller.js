@@ -2,7 +2,6 @@ import { prisma } from "../../config/prisma.js";
 import { processImage } from "../../uploadImage.js";
 import cloudinary from "../../cloudinaryConfig.js";
 
-
 export const createProject = async (req, res) => {
   const { nombre, descripcion } = req.body;
   const usuarioId = req.usuario.id;
@@ -40,7 +39,6 @@ export const createProject = async (req, res) => {
     res.status(500).json({ error: "Error al crear el proyecto" });
   }
 };
-
 
 //TODA ESTA PARTE ES EL CONTROLADOR DE LA MEETING
 export const createMeeting = async (req, res) => {
@@ -114,7 +112,9 @@ export const getProjectInvitations = async (req, res) => {
     const { projectId } = req.params;
 
     if (!projectId) {
-      return res.status(400).json({ message: 'El ID del proyecto es requerido.' });
+      return res
+        .status(400)
+        .json({ message: "El ID del proyecto es requerido." });
     }
 
     const invitations = await prisma.invitations.findMany({
@@ -124,13 +124,19 @@ export const getProjectInvitations = async (req, res) => {
     });
 
     if (!invitations.length) {
-      return res.status(404).json({ message: 'No se encontraron invitaciones para este proyecto.' });
+      return res
+        .status(404)
+        .json({
+          message: "No se encontraron invitaciones para este proyecto.",
+        });
     }
 
     return res.status(200).json(invitations);
   } catch (error) {
-    console.error('Error al obtener las invitaciones del proyecto:', error);
-    return res.status(500).json({ message: 'Error al obtener las invitaciones del proyecto.' });
+    console.error("Error al obtener las invitaciones del proyecto:", error);
+    return res
+      .status(500)
+      .json({ message: "Error al obtener las invitaciones del proyecto." });
   }
 };
 
@@ -286,14 +292,10 @@ export const getProjectBoard = async (req, res) => {
   console.log(req.params);
   try {
     const project = await prisma.projects.findFirst({
-      where: {
-        id: +id,
-      },
+      where: { id: +id },
       include: {
         team: {
-          include: {
-            user: true,
-          },
+          include: { user: true },
         },
         tags: true,
         tasks: {
@@ -304,6 +306,14 @@ export const getProjectBoard = async (req, res) => {
             comments: true,
             files: true,
             links: true,
+            creator: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
           },
         },
       },
