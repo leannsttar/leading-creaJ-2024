@@ -31,7 +31,7 @@ const MeetingsSection = ({ icon, title, numMeetings }) => {
 };
 
 export const MeetingsList = ({ meetings, validatedAttendance }) => {
-  const {usuario, logout} = useSession()
+  const { usuario, logout } = useSession();
   return (
     <>
       <div className="mt-14">
@@ -48,8 +48,8 @@ export const MeetingsList = ({ meetings, validatedAttendance }) => {
               going={meeting.attendance.length}
               link={meeting.id}
               teamPictures={meeting.attendance}
-              validatedAttendance={meeting.attendance.some((member)=>{
-                return member.userId == usuario.id
+              validatedAttendance={meeting.attendance.some((member) => {
+                return member.userId == usuario.id;
               })}
             />
           );
@@ -139,7 +139,6 @@ const MeetingCard = ({
         </div>
         <div className="flex items-center">
           <div className="flex">
-            {console.log(teamPictures)}
             {teamPictures.map((picture, index) => {
               return (
                 <img
@@ -160,7 +159,9 @@ const MeetingCard = ({
           </div>
         </div>
         {attendanceConfirmed || validatedAttendance ? (
-          <p className="text-lg text-center text-emerald-600 font-inter">{confirmationMessage}</p>
+          <p className="text-lg text-center text-emerald-600 font-inter">
+            {confirmationMessage}
+          </p>
         ) : (
           <>
             <button
@@ -209,7 +210,6 @@ export const MeetingsTab = () => {
         }
       );
       setMeetings(response.data.meetings);
-
     } catch (error) {
       console.error("Error al obtener las reuniones:", error);
     }
@@ -217,12 +217,6 @@ export const MeetingsTab = () => {
   useEffect(() => {
     fetchMeetings();
   }, []);
-
-  const [stats, setStats] = useState({
-    totalMeetings: 0,
-    pastMeetings: 0,
-    upcomingMeetings: 0,
-  });
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -243,6 +237,13 @@ export const MeetingsTab = () => {
     fetchStats();
   }, [params.id]);
 
+
+  const [stats, setStats] = useState({
+    totalMeetings: 0,
+    pastMeetings: 0,
+    upcomingMeetings: 0,
+  });
+  
   const [meetingDate, setMeetingDate] = useState();
   const [meetingLink, setMeetingLink] = useState();
   const [modal1Open, setModal1Open] = useState(false);
@@ -399,43 +400,3 @@ export const MeetingsTab = () => {
     </div>
   );
 };
-
-// const [formData, setFormData] = useState({
-//   date: null,
-//   time: null,
-//   meetLink: "",
-//   description: "",
-// });
-
-// const onDateChange = (date) => {
-//   setFormData({
-//     ...formData,
-//     date,
-//   });
-// };
-
-// const onTimeChange = (time) => {
-//   setFormData({
-//     ...formData,
-//     time,
-//   });
-// };
-
-// const onLinkChange = (event) => {
-//   setFormData({
-//     ...formData,
-//     meetLink: event.target.value,
-//   });
-// };
-
-// const onDescriptionChange = (event) => {
-//   setFormData({
-//     ...formData,
-//     description: event.target.value,
-//   });
-// };
-
-// const handleSubmit = () => {
-//   // Submit the form data to your server or perform other actions
-//   console.log("Submitting form data:", formData);
-// };

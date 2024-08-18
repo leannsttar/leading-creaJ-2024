@@ -34,6 +34,7 @@ import {
 import TextArea from "antd/es/input/TextArea";
 import ImgCrop from "antd-img-crop";
 import axios from "axios";
+import { useTheme } from "@material-tailwind/react";
 
 const navLinks = [
   { title: "Panel", href: "/dashboard", img: dashboardIcon },
@@ -65,6 +66,8 @@ const SideBarLink = ({ name, img, href, isProject, isShrinked }) => {
       }
     }
   }, [location.pathname, href]);
+
+
 
   return isProject ? (
     <Link to={href}>
@@ -124,21 +127,6 @@ export const SideBar = () => {
     },
   ]);
 
-  // const [misProyectos, setMisProyectos] = useState([]);
-
-  // const obtenerProyectos = async () => {
-  //   try {
-  //     const response = await clienteAxios.get(`/api/projects/${usuario.id}`);
-
-  //     setMisProyectos(response.data);
-  //   } catch (error) {
-  //     console.log("Error al obtener los proyectos:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   obtenerProyectos();
-  // }, []);
 
   const [isDark, setIsDark] = useState(false);
   const [isShrinked, setIsShrinked] = useState(window.innerWidth < 1280);
@@ -355,6 +343,18 @@ export const SideBar = () => {
     },
   ];
 
+  
+  //Prueba del darkmode
+  const {theme, setTheme} = useTheme();
+
+  const handleTheme = () => {
+      if (theme == "light") {
+          setTheme("dark")
+          return
+      }
+      setTheme("light")
+  }
+
   return (
     <>
       {contextHolder}
@@ -377,7 +377,7 @@ export const SideBar = () => {
               style={{ transition: "opacity 300ms ease" }}
             >
               <img
-                src="/logoTemporalBlack.svg"
+                src="/logoTerminado.png"
                 alt="Logo"
                 className="w-[2rem]"
               />
@@ -747,22 +747,6 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
     },
   ]);
 
-  // const [misProyectos, setMisProyectos] = useState([]);
-
-  // const obtenerProyectos = async () => {
-  //   try {
-  //     const response = await clienteAxios.get(`/api/projects/${usuario.id}`);
-
-  //     setMisProyectos(response.data);
-  //   } catch (error) {
-  //     console.log("Error al obtener los proyectos:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   obtenerProyectos();
-  // }, []);
-
   const [isDark, setIsDark] = useState(false);
   const [isShrinked, setIsShrinked] = useState(false);
 
@@ -1005,7 +989,7 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
               style={{ transition: "opacity 300ms ease" }}
             >
               <img
-                src="/logoTemporalBlack.svg"
+                src="/logoTerminado.png"
                 alt="Logo"
                 className="w-[2rem]"
               />

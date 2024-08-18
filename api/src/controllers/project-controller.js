@@ -103,6 +103,8 @@ export const getMeetings = async (req, res) => {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 };
+
+
 export const confirmAttendance = async (req, res) => {
   const { meetingId, userId } = req.body;
   console.log;
