@@ -11,6 +11,10 @@ export const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -19,6 +23,27 @@ export const SignUpPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if(nameError){
+      messageApi.open({
+        type: "error",
+        content: "Nombre invalido...",
+      });
+      return 
+    }
+    if(emailError){
+      messageApi.open({
+        type: "error",
+        content: "Correo invalido...",
+      });
+      return 
+    }
+    if(passwordError){
+      messageApi.open({
+        type: "error",
+        content: "Contraseña invalido...",
+      });
+      return 
+    }
     const response = await fetch("http://localhost:5000/api/users/signup", {
       method: "POST",
       headers: {
@@ -67,6 +92,37 @@ export const SignUpPage = () => {
   };
 
   const [messageApi, contextHolder] = message.useMessage();
+
+  const validateName = (name) => {
+    if (name.length > 15) {
+      return "El nombre no puede tener más de 15 caracteres";
+    }
+    if (!/^[A-Z]/.test(name)) {
+      return "El nombre debe comenzar con una letra mayúscula";
+    }
+    return "";
+  };
+
+  const validateEmail = (email) => {
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      return "El correo debe contener un @ válido";
+    }
+    return "";
+  };
+
+  const validatePassword = (password) => {
+    if (password.length < 8) {
+      return "La contraseña debe tener al menos 8 caracteres";
+    }
+    if (!/[A-Z]/.test(password)) {
+      return "La contraseña debe contener al menos una letra mayúscula";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "La contraseña debe contener al menos un número";
+    }
+    return "";
+  };
+
   
   return (
     <>
@@ -146,8 +202,14 @@ export const SignUpPage = () => {
                     placeholder="Ingresa tu nombre"
                     type="text"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setNameError(validateName(e.target.value))
+                    }}
                   />
+                  {nameError && (
+                    <p className="text-red-500 text-sm">{nameError}</p>
+                  )}
                 </div>
                 <div>
                   <label className="text-lg font-medium" htmlFor="email">
@@ -157,10 +219,13 @@ export const SignUpPage = () => {
                     id="email"
                     className="w-full pl-4 rounded-md outline-none border border-gray h-12 text-lg"
                     placeholder="Ingresa un correo"
-                    type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {setEmail(e.target.value),setEmailError(validateEmail(e.target.value))
+                    }}
                   />
+                  {emailError && (
+                    <p className="text-red-500 text-sm">{emailError}</p>
+                  )}
                 </div>
                 <div className="relative">
                   <label className="text-lg font-medium" htmlFor="password">
@@ -172,8 +237,11 @@ export const SignUpPage = () => {
                     placeholder="Ingresa una contraseña"
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {setPassword(e.target.value),setPasswordError(validatePassword(e.target.value))}}
                   />
+                  {passwordError && (
+                    <p className="text-red-500 text-sm">{passwordError}</p>
+                  )}
                   {showPassword ? (
                     <IoEyeOffOutline
                       size={25}
