@@ -110,7 +110,7 @@ export const updateTask = async (req, res) => {
           if (newMember.id !== +userId) {
             await prisma.notifications.create({
               data: {
-                content: `${actionUserName} te ha agregado a la tarea "${taskName}"`,
+                content: `${actionUserName} ha agregado a "${newMember.name}" a la tarea "${taskName}"`,
                 type: "task_assignment",
                 taskId: +taskId,
                 userId: newMember.id,
@@ -247,23 +247,29 @@ export const createTask = async (req, res) => {
       });
 
       await Promise.all(
-        membersArray.map(async (member) => {
+        membersArray.map(async (memberId) => {
           await prisma.tasksAssignees.create({
             data: {
               taskId: newTask.id,
-              userId: member,
+              userId: memberId,
             },
           });
 
           // Crear notificación para cada miembro asignado
-          if (member !== authorId) {
+          if (memberId !== authorId) {
+            // Obtener la información del usuario asignado
+            const assignedUser = await prisma.users.findUnique({
+              where: { id: memberId },
+              select: { name: true },
+            });
+
             await prisma.notifications.create({
               data: {
-                content: `Has sido asignado a la tarea "${title}"`,
+                content: `${assignedUser.name} ha sido asignado a la tarea "${title}"`,
                 type: "task_assignment",
                 taskId: newTask.id,
-                userId: member,
-                actionUserId:  +authorId,
+                userId: memberId,
+                actionUserId: +authorId,
                 projectId: +projectId
               },
             });

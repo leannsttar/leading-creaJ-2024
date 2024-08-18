@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { RxCode } from "react-icons/rx";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
+import { clienteAxios } from "@/config/clienteAxios";
+import { Loader } from "../../../components/Loader.jsx";
+import { useParams } from "react-router-dom";
 
 import addFileIcon from "../../../assets/addFileIcon.svg";
 import commentIcon from "../../../assets/commentIcon.svg";
@@ -8,30 +13,57 @@ import finishIcon from "../../../assets/finishIcon.svg";
 import deleteIcon from "../../../assets/deleteIcon.svg";
 import calendarIcon from "../../../assets/calendarIcon.svg";
 
+import {
+  MdAssignment,
+  MdEdit,
+  MdPersonAdd,
+  MdLabel,
+  MdCheckBoxOutlineBlank,
+  MdSwapHoriz,
+  MdLink,
+  MdCheckCircle,
+  MdMail,
+} from "react-icons/md";
+
 const ActionRecord = ({ type, user, userImage, action, date }) => {
-  let iconSrc = "";
+  let IconComponent;
 
   switch (type) {
-    case "addFile":
-      iconSrc = addFileIcon;
+    case "task_assignment":
+      IconComponent = MdAssignment;
       break;
-    case "comment":
-      iconSrc = commentIcon;
+    case "task_edit":
+      IconComponent = MdEdit;
       break;
-    case "finish":
-      iconSrc = finishIcon;
+    case "new_member_assignment":
+      IconComponent = MdPersonAdd;
       break;
-    case "delete":
-      iconSrc = deleteIcon;
+    case "new_tags":
+      IconComponent = MdLabel;
+      break;
+    case "subtask_status_update":
+      IconComponent = MdCheckBoxOutlineBlank;
+      break;
+    case "task_status_change":
+      IconComponent = MdSwapHoriz;
+      break;
+    case "new_link":
+      IconComponent = MdLink;
+      break;
+    case "invitation_accepted":
+      IconComponent = MdCheckCircle;
+      break;
+    case "project_invitation":
+      IconComponent = MdMail;
       break;
     default:
-      iconSrc = <RxCode />;
+      IconComponent = RxCode;
   }
 
   return (
     <div className="bg-[#F7F7F7] rounded-xl px-3 py-2 lg:px-5 flex justify-between ">
       <div className="flex gap-1.5 lg:gap-4 items-center">
-        <img src={iconSrc} alt="" className={`min-w-[1.2rem] min-h-[1.2rem]`} />
+        <IconComponent className="text-2xl" />
         <img
           src={userImage}
           alt=""
@@ -54,6 +86,9 @@ const ActionRecord = ({ type, user, userImage, action, date }) => {
 export const TimelineTab = () => {
   const [rotateUsuarios, setRotateUsuarios] = useState(false);
   const [rotateAcciones, setRotateAcciones] = useState(false);
+  const [timeline, setTimeline] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const params = useParams();
 
   const handleUsuariosClick = () => {
     setRotateUsuarios(!rotateUsuarios);
@@ -62,6 +97,28 @@ export const TimelineTab = () => {
   const handleAccionesClick = () => {
     setRotateAcciones(!rotateAcciones);
   };
+
+  const getTimeline = async () => {
+    try {
+      const response = await clienteAxios.get(
+        `/api/notifications/getProjectNotifications/${params.id}`
+      );
+      const sortedTimeline = response.data.sort(
+        (a, b) => new Date(b.event_time) - new Date(a.event_time)
+      );
+      setTimeline(sortedTimeline);
+    } catch (error) {
+      console.log("Error al obtener la línea de tiempo", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getTimeline();
+  }, []);
+
+  if (loading) return <Loader />;
 
   return (
     <div className="m-5 lg:mx-[7%] lg:mt-12 space-y-4">
@@ -107,54 +164,23 @@ export const TimelineTab = () => {
         </div>
       </div>
       <div className="space-y-3">
-        <ActionRecord
-          type={"addFile"}
-          user={"Juan Charlie"}
-          userImage={
-            "https://i.pinimg.com/564x/5a/13/34/5a1334256dea673480a0c933d2368aa2.jpg"
-          }
-          action={
-            "added 2 .pdf files to the task Payment method via e-commerce"
-          }
-          date={"27 feb"}
-        />
-        <ActionRecord
-          type={"comment"}
-          user={"Juan Charlie"}
-          userImage={
-            "https://i.pinimg.com/564x/5a/13/34/5a1334256dea673480a0c933d2368aa2.jpg"
-          }
-          action={"commented the task Create home ux writing content"}
-          date={"27 feb"}
-        />
-        <ActionRecord
-          type={"finish"}
-          user={"Juan Charlie"}
-          userImage={
-            "https://i.pinimg.com/564x/5a/13/34/5a1334256dea673480a0c933d2368aa2.jpg"
-          }
-          action={"finished the task Create userflow website"}
-          date={"27 feb"}
-        />
-        <ActionRecord
-          type={"delete"}
-          user={"Juan Charlie"}
-          userImage={
-            "https://i.pinimg.com/564x/5a/13/34/5a1334256dea673480a0c933d2368aa2.jpg"
-          }
-          action={"deleted 2 tasks Payment method and via e-commerce"}
-          date={"27 feb"}
-        />
-        <ActionRecord
-          type={"comment"}
-          user={"Juan Charlie"}
-          userImage={
-            "https://i.pinimg.com/564x/5a/13/34/5a1334256dea673480a0c933d2368aa2.jpg"
-          }
-          action={"commented the task Create home ux writing content"}
-          date={"27 feb"}
-        />
-        
+        {timeline.length > 0 ? (
+          timeline.map((item, index) => (
+            <ActionRecord
+              key={index}
+              type={item.type}
+              user={item.actionUser.name}
+              userImage={item.actionUser.image}
+              action={item.content}
+              date={formatDistanceToNow(new Date(item.event_time), {
+                addSuffix: true,
+                locale: es,
+              })}
+            />
+          ))
+        ) : (
+          <p>No hay actividades recientes</p>
+        )}
       </div>
     </div>
   );

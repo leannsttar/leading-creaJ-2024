@@ -335,7 +335,7 @@ const LayoutProject = () => {
                       ))}
                       {project.users.length > 3 && (
                         <div className="bg-[#D9D9D9] w-8 h-8 flex justify-center items-center rounded-full relative right-1 font-semibold">
-                          <p>{project.users.length - 3} +</p>
+                          <p>{project.users.length - 3}+</p>
                         </div>
                       )}
                     </div>

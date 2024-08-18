@@ -19,7 +19,7 @@ export const NotificationsScreen = () => {
     try {
       const response = await clienteAxios.get(
         `/api/notifications/getUserNotifications/${usuario.id}`
-      );
+      ); 
       // Ordenar las notificaciones por fecha, más nuevas primero
       const sortedNotifications = response.data.sort(
         (a, b) => new Date(b.event_time) - new Date(a.event_time)
