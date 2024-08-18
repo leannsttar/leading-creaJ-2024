@@ -134,6 +134,8 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
 
   const [isEditing, setIsEditing] = useState(false);
 
+  const [canEdit, setCanEdit] = useState(false);
+
   const onChangeDate = (date, dateString) => {
     setEditedDate(dateString);
   };
@@ -175,6 +177,17 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
     }
   }, [isOpen, task]);
 
+  useEffect(() => {
+    if (project && selectedTask && usuario) {
+      const isProjectLeader = project.team.some(
+        (member) => member.role === "leader" && member.user.id === usuario.id
+      );
+      console.log(selectedTask.members)
+      const isTaskCreator = selectedTask.creator.id === usuario.id;
+      setCanEdit(isProjectLeader || isTaskCreator);
+    }
+  }, [project, selectedTask, usuario]);
+
   const getProject = async () => {
     try {
       setLoading(true);
@@ -201,7 +214,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
           progressList: task.subTasks.filter(
             (subTask) => subTask.status == "terminado"
           ).length,
-          date: format(addDays(task.due_date, 1), 'PP', { locale: es }),
+          date: format(addDays(task.due_date, 1), "PP", { locale: es }),
           members: task.assignees.map((assignee) => {
             const member = response.data.team.find(
               (projectMember) => projectMember.user.id === assignee.userId
@@ -253,99 +266,16 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  // const createTask = async () => {
-  //   try {
-  //     if (!titleTask.trim()) {
-  //       messageApi.open({
-  //         type: "error",
-  //         content: "El título de la tarea es obligatorio",
-  //       });
-  //       return;
-  //     }
-
-  //     if (!dateTask) {
-  //       messageApi.open({
-  //         type: "error",
-  //         content: "La fecha de entrega es obligatoria",
-  //       });
-  //       return;
-  //     }
-
-  //     if (valueMembers.length === 0) {
-  //       messageApi.open({
-  //         type: "error",
-  //         content: "Debes seleccionar al menos un miembro",
-  //       });
-  //       return;
-  //     }
-
-  //     if (valueTags.length === 0) {
-  //       messageApi.open({
-  //         type: "error",
-  //         content: "Debes seleccionar al menos una etiqueta",
-  //       });
-  //       return;
-  //     }
-
-  //     if (!descriptionTask.trim()) {
-  //       messageApi.open({
-  //         type: "error",
-  //         content: "La descripción de la tarea es obligatoria",
-  //       });
-  //       return;
-  //     }
-
-  //     const formData = new FormData();
-
-  //     const filteredSubtasks = subtasks.filter(
-  //       (subtask) => subtask.trim() !== ""
-  //     );
-  //     console.log(formData);
-  //     if (filteredSubtasks.length > 0) {
-  //       formData.append("subtasks", JSON.stringify(filteredSubtasks));
-  //     }
-
-  //     formData.append("projectId", params.id);
-  //     formData.append("authorId", usuario.id);
-  //     formData.append("title", titleTask);
-  //     formData.append("date", dateTask);
-  //     formData.append("members", JSON.stringify(valueMembers));
-  //     formData.append("tags", JSON.stringify(valueTags));
-  //     formData.append("description", descriptionTask);
-
-  //     const response = await clienteAxios.postForm(
-  //       "/api/tasks/createTask",
-  //       formData,
-  //       {
-  //         headers: {
-  //           Authorization: "Bearer " + userToken,
-  //         },
-  //       }
-  //     );
-
-  //     messageApi.open({
-  //       type: "success",
-  //       content: "Tarea creada correctamente",
-  //     });
-
-  //     reload();
-  //     onClose();
-
-  //     console.log("Respuesta del backend:", response.data);
-  //   } catch (error) {
-  //     messageApi.open({
-  //       type: "error",
-  //       content: "Hubo un error al crear la tarea",
-  //     });
-  //     console.error("Error al enviar los datos", error);
-  //   }
-  // };
-
   const handleSave = async () => {
     try {
+      if (!canEdit) {
+        messageApi.error("No tienes permiso para editar esta tarea");
+        return;
+      }
+
       const formData = new FormData();
       let hasChanges = false;
-  
+
       if (editingTitle) {
         if (!editedTitle.trim()) {
           messageApi.error("El título de la tarea no puede estar vacío");
@@ -354,7 +284,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
         formData.append("title", editedTitle);
         hasChanges = true;
       }
-  
+
       if (editingDate) {
         if (!editedDate) {
           messageApi.error("La fecha de entrega es obligatoria");
@@ -364,7 +294,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
         formData.append("date", editedDate);
         hasChanges = true;
       }
-  
+
       if (editingMembers) {
         if (valueMembers.length === 0) {
           messageApi.error("Debes seleccionar al menos un miembro");
@@ -373,7 +303,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
         formData.append("members", JSON.stringify(valueMembers));
         hasChanges = true;
       }
-  
+
       if (editingTags) {
         if (valueTags.length === 0) {
           messageApi.error("Debes seleccionar al menos una etiqueta");
@@ -382,7 +312,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
         formData.append("tags", JSON.stringify(valueTags));
         hasChanges = true;
       }
-  
+
       if (isEditingDescription) {
         if (!editedDescription.trim()) {
           messageApi.error("La descripción de la tarea no puede estar vacía");
@@ -391,14 +321,19 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
         formData.append("description", editedDescription);
         hasChanges = true;
       }
-  
+
       if (!hasChanges) {
         messageApi.info("No se han realizado cambios");
         return;
       }
-  
+
+      formData.append("projectId", project.id)
+      formData.append("userId", usuario.id)
       formData.append("taskId", selectedTask.id);
-  
+      formData.append("actionUserName", usuario.name)
+      formData.append("taskName", selectedTask.title)
+      formData.append("assignedUsers", JSON.stringify(selectedTask.members))
+
       const response = await clienteAxios.postForm(
         "/api/tasks/updateTask",
         formData,
@@ -408,10 +343,10 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
           },
         }
       );
-  
+
       messageApi.success("Tarea actualizada correctamente");
       getProject();
-  
+
       // Resetear estados de edición
       setEditingMembers(false);
       setEditingTags(false);
@@ -419,7 +354,6 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
       setEditingDate(false);
       setEditingTitle(false);
       setIsEditing(false);
-  
     } catch (error) {
       messageApi.error("Hubo un error al actualizar la tarea");
       console.error("Error al enviar los datos", error);
@@ -483,9 +417,13 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
     try {
       const formData = new FormData();
 
+      formData.append("projectId", project.id)
       formData.append("authorId", usuario.id);
       formData.append("taskId", selectedTask.id);
       formData.append("link", taskUrl);
+      formData.append("authorName", usuario.name)
+      formData.append("taskName", selectedTask.title)
+      formData.append("assignedUsers", JSON.stringify(selectedTask.members))
 
       const response = await clienteAxios.postForm(
         `/api/tasks/createLink`,
@@ -518,10 +456,16 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
     }
   };
 
+  
+
   const createComment = async () => {
     try {
       const formData = new FormData();
-
+      
+      formData.append("projectId", project.id)
+      formData.append("authorName", usuario.name)
+      formData.append("taskName", selectedTask.title)
+      formData.append("assignedUsers", JSON.stringify(selectedTask.members))
       formData.append("authorId", usuario.id);
       formData.append("taskId", selectedTask.id);
       formData.append("comment", taskComment);
@@ -560,8 +504,13 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
   const taskToInProgress = async (taskId) => {
     try {
       const formData = new FormData();
+      formData.append("projectId", project.id)
+      formData.append("userId", usuario.id)
       formData.append("taskId", taskId);
       formData.append("status", "en progreso");
+      formData.append("actionUserName", usuario.name)
+      formData.append("taskName", selectedTask.title)
+      formData.append("assignedUsers", JSON.stringify(selectedTask.members))
 
       const response = await clienteAxios.postForm(
         `/api/tasks/changeTaskStatus`,
@@ -602,8 +551,13 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
     try {
       const formData = new FormData();
 
+      formData.append("projectId", project.id)
+      formData.append("userId", usuario.id)
       formData.append("taskId", taskId);
       formData.append("status", "terminado");
+      formData.append("actionUserName", usuario.name)
+      formData.append("taskName", selectedTask.title)
+      formData.append("assignedUsers", JSON.stringify(selectedTask.members))
 
       const response = await clienteAxios.postForm(
         `/api/tasks/changeTaskStatus`,
@@ -663,7 +617,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
   }
 
   useEffect(() => clearTimer, []);
-  // console.log(selectedTask);
+  console.log(selectedTask);
   return (
     <>
       {contextHolder}
@@ -705,30 +659,10 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
               alt=""
               className="min-w-10 min-h-10 max-w-10 max-h-10 rounded-full object-cover"
             />
-
+        
             {selectedTask ? (
               <>
-                {section === "archivos" &&
-                selectedTask.status !== "terminado" &&
-                selectedTask.members.some(
-                  (member) => member.id === usuario.id
-                ) ? (
-                  <>
-                    <input
-                      onChange={(e) => setTaskUrl(e.target.value)}
-                      onKeyDown={handleKeyDownLink}
-                      className="rounded-2xl bg-[#f0f0f0] px-3 py-2 outline-none w-full mr-4"
-                      type="text"
-                      placeholder={"Copia el link aquí"}
-                      name=""
-                      id=""
-                    />
-                    <SendOutlined
-                      className="absolute right-8"
-                      onClick={createLink}
-                    />
-                  </>
-                ) : section === "comentarios" ? (
+                {section === "comentarios" ? (
                   <>
                     <input
                       onChange={(e) => setTaskComment(e.target.value)}
@@ -744,34 +678,55 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
                       onClick={createComment}
                     />
                   </>
-                ) : selectedTask.status !== "terminado" &&
-                  selectedTask.members.some(
-                    (member) => member.id === usuario.id
-                  ) ? (
-                  <>
-                    {selectedTask.status === "proximo" ? (
-                      <button
-                        onClick={handleTaskToInProgress}
-                        className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
-                      >
-                        Empezar tarea
-                      </button>
-                    ) : selectedTask.status === "en progreso" ? (
-                      <button
-                        onClick={handleTaskToFinished}
-                        className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
-                      >
-                        Marcar tarea como completada
-                      </button>
-                    ) : null}
-                  </>
                 ) : selectedTask.status === "terminado" ? (
                   <p className="text-green-600 font-semibold ml-2">
                     ✓ Esta tarea ya está completada
                   </p>
-                ) : (
+                ) : selectedTask.members.some((member) => member.id === usuario.id) ? (
+                  <>
+                    {section === "archivos" ? (
+                      <>
+                        <input
+                          onChange={(e) => setTaskUrl(e.target.value)}
+                          onKeyDown={handleKeyDownLink}
+                          className="rounded-2xl bg-[#f0f0f0] px-3 py-2 outline-none w-full mr-4"
+                          type="text"
+                          placeholder={"Copia el link aquí"}
+                          name=""
+                          id=""
+                        />
+                        <SendOutlined
+                          className="absolute right-8"
+                          onClick={createLink}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        {selectedTask.status === "proximo" ? (
+                          <button
+                            onClick={handleTaskToInProgress}
+                            className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
+                          >
+                            Empezar tarea
+                          </button>
+                        ) : selectedTask.status === "en progreso" ? (
+                          <button
+                            onClick={handleTaskToFinished}
+                            className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
+                          >
+                            Marcar tarea como completada
+                          </button>
+                        ) : null}
+                      </>
+                    )}
+                  </>
+                ) : canEdit ? (
                   <p className="text-gray-600 font-semibold ml-2">
                     No estás asignado a esta tarea
+                  </p>
+                ) : (
+                  <p className="text-gray-600 font-semibold ml-2">
+                    No estás asignado a esta tarea y no tienes permiso para editarla
                   </p>
                 )}
               </>
@@ -782,21 +737,23 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
         {selectedTask ? (
           <>
             <div className="flex gap-1 items-center">
-              {editingTitle ? (
+              {editingTitle && canEdit ? (
                 <input
-                className="outline-none border-[1px] border-gray-400 rounded-lg py-1 px-3 text-4xl font-bold"
+                  className="outline-none border-[1px] border-gray-400 rounded-lg py-1 px-3 text-4xl font-bold"
                   value={editedTitle}
                   onChange={(e) => setEditedTitle(e.target.value)}
                 />
               ) : (
                 <p className="text-5xl font-semibold">{selectedTask.title}</p>
               )}
-              <TbEdit
-                size={30}
-                opacity={0.6}
-                className="cursor-pointer relative top-0.5"
-                onClick={() => setEditingTitle(true)}
-              />
+              {canEdit && (
+                <TbEdit
+                  size={30}
+                  opacity={0.6}
+                  className="cursor-pointer relative top-0.5"
+                  onClick={() => setEditingTitle(true)}
+                />
+              )}
             </div>
             <table className="w-full my-5">
               <tbody>
@@ -832,7 +789,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
                         );
                       })}
 
-                      {editingMembers ? (
+                      {canEdit && editingMembers ? (
                         <div className="flex min-w-[9rem] items-center justify-center rounded-full ml-3 cursor-pointer">
                           <TreeSelect
                             showSearch
@@ -847,14 +804,14 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
                             treeData={treeDataMembers}
                           />
                         </div>
-                      ) : (
+                      ) : canEdit ? (
                         <div
                           className="w-8 h-8 ml-2 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer"
                           onClick={() => setEditingMembers(true)}
                         >
                           <FaPlus className="text-gray-500" />
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   </td>
                 </tr>
@@ -864,7 +821,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
                   </td>
                   <td className=" py-2 flex items-center gap-2">
                     <p className="font-medium">{selectedTask.date}</p>
-                    {editingDate ? (
+                    {canEdit && editingDate ? (
                       <div className="flex min-w-[9rem] items-center justify-center rounded-full ml-3 cursor-pointer">
                         <DatePicker
                           style={{
@@ -872,18 +829,17 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
                           }}
                           getPopupContainer={(trigger) => trigger.parentElement}
                           onChange={onChangeDate}
-                          
                           placeholder={"Selecciona fecha"}
                         />
                       </div>
-                    ) : (
+                    ) : canEdit ? (
                       <div
                         className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer"
                         onClick={() => setEditingDate(true)}
                       >
                         <FiEdit opacity={0.7} />
                       </div>
-                    )}
+                    ) : null}
                   </td>
                 </tr>
                 <tr>
@@ -901,7 +857,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
                         );
                       })}
 
-                      {editingTags ? (
+                      {canEdit && editingTags ? (
                         <div className="flex min-w-[9rem] items-center justify-center rounded-full cursor-pointer">
                           <TreeSelect
                             showSearch
@@ -916,14 +872,14 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
                             treeData={treeDataTags}
                           />
                         </div>
-                      ) : (
+                      ) : canEdit ? (
                         <div
                           className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer"
                           onClick={() => setEditingTags(true)}
                         >
                           <FaPlus className="text-gray-500" />
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   </td>
                 </tr>
@@ -944,18 +900,19 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <p className="text-2xl font-semibold">Descripción</p>
-                {isEditingDescription ? (
-                  <Button onClick={handleSave}>Guardar</Button>
-                ) : (
-                  <TbEdit
-                    size={23}
-                    opacity={0.4}
-                    className="cursor-pointer"
-                    onClick={() => setIsEditingDescription(true)}
-                  />
-                )}
+                {canEdit &&
+                  (isEditingDescription ? (
+                    <Button onClick={handleSave}>Guardar</Button>
+                  ) : (
+                    <TbEdit
+                      size={23}
+                      opacity={0.4}
+                      className="cursor-pointer"
+                      onClick={() => setIsEditingDescription(true)}
+                    />
+                  ))}
               </div>
-              {isEditingDescription ? (
+              {isEditingDescription && canEdit ? (
                 <Input.TextArea
                   value={editedDescription}
                   onChange={(e) => setEditedDescription(e.target.value)}
@@ -1044,6 +1001,9 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
                             name={task.name}
                             isChecked={task.status == "terminado"}
                             refreshProject={getProject}
+                            taskMembers={selectedTask.members}
+                            taskName={selectedTask.title}
+                            projectId={project.id}
                           />
                         );
                       })}

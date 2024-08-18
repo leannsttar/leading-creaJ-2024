@@ -282,6 +282,7 @@ const LayoutProject = () => {
       }
 
       const formData = new FormData();
+      formData.append("userId", usuario.id)
       formData.append("correo", newMemberEmail);
       formData.append("proyectoId", params.id);
       const response = await clienteAxios.postForm(
@@ -333,7 +334,7 @@ const LayoutProject = () => {
                         <AvatarMember key={index} img={user.image} />
                       ))}
                       {project.users.length > 3 && (
-                        <div className="bg-[#D9D9D9] w-8 h-8 flex justify-center items-center rounded-full relative right-6 font-semibold">
+                        <div className="bg-[#D9D9D9] w-8 h-8 flex justify-center items-center rounded-full relative right-1 font-semibold">
                           <p>{project.users.length - 3} +</p>
                         </div>
                       )}
@@ -436,14 +437,14 @@ const LayoutNotifications = () => {
           <div className="flex flex-col h-full justify-between w-full lg:w-auto">
             <div className="flex flex-col gap-1 justify-center lg:justify-normal lg:gap-0 lg:flex-row lg:items-center w-full lg:mt-[3rem]">
               <div>
-                <p className="text-[2rem] font-semibold">Notificaciones</p>
+                <p className="text-[2rem] font-semibold relative top-3">Notificaciones</p>
               </div>
             </div>
-            <div className="flex gap-6 text-[#7C7C7C] overflow-x-scroll lg:overflow-x-auto ">
+            {/* <div className="flex gap-6 text-[#7C7C7C] overflow-x-scroll lg:overflow-x-auto ">
               <MiniTabLink title={"Vista General"} />
               <MiniTabLink title={"Invitaciones"} />
               <MiniTabLink title={"Comentarios"} />
-            </div>
+            </div> */}
           </div>
           <div className=" gap-2 hidden">
             <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">

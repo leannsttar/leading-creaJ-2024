@@ -21,7 +21,13 @@ model Users {
   meetings          Meetings[]
   meetingAttendance MeetingsAttendance[]
   messages          Messages[]
-  notifications     Notifications[]
+  
+  // Relación con notificaciones que recibe el usuario
+  notifications     Notifications[]      @relation("UserNotifications")
+  
+  // Relación con notificaciones donde el usuario realizó la acción
+  actionNotifications Notifications[]    @relation("ActionUserNotifications")
+
   tasks             Tasks[]
   teams             TeamProject[]
   timeline          Timeline[]
@@ -41,6 +47,9 @@ model Projects {
   team        TeamProject[]
   tags        Tags[]
   invitations Invitations[]
+  
+  // Relación con notificaciones
+  notifications Notifications[]
 }
 
 model TeamProject {
@@ -146,14 +155,26 @@ model TaskTags {
 }
 
 model Notifications {
-  id         Int      @id @default(autoincrement())
-  content    String
-  type       String
-  taskId     Int
-  userId     Int
-  event_time DateTime @default(now())
-  task       Tasks    @relation(fields: [taskId], references: [id])
-  user       Users    @relation(fields: [userId], references: [id])
+  id            Int      @id @default(autoincrement())
+  content       String
+  type          String
+  taskId        Int?
+  userId        Int
+  actionUserId  Int
+  projectId     Int?     // Nuevo campo para la relación con el proyecto
+  event_time    DateTime @default(now())
+  
+  // Relación con el modelo Tasks
+  task          Tasks?    @relation(fields: [taskId], references: [id])
+
+  // Relación con el modelo Projects
+  project       Projects? @relation(fields: [projectId], references: [id])
+
+  // Relación con el modelo Users para el usuario que recibe la notificación
+  user          Users    @relation("UserNotifications", fields: [userId], references: [id])
+
+  // Relación con el modelo Users para el usuario que realizó la acción
+  actionUser    Users    @relation("ActionUserNotifications", fields: [actionUserId], references: [id])
 }
 
 model Messages {

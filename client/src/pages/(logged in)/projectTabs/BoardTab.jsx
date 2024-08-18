@@ -324,7 +324,7 @@ const HeaderTaskCards = memo(({ title, numCards, hidden, project, reload }) => {
       const filteredSubtasks = subtasks.filter(
         (subtask) => subtask.trim() !== ""
       );
-      console.log(formData);
+      // console.log(formData);
       if (filteredSubtasks.length > 0) {
         formData.append("subtasks", JSON.stringify(filteredSubtasks));
       }

@@ -8,6 +8,7 @@ import userRoutes from "./src/routes/register-route.js";
 import loginRoutes from "./src/routes/login-route.js";
 import projectRoutes from "./src/routes/project-route.js";
 import tasksRoutes from "./src/routes/tasks-route.js";
+import notificationsRoutes from "./src/routes/notifications-route.js"
 
 import http from "http";
 import createSocketServer from "./socket.js";
@@ -41,6 +42,8 @@ app.use("/api/auth", loginRoutes);
 
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", tasksRoutes);
+
+app.use("/api/notifications", notificationsRoutes)
 
 server.listen(PORT, () => {
   console.log(`Servidor funcionando en el puerto ${PORT}`);
