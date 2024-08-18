@@ -109,7 +109,8 @@ export const addTeamMember = async (req, res) => {
             content: `${inviter.name} ha invitado a ${correo} al proyecto "${project.name}"`,
             type: "project_invitation",
             userId: member.userId,
-            actionUserId: +inviter.id
+            actionUserId: +inviter.id,
+            projectId: +proyectoId
             // Ya no es necesario incluir la conexión con la tarea
           },
         });
@@ -186,7 +187,7 @@ export const acceptInvitation = async (req, res) => {
 
     const project = await prisma.projects.findUnique({
       where: { id: invitation.projectId },
-      select: { name: true },
+      select: { name: true, id: true },
     });
 
     const teamMembers = await prisma.teamProject.findMany({
@@ -201,7 +202,8 @@ export const acceptInvitation = async (req, res) => {
             content: `${user.name} ha aceptado la invitación al proyecto "${project.name}"`,
             type: "invitation_accepted",
             userId: member.userId,
-            actionUserId: +user.id
+            actionUserId: +user.id,
+            projectId: +project.id
             // Ya no es necesario incluir la conexión con la tarea
           },
         });

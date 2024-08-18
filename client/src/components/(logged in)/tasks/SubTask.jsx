@@ -8,7 +8,7 @@ import { Checkbox, message } from "antd";
 
 import { PiList } from "react-icons/pi";
 
-export const SubTask = ({ name, index, taskId, isChecked, refreshProject, taskMembers, taskName }) => {
+export const SubTask = ({ name, index, taskId, isChecked, refreshProject, taskMembers, taskName, projectId }) => {
   const { userToken, usuario } = useSession();
 
   const [check, setCheck] = useState(isChecked);
@@ -20,6 +20,7 @@ export const SubTask = ({ name, index, taskId, isChecked, refreshProject, taskMe
       setCheck(!check);
       const formData = new FormData();
 
+      formData.append("projectId", projectId)
       formData.append("userId", usuario.id)
       formData.append("userName", usuario.name)
       formData.append("taskName", taskName)

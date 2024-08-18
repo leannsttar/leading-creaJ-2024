@@ -11,6 +11,7 @@ export const getUserNotifications = async (req, res) => {
       },
       include: {
         actionUser: true,
+        project: true
       }
     });
 

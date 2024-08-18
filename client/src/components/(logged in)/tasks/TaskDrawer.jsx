@@ -327,7 +327,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
         return;
       }
 
-      
+      formData.append("projectId", project.id)
       formData.append("userId", usuario.id)
       formData.append("taskId", selectedTask.id);
       formData.append("actionUserName", usuario.name)
@@ -417,6 +417,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
     try {
       const formData = new FormData();
 
+      formData.append("projectId", project.id)
       formData.append("authorId", usuario.id);
       formData.append("taskId", selectedTask.id);
       formData.append("link", taskUrl);
@@ -461,6 +462,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
     try {
       const formData = new FormData();
       
+      formData.append("projectId", project.id)
       formData.append("authorName", usuario.name)
       formData.append("taskName", selectedTask.title)
       formData.append("assignedUsers", JSON.stringify(selectedTask.members))
@@ -502,6 +504,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
   const taskToInProgress = async (taskId) => {
     try {
       const formData = new FormData();
+      formData.append("projectId", project.id)
       formData.append("userId", usuario.id)
       formData.append("taskId", taskId);
       formData.append("status", "en progreso");
@@ -548,6 +551,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
     try {
       const formData = new FormData();
 
+      formData.append("projectId", project.id)
       formData.append("userId", usuario.id)
       formData.append("taskId", taskId);
       formData.append("status", "terminado");
@@ -999,6 +1003,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
                             refreshProject={getProject}
                             taskMembers={selectedTask.members}
                             taskName={selectedTask.title}
+                            projectId={project.id}
                           />
                         );
                       })}

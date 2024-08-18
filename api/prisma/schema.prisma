@@ -34,7 +34,6 @@ model Users {
   assignedTasks     TasksAssignees[]
 }
 
-
 model Projects {
   id          Int           @id @default(autoincrement())
   name        String
@@ -48,6 +47,9 @@ model Projects {
   team        TeamProject[]
   tags        Tags[]
   invitations Invitations[]
+  
+  // Relación con notificaciones
+  notifications Notifications[]
 }
 
 model TeamProject {
@@ -158,12 +160,16 @@ model Notifications {
   type          String
   taskId        Int?
   userId        Int
-  actionUserId  Int      // Nueva columna para el usuario que realizó la acción
+  actionUserId  Int
+  projectId     Int?     // Nuevo campo para la relación con el proyecto
   event_time    DateTime @default(now())
   
   // Relación con el modelo Tasks
   task          Tasks?    @relation(fields: [taskId], references: [id])
-  
+
+  // Relación con el modelo Projects
+  project       Projects? @relation(fields: [projectId], references: [id])
+
   // Relación con el modelo Users para el usuario que recibe la notificación
   user          Users    @relation("UserNotifications", fields: [userId], references: [id])
 

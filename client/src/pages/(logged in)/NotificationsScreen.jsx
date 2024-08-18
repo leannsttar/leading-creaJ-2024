@@ -4,8 +4,12 @@ import { clienteAxios } from "@/config/clienteAxios";
 import { Loader } from "../../components/Loader.jsx";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import useProject from "@/hooks/useProject.jsx";
+import { Link } from "react-router-dom";
 
 export const NotificationsScreen = () => {
+  const { proyectos } = useProject();
+
   const { usuario } = useSession();
 
   const [notifications, setNotifications] = useState([]);
@@ -56,30 +60,49 @@ export const NotificationsScreen = () => {
   return (
     <div className="m-8 space-y-4">
       {notifications.length > 0 ? (
-        notifications.map((notification, index) => (
-          <div
-            key={index}
-            className="border-b border-[#ECECEC] pb-4 flex gap-2 items-center"
-          >
-            <img
-              className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
-              src={notification.actionUser.image}
-              alt=""
-            />
-            <div>
-              <p className="font-bold">
-                {getNotificationTypeText(notification.type)}
-              </p>
-              <p>{notification.content}</p>
-              <p className="text-sm text-gray-500">
-                {formatDistanceToNow(new Date(notification.event_time), {
-                  addSuffix: true,
-                  locale: es,
-                })}
-              </p>
-            </div>
-          </div>
-        ))
+        notifications.map(
+          (notification, index) => (
+            console.log(notification),
+            (
+              <div
+                key={index}
+                className="border-b border-[#ECECEC] pb-4 flex gap-2 items-center"
+              >
+                <img
+                  className="min-w-[3rem] min-h-[3rem] max-w-[3rem] max-h-[3rem] rounded-full object-cover"
+                  src={notification.actionUser.image}
+                  alt=""
+                />
+                <div>
+                  <p className="font-bold">
+                    {getNotificationTypeText(notification.type)}
+                  </p>
+                  <p>{notification.content}</p>
+
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-gray-500">
+                      {formatDistanceToNow(new Date(notification.event_time), {
+                        addSuffix: true,
+                        locale: es,
+                      })}{" "}
+                      en
+                    </p>
+                    <Link className="cursor-pointer" to={`/dashboard/project/${notification.project.id}`}>
+                      <div className="flex gap-1 items-center">
+                        <img
+                          className="min-w-[1.5rem] min-h-[1.5rem] max-w-[1.5rem] max-h-[1.5rem] rounded-full object-cover"
+                          src={notification.project.imagen}
+                          alt=""
+                        />
+                        <p>{notification.project.name}</p>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )
+          )
+        )
       ) : (
         <p>No tienes notificaciones</p>
       )}

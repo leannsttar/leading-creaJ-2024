@@ -40,7 +40,7 @@ export const getUserTasks = async (req, res) => {
 };
 
 export const updateTask = async (req, res) => {
-  const { taskId, title, date, members, tags, description, userId, actionUserName, taskName, assignedUsers } = req.body;
+  const { taskId, title, projectId, date, members, tags, description, userId, actionUserName, taskName, assignedUsers } = req.body;
   const assignedArray = JSON.parse(assignedUsers);
   if (!taskId) {
     return res.status(400).json({ error: "El ID de la tarea es requerido" });
@@ -77,7 +77,8 @@ export const updateTask = async (req, res) => {
               type: "task_edit",
               taskId: +taskId,
               userId: user.id,
-              actionUserId: +userId
+              actionUserId: +userId,
+              projectId: +projectId
             },
           })
         );
@@ -87,86 +88,102 @@ export const updateTask = async (req, res) => {
 
     if (members) {
       const membersArray = JSON.parse(members);
-      if (Array.isArray(membersArray) && membersArray.length > 0) {
-        const existingMemberIds = assignedArray.map(user => user.id);
-
-        for (const newMember of membersArray) {
-          if (!existingMemberIds.includes(newMember.id)) {
-            console.log(newMember)
-            await prisma.tasksAssignees.create({
+      
+      // Obtener detalles de los miembros desde la base de datos
+      const membersDetails = await prisma.users.findMany({
+        where: { id: { in: membersArray } },
+        select: { id: true, name: true }
+      });
+    
+      const existingMemberIds = assignedArray.map(user => user.id);
+    
+      for (const newMember of membersDetails) {
+        if (!existingMemberIds.includes(newMember.id)) {
+          await prisma.tasksAssignees.create({
+            data: {
+              taskId: +taskId,
+              userId: newMember.id,
+            },
+          });
+    
+          // Notificar al nuevo miembro
+          if (newMember.id !== +userId) {
+            await prisma.notifications.create({
               data: {
+                content: `${actionUserName} te ha agregado a la tarea "${taskName}"`,
+                type: "task_assignment",
                 taskId: +taskId,
-                userId: newMember,
+                userId: newMember.id,
+                actionUserId: +userId,
+                projectId: +projectId
               },
             });
-
-            // Notificar al nuevo miembro
-            if (newMember.id !== +userId) {
-              await prisma.notifications.create({
-                data: {
-                  content: `${actionUserName} te ha agregado a la tarea "${taskName}"`,
-                  type: "task_assignment",
-                  taskId: +taskId,
-                  userId: newMember,
-                  actionUserId: +userId
-                },
-              });
-            }
-
-            // Notificar a los miembros existentes sobre el nuevo miembro
-            const newMemberNotificationPromises = assignedArray
-              .filter(user => user.id !== +userId && user.id !== newMember.id)
-              .map(user => 
-                prisma.notifications.create({
-                  data: {
-                    content: `${actionUserName} ha agregado a ${newMember.name} a la tarea "${taskName}"`,
-                    type: "new_member_assignment",
-                    taskId: +taskId,
-                    userId: user.id,
-                    actionUserId: +userId
-                  },
-                })
-              );
-
-            await Promise.all(newMemberNotificationPromises);
           }
+    
+          // Notificar a los miembros existentes sobre el nuevo miembro
+          const newMemberNotificationPromises = assignedArray
+            .filter(user => user.id !== +userId && user.id !== newMember.id)
+            .map(user => 
+              prisma.notifications.create({
+                data: {
+                  content: `${actionUserName} ha agregado a "${newMember.name}" a la tarea "${taskName}"`,
+                  type: "new_member_assignment",
+                  taskId: +taskId,
+                  userId: user.id,
+                  actionUserId: +userId,
+                  projectId: +projectId
+                },
+              })
+            );
+    
+          await Promise.all(newMemberNotificationPromises);
         }
       }
     }
+    
+    
 
     if (tags) {
       const tagsArray = JSON.parse(tags);
       if (Array.isArray(tagsArray) && tagsArray.length > 0) {
+        // Recuperar las etiquetas con sus nombres desde la base de datos
+        const tagsWithNames = await prisma.tags.findMany({
+          where: { id: { in: tagsArray } },
+          select: { id: true, name: true }
+        });
+    
         await Promise.all(
-          tagsArray.map((tag) =>
+          tagsWithNames.map((tag) =>
             prisma.taskTags.create({
               data: {
-                tagId: tag,
+                tagId: tag.id,
                 taskId: +taskId,
               },
             })
           )
         );
-
+    
         // Notificar a los miembros sobre las nuevas etiquetas
-        const tagNames = tagsArray.map(tag => tag.name).join(", ");
+        const tagNames = tagsWithNames.map(tag => tag.name).join(", ");
         const tagNotificationPromises = assignedArray
           .filter(user => user.id !== +userId)
           .map(user => 
             prisma.notifications.create({
               data: {
-                content: `${actionUserName} ha agregado ${tagsArray.length === 1 ? 'la etiqueta' : 'las etiquetas'} "${tagNames}" a la tarea "${taskName}"`,
+                content: `${actionUserName} ha agregado ${tagsWithNames.length === 1 ? 'la etiqueta' : 'las etiquetas'} "${tagNames}" a la tarea "${taskName}"`,
                 type: "new_tags",
                 taskId: +taskId,
                 userId: user.id,
-                actionUserId: +userId
+                actionUserId: +userId,
+                projectId: +projectId
               },
             })
           );
-
+    
         await Promise.all(tagNotificationPromises);
       }
     }
+    
 
     const updatedTaskWithRelations = await prisma.tasks.findUnique({
       where: { id: +taskId },
@@ -246,7 +263,8 @@ export const createTask = async (req, res) => {
                 type: "task_assignment",
                 taskId: newTask.id,
                 userId: member,
-                actionUserId:  +authorId
+                actionUserId:  +authorId,
+                projectId: +projectId
               },
             });
           }
@@ -287,7 +305,7 @@ export const createTask = async (req, res) => {
 };
 
 export const updateSubtaskStatus = async(req, res) => {
-  const { taskId, status, userId, userName, taskName, assignedUsers } = req.body
+  const { taskId, status, userId, projectId, userName, taskName, assignedUsers } = req.body
   const membersArray = JSON.parse(assignedUsers);
   try {
     const updatedSubtask = await prisma.subTasks.update({
@@ -308,7 +326,8 @@ export const updateSubtaskStatus = async(req, res) => {
             content: `${userName} ha cambiado el estado de una subtarea en "${taskName}" a ${status}`,
             type: "subtask_status_update",
             userId: user.id,
-            actionUserId: +userId
+            actionUserId: +userId,
+            projectId: +projectId
           }
         })
       );
@@ -323,7 +342,7 @@ export const updateSubtaskStatus = async(req, res) => {
 }
 
 export const addLinkToTask = async(req, res) => {
-  const { taskId, authorId, link, authorName, taskName, assignedUsers } = req.body
+  const { taskId, authorId, projectId, link, authorName, taskName, assignedUsers } = req.body
 
   const membersArray = JSON.parse(assignedUsers);
 
@@ -345,7 +364,8 @@ export const addLinkToTask = async(req, res) => {
             content: `${authorName} ha agregado un link a la tarea "${taskName}"`,
             type: "new_link",
             userId: user.id,
-            actionUserId: +authorId
+            actionUserId: +authorId,
+            projectId: +projectId
           }
         })
       );
@@ -360,7 +380,7 @@ export const addLinkToTask = async(req, res) => {
 }
 
 export const createComment = async(req, res) => {
-  const { taskId, authorId, comment, authorName, taskName, assignedUsers } = req.body
+  const { taskId, authorId, projectId, comment, authorName, taskName, assignedUsers } = req.body
 
   const membersArray = JSON.parse(assignedUsers);
 
@@ -382,7 +402,8 @@ export const createComment = async(req, res) => {
             content: `${authorName} ha comentado en la tarea "${taskName}"`,
             type: "new_comment",
             userId: user.id,
-            actionUserId: +authorId
+            actionUserId: +authorId,
+            projectId: +projectId
           }
         })
       );
@@ -398,7 +419,7 @@ export const createComment = async(req, res) => {
 
 //este
 export const changeTaskStatus = async (req, res) => {
-  const { taskId, status, userId, actionUserName, taskName, assignedUsers } = req.body;
+  const { taskId, status, projectId, userId, actionUserName, taskName, assignedUsers } = req.body;
   
   const membersArray = JSON.parse(assignedUsers);
 
@@ -423,7 +444,8 @@ export const changeTaskStatus = async (req, res) => {
             type: "task_status_change",
             taskId: +taskId,
             userId: user.id,
-            actionUserId: +userId
+            actionUserId: +userId,
+            projectId: +projectId
           },
         })
       );
