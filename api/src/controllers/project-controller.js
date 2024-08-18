@@ -79,20 +79,46 @@ export const getMeetings = async (req, res) => {
           },
         },
       },
+      orderBy: { event_time: "asc" },
     });
 
-    return res.status(200).json(meetings);
+    const currentDate = new Date();
+
+    // reuniones pasadas y próximas
+    const pastMeetings = meetings.filter(
+      (meeting) => new Date(meeting.event_time) < currentDate
+    );
+    const upcomingMeetings = meetings.filter(
+      (meeting) => new Date(meeting.event_time) >= currentDate
+    );
+
+    return res.status(200).json({
+      totalMeetings: meetings.length,
+      pastMeetings: pastMeetings.length,
+      upcomingMeetings: upcomingMeetings.length,
+      meetings,
+    });
   } catch (error) {
     console.error("Error al obtener las reuniones:", error);
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 };
-
-//confirmar la asistencia
 export const confirmAttendance = async (req, res) => {
   const { meetingId, userId } = req.body;
+  console.log;
 
   try {
+    const existingAttendance = await prisma.meetingsAttendance.findFirst({
+      where: {
+        meetingId: meetingId,
+        userId: +userId,
+      },
+    });
+
+    if (existingAttendance) {
+      return res.status(400).json({ error: "Asistencia ya confirmada" });
+    }
+
     const attendance = await prisma.meetingsAttendance.create({
       data: {
         meetingId: meetingId,
