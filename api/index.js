@@ -3,7 +3,7 @@ import cors from "cors";
 import multer from "multer";
 import compression from "compression";
 import { PORT } from "./config.js";
-
+import fileRoutes from './src/routes/file-route.js';
 import userRoutes from "./src/routes/register-route.js";
 import loginRoutes from "./src/routes/login-route.js";
 import projectRoutes from "./src/routes/project-route.js";
@@ -44,6 +44,7 @@ app.use("/api/auth", loginRoutes);
 
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", tasksRoutes);
+app.use('/api/files', fileRoutes);
 
 app.use("/api/notifications", notificationsRoutes)
 
