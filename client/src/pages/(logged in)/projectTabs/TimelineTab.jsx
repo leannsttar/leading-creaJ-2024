@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { RxCode } from "react-icons/rx";
 import { formatDistanceToNow } from "date-fns";
@@ -6,13 +6,10 @@ import { es } from "date-fns/locale";
 import { clienteAxios } from "@/config/clienteAxios";
 import { Loader } from "../../../components/Loader.jsx";
 import { useParams } from "react-router-dom";
+import useProject from "@/hooks/useProject.jsx";
 
-import addFileIcon from "../../../assets/addFileIcon.svg";
-import commentIcon from "../../../assets/commentIcon.svg";
-import finishIcon from "../../../assets/finishIcon.svg";
-import deleteIcon from "../../../assets/deleteIcon.svg";
+import { Select } from "antd"; // Importación de Ant Design
 import calendarIcon from "../../../assets/calendarIcon.svg";
-
 import {
   MdAssignment,
   MdEdit,
@@ -84,19 +81,36 @@ const ActionRecord = ({ type, user, userImage, action, date }) => {
 };
 
 export const TimelineTab = () => {
-  const [rotateUsuarios, setRotateUsuarios] = useState(false);
-  const [rotateAcciones, setRotateAcciones] = useState(false);
-  const [timeline, setTimeline] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { proyectos } = useProject();
   const params = useParams();
 
-  const handleUsuariosClick = () => {
-    setRotateUsuarios(!rotateUsuarios);
-  };
+  const [timeline, setTimeline] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState("Todos");
+  const [selectedAction, setSelectedAction] = useState("Todos");
 
-  const handleAccionesClick = () => {
-    setRotateAcciones(!rotateAcciones);
-  };
+  const currentProject = useMemo(() => {
+    return proyectos.find(project => project.id === parseInt(params.id));
+  }, [proyectos, params.id]);
+
+  const projectUsers = useMemo(() => {
+    return currentProject && currentProject.users 
+      ? currentProject.users 
+      : [];
+  }, [currentProject]);
+
+  const actionTypes = [
+    { label: "Todos", value: "Todos" },
+    { label: "Asignación de tarea", value: "task_assignment" },
+    { label: "Edición de tarea", value: "task_edit" },
+    { label: "Nuevo miembro asignado", value: "new_member_assignment" },
+    { label: "Nuevas etiquetas", value: "new_tags" },
+    { label: "Actualización de subtarea", value: "subtask_status_update" },
+    { label: "Cambio de estado de tarea", value: "task_status_change" },
+    { label: "Nuevo enlace", value: "new_link" },
+    { label: "Invitación aceptada", value: "invitation_accepted" },
+    { label: "Invitación a proyecto", value: "project_invitation" },
+  ];
 
   const getTimeline = async () => {
     try {
@@ -116,56 +130,49 @@ export const TimelineTab = () => {
 
   useEffect(() => {
     getTimeline();
-  }, []);
+  }, [params.id]);
 
-  if (loading) return <Loader />;
+  const filteredTimeline = useMemo(() => {
+    return timeline.filter(item => 
+      (selectedUser === "Todos" || item.actionUser.name === selectedUser) &&
+      (selectedAction === "Todos" || item.type === selectedAction)
+    );
+  }, [timeline, selectedUser, selectedAction]);
+
+  if (loading || !currentProject) return <Loader />;
 
   return (
     <div className="m-5 lg:mx-[7%] lg:mt-12 space-y-4">
       <div className="flex justify-between">
         <p className="font-bold text-[1.2rem]">Filtrar</p>
         <div className="flex gap-3">
-          <div
-            className="flex items-center lg:hidden"
-            onClick={handleUsuariosClick}
-          >
-            <p>Usuarios</p>
-            <MdKeyboardArrowDown
-              className={`transform ${rotateUsuarios ? "-rotate-90" : ""}`}
-            />
-          </div>
-          <div
-            className="flex items-center lg:hidden"
-            onClick={handleAccionesClick}
-          >
-            <p>Acciones</p>
-            <MdKeyboardArrowDown
-              className={`transform ${rotateAcciones ? "-rotate-90" : ""}`}
-            />
-          </div>
-          <div className=" items-center hidden lg:flex lg:gap-3">
+          <div className="items-center hidden lg:flex lg:gap-3">
             <p>Filtrar por usuario</p>
-            <div className="flex items-center" onClick={handleUsuariosClick}>
-              <p className="font-semibold">Todos</p>
-              <MdKeyboardArrowDown
-                className={`transform ${rotateUsuarios ? "-rotate-90" : ""}`}
-              />
-            </div>
+            <Select 
+              value={selectedUser} 
+              onChange={(value) => setSelectedUser(value)}
+              options={[{ label: "Todos", value: "Todos" }, ...projectUsers.map(user => ({ label: user.name, value: user.name }))]}
+              className="font-semibold"
+              style={{ width: 200 }}
+              suffixIcon={<MdKeyboardArrowDown />}
+            />
           </div>
           <div className="items-center hidden lg:flex lg:gap-3">
             <p>Filtrar por acción</p>
-            <div className="flex items-center" onClick={handleAccionesClick}>
-              <p className="font-semibold">Todos</p>
-              <MdKeyboardArrowDown
-                className={`transform ${rotateAcciones ? "-rotate-90" : ""}`}
-              />
-            </div>
+            <Select 
+              value={selectedAction} 
+              onChange={(value) => setSelectedAction(value)}
+              options={actionTypes}
+              className="font-semibold"
+              style={{ width: 200 }}
+              suffixIcon={<MdKeyboardArrowDown />}
+            />
           </div>
         </div>
       </div>
       <div className="space-y-3">
-        {timeline.length > 0 ? (
-          timeline.map((item, index) => (
+        {filteredTimeline.length > 0 ? (
+          filteredTimeline.map((item, index) => (
             <ActionRecord
               key={index}
               type={item.type}
