@@ -9,6 +9,7 @@ import loginRoutes from "./src/routes/login-route.js";
 import projectRoutes from "./src/routes/project-route.js";
 import tasksRoutes from "./src/routes/tasks-route.js";
 import notificationsRoutes from "./src/routes/notifications-route.js"
+/// import fileRoutes from "./src/routes/file-routes.js"
 
 import http from "http";
 import createSocketServer from "./socket.js";
@@ -37,6 +38,7 @@ const upload = multer({ storage });
 // app.use("/public",express.static('./public'));
 app.use("/uploads", express.static("./uploads"));
 
+/// app.use('/api/files', fileRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", loginRoutes);
 
