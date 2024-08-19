@@ -22,12 +22,12 @@ export const AcceptInvitation = () => {
       if (hasAccepted) return;
 
       try {
-        const response = await clienteAxios.get(
+        const { status, data } = await clienteAxios.get(
           `/api/projects/acceptInvitation/${id}`
         );
 
-        if (response.status === 200) {
-          setMessage(response.data.message);
+        if (status === 200) {
+          setMessage(data.message);
           setHasAccepted(true);
         } else {
           setMessage("Hubo un problema al aceptar la invitación.");
