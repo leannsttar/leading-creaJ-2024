@@ -233,7 +233,7 @@ const LayoutProject = () => {
   const tabLinksProject = [
     { title: "Vista general", href: `/dashboard/project/${params.id}` },
     { title: "Tablero", href: `/dashboard/project/${params.id}/board` },
-    { title: "Timeline", href: `/dashboard/project/${params.id}/timeline` },
+    { title: "Cronología", href: `/dashboard/project/${params.id}/timeline` },
     { title: "Reuniones", href: `/dashboard/project/${params.id}/meetings` },
     { title: "Archivos", href: `/dashboard/project/${params.id}/files` },
     { title: "Configuración", href: `/dashboard/project/${params.id}/config` },

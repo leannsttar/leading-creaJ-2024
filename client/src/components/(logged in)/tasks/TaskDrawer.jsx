@@ -182,7 +182,6 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
       const isProjectLeader = project.team.some(
         (member) => member.role === "leader" && member.user.id === usuario.id
       );
-      console.log(selectedTask.members)
       const isTaskCreator = selectedTask.creator.id === usuario.id;
       setCanEdit(isProjectLeader || isTaskCreator);
     }
@@ -392,27 +391,9 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
   const onChangeTags = (newValue) => {
     setValueTags(newValue);
   };
-  // const handleEditDescription = async () => {
-  //   if (editedDescription !== selectedTask.description) {
-  //     try {
-  //       const formData = new FormData();
-  //       formData.append("taskId", selectedTask.id);
-  //       formData.append("description", editedDescription);
+  
 
-  //       await clienteAxios.postForm("/api/tasks/updateTask", formData, {
-  //         headers: { Authorization: "Bearer " + userToken },
-  //       });
-
-  //       getProject();
-  //       setIsEditingDescription(false);
-  //       messageApi.success("Descripción actualizada exitosamente");
-  //     } catch (error) {
-  //       console.error("Error al actualizar descripción:", error);
-  //       messageApi.error("Error al actualizar descripción");
-  //     }
-  //   }
-  // };
-
+  
   const createLink = async () => {
     try {
       const formData = new FormData();
