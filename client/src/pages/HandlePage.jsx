@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 export const NotFoundPage = () => {
   return (
     <div className="flex h-[calc(100vh-80px)] items-center justify-center p-5 bg-white w-full pb-16">
-      <div className="text-center space-y-8">
+      <div className="text-center space-y-8 max-w-md mx-auto">
         <div className="inline-flex rounded-full bg-[#ECECEC] p-4">
           <div className="rounded-full bg-black p-4">
             <svg
