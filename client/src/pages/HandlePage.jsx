@@ -2,18 +2,19 @@ import { Link } from 'react-router-dom';
 
 export const NotFoundPage = () => {
   return (
-    <div className="flex h-[calc(100vh-80px)] items-center justify-center p-5 bg-white w-full pb-16">
-      <div className="text-center space-y-8 max-w-md mx-auto">
-        <div className="inline-flex rounded-full bg-[#ECECEC] p-4">
-          <div className="rounded-full bg-black p-4">
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 p-6">
+      <div className="bg-white shadow-lg rounded-lg p-8 text-center max-w-lg w-full">
+        <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center justify-center w-24 h-24 bg-blue-500 rounded-full text-white">
             <svg
-              className="w-16 h-16 text-white"
-              viewBox="0 0 28 28"
+              className="w-16 h-16"
+              viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M14 9.33337V14M14 18.6667H14.0118M25.6668 14C25.6668 20.4434 20.4435 25.6667 14.0002 25.6667C7.55684 25.6667 2.3335 20.4434 2.3335 14C2.3335 7.55672 7.55684 2.33337 14.0002 2.33337C20.4435 2.33337 25.6668 7.55672 25.6668 14Z"
+                d="M12 6v6m0 4h.01M21 12c0 4.97-4.03 9-9 9-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9 4.97 0 9 4.03 9 9z"
+                stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -21,16 +22,13 @@ export const NotFoundPage = () => {
             </svg>
           </div>
         </div>
-        <h1 className="text-3xl lg:text-5xl font-bold text-slate-800">
-          404 - Página no encontrada
-        </h1>
-        <p className="text-slate-600 mt-5 lg:text-lg text-base pb-12">
-          La página que estás buscando no existe
-          <br /> o ha sido removida.
+        <h1 className="text-4xl font-extrabold text-gray-800 mb-4">404 - Página no encontrada</h1>
+        <p className="text-gray-600 mb-6">
+          La página que estás buscando no existe o ha sido eliminada.
         </p>
         <Link
           to="/"
-          className="inline-block text-black hover:text-white border border-black hover:bg-black focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center transition duration-250"
+          className="bg-blue-500 text-white hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition duration-150"
         >
           Regresar a la página principal
         </Link>
