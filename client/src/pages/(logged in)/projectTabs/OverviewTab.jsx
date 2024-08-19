@@ -66,11 +66,86 @@ export const OverviewTab = () => {
 
   const fetchProjectData = async () => {
     try {
+      setProject(undefined);
       setLoading(true);
       const response = await clienteAxios.get(
         `/api/projects/getProjectOverview/${params.id}`
       );
-      console.log(response.data);
+
+      setProject(response.data);
+      setUpcomingTasks(
+        response.data.tasks.map((task) => {
+          let progressList = 0;
+          return {
+            id: task.id,
+            title: task.name,
+            creator: task.creator,
+            tags: task.tags.map(
+              (taskTag) =>
+                response.data.tags.find(
+                  (projectTag) => projectTag.id === taskTag.tagId
+                ).name
+            ),
+            description: task.description,
+            subTasks: task.subTasks,
+            progressList: task.subTasks.filter(
+              (subTask) => subTask.status == "terminado"
+            ).length,
+            date: format(addDays(task.due_date, 1), "PP", { locale: es }),
+            members: task.assignees.map((assignee) => {
+              const member = response.data.team.find(
+                (projectMember) => projectMember.user.id === assignee.userId
+              ).user;
+              return {
+                id: member.id,
+                name: member.name,
+                image: member.image,
+              };
+            }),
+            files: task.files,
+            links: task.links,
+            comments: task.comments.map((comment) => {
+              const creator = response.data.team.find(
+                (member) => member.user.id === comment.authorId
+              );
+
+              let timeAgo = "Invalid date";
+              try {
+                const commentDate = parseISO(comment.createdAt);
+                timeAgo = formatDistanceToNow(commentDate, {
+                  addSuffix: true,
+                  locale: es,
+                });
+              } catch (error) {
+                console.error("Error parsing comment date:", error);
+              }
+
+              return {
+                id: comment.id,
+                text: comment.content,
+                timeAgo: timeAgo,
+                creatorId: creator.user.id,
+                creatorImage: creator.user.image,
+                creatorName: creator.user.name,
+              };
+            }),
+            status: task.status,
+          };
+        })
+      );
+      setLoading(false);
+    } catch (error) {
+      console.log("Error al obtener el proyecto:", error);
+    }
+  };
+
+  const fetchProjectData2 = async () => {
+    try {
+      setLoading(true);
+      const response = await clienteAxios.get(
+        `/api/projects/getProjectOverview/${params.id}`
+      );
+
       setProject(response.data);
       setUpcomingTasks(
         response.data.tasks.map((task) => {
@@ -202,7 +277,7 @@ export const OverviewTab = () => {
         task={selectedTask}
         close={onClose}
         project={project}
-        reload={fetchProjectData}
+        reload={fetchProjectData2}
         overview
       />
       {console.log(selectedTask)}

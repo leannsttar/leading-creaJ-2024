@@ -1,5 +1,5 @@
 import express from "express";
-import { getTasks, createTag, createTask, updateSubtaskStatus, addLinkToTask, createComment, getUserTasks, changeTaskStatus, updateTask } from "../controllers/tasks-controller.js";
+import { getTasks, createTag, createTask, updateSubtaskStatus, addLinkToTask, createComment, getUserTasks, changeTaskStatus, updateTask, getUserTasksCalendar } from "../controllers/tasks-controller.js";
 
 import { auth } from "../../middleware/auth.js";
 import multer from "multer";
@@ -20,6 +20,7 @@ const upload = multer({ storage: storage });
 router.get("/getTasks", upload.single(), getTasks)
 
 router.get("/getUserTasks/:userId", upload.single(), getUserTasks)
+router.get("/getUserTasksCalendar/:userId", upload.single(), getUserTasksCalendar)
 router.post("/createTag", upload.single(), createTag);
 router.post("/createTask", upload.single(), createTask);
 router.post("/updateTask", upload.single(), updateTask)

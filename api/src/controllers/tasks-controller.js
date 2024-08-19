@@ -18,6 +18,30 @@ export const getTasks = async (req, res) => {
   }
 };
 
+export const getUserTasksCalendar = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const tasks = await prisma.tasks.findMany({
+      where: {
+        assignees: {
+          some: {
+            userId: +userId,
+          },
+        },
+      },
+      include: {
+        project: true
+      }
+    });
+
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error al obtener las tareas" });
+  }
+};
+
 export const getUserTasks = async (req, res) => {
   const { userId } = req.params;
 
@@ -27,6 +51,39 @@ export const getUserTasks = async (req, res) => {
         assignees: {
           some: {
             userId: +userId,
+          },
+        },
+      },
+      include: {
+        subTasks: true,
+        assignees: true,
+        tags: true,
+        comments: true,
+        files: true,
+        links: true,
+        project: {
+          include: {
+            team: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                  },
+                },
+              },
+            },
+            tags: true
+          },
+        },
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
           },
         },
       },

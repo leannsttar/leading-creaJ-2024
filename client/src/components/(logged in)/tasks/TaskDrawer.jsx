@@ -99,6 +99,7 @@ import { SubTask } from "./SubTask";
 import { CommentComponent } from "./CommentComponent";
 
 export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) => {
+
   const { usuario, userToken } = useSession();
 
   //ESTO ES LO DE SUBIR ARCHIVOS TODAVÍA NO ESTÁ COMPLETO
@@ -245,7 +246,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
       setLoading(true);
       
       const response = await clienteAxios.get(
-        `/api/projects/${overview ? 'getProjectOverview' : 'getProjectBoard'}/${params.id}`
+        `/api/projects/${overview ? 'getProjectOverview' : 'getProjectBoard'}/${project.id}`
       );
       if (selectedTask) {
         const task = response.data.tasks.find(

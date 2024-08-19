@@ -20,7 +20,7 @@ export const TasksCalendarTab = () => {
   const getUserTasks = async () => {
     try {
       const response = await clienteAxios.get(
-        `/api/tasks/getUserTasks/${usuario.id}`
+        `/api/tasks/getUserTasksCalendar/${usuario.id}`
       );
       setTasks(response.data);
     } catch (error) {

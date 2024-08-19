@@ -610,6 +610,7 @@ export const BoardTab = () => {
         `/api/projects/getProjectBoard/${params.id}`
       );
       setProject(response.data);
+      console.log(response.data.tasks)
       setUpcomingTasks(
         response.data.tasks.map((task) => {
           let progressList = 0;

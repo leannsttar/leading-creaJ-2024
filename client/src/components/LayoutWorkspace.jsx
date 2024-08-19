@@ -133,7 +133,7 @@ const LayoutTasks = () => {
             </div>
             <div className="flex gap-6 text-[#7C7C7C] ">
               <MiniTabLink title={"Tablero"} href={"/dashboard/tasks"} />
-              <MiniTabLink title={"Lista"} href={"/dashboard/tasks/list"} />
+              {/* <MiniTabLink title={"Lista"} href={"/dashboard/tasks/list"} /> */}
               <MiniTabLink
                 title={"Calendario"}
                 href={"/dashboard/tasks/calendar"}
