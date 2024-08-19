@@ -125,7 +125,7 @@ export const TasksCalendarTab = () => {
     const listData =
       info?.type === "month" ? getMonthData(value) : getListData(value);
 
-    const cellClass = listData.length > 0 ? "bg-[#FEE4CB] bg-opacity-0 md:bg-opacity-100" : "";
+    const cellClass = listData.length > 0 ? "bg-[#2f2f2f] text-white bg-opacity-0 md:bg-opacity-100" : "";
     if (info?.type === "month") {
       return (
         <div

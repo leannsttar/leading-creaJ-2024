@@ -98,7 +98,7 @@ const props = {
 import { SubTask } from "./SubTask";
 import { CommentComponent } from "./CommentComponent";
 
-export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
+export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) => {
   const { usuario, userToken } = useSession();
 
   const params = useParams();
@@ -191,9 +191,9 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
   const getProject = async () => {
     try {
       setLoading(true);
-      reload();
+      
       const response = await clienteAxios.get(
-        `/api/projects/getProjectBoard/${params.id}`
+        `/api/projects/${overview ? 'getProjectOverview' : 'getProjectBoard'}/${params.id}`
       );
       if (selectedTask) {
         const task = response.data.tasks.find(
@@ -256,6 +256,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
         };
         setSelectedTask(updatedSelectedTask);
         setLoading(false);
+        reload();
       } else {
         setLoading(false);
       }

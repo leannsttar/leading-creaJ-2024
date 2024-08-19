@@ -248,17 +248,38 @@ export const getProject = async (req, res) => {
 
 export const getProjectOverview = async (req, res) => {
   const { id } = req.params;
-
+  console.log(req.params);
   try {
     const project = await prisma.projects.findFirst({
-      where: {
-        id: +id,
+      where: { id: +id },
+      include: {
+        team: {
+          include: { user: true },
+        },
+        tags: true,
+        tasks: {
+          where: {
+            status: 'proximo' // Filtra solo las tareas con estado 'proximo'
+          },
+          include: {
+            subTasks: true,
+            assignees: true,
+            tags: true,
+            comments: true,
+            files: true,
+            links: true,
+            creator: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
+          },
+        },
       },
     });
-
-    if (!project) {
-      return res.status(404).json({ error: "Project not found" });
-    }
 
     res.status(200).json(project);
   } catch (error) {
@@ -266,6 +287,7 @@ export const getProjectOverview = async (req, res) => {
     res.status(500).json({ error: "Error al obtener el proyecto" });
   }
 };
+
 
 export const getProjectConfig = async (req, res) => {
   const { id } = req.params;
