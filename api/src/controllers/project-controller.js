@@ -2,6 +2,7 @@ import { prisma } from "../../config/prisma.js";
 import { processImage } from "../../uploadImage.js";
 import cloudinary from "../../cloudinaryConfig.js";
 
+
 export const createProject = async (req, res) => {
   const { nombre, descripcion } = req.body;
   const usuarioId = req.usuario.id;

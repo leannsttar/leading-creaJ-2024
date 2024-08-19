@@ -52,6 +52,7 @@ export const MeetingsList = ({ meetings, validatedAttendance, fetchMeetings }) =
                 return member.userId == usuario.id;
               })}
             fetchMeetings={fetchMeetings}
+            identificador={meeting.id}
             />
           );
         })}
@@ -68,7 +69,8 @@ const MeetingCard = ({
   teamPictures,
   link,
   validatedAttendance,
-  fetchMeetings
+  fetchMeetings,
+  identificador
 }) => {
   const params = useParams();
   const { logout, usuario, userToken } = useSession();
@@ -123,7 +125,7 @@ const MeetingCard = ({
   };
 
   return (
-    <div className="bg-[#f7f7f7] p-7 rounded-2xl space-y-10 ">
+    <div key={identificador} className="bg-[#f7f7f7] p-7 rounded-2xl space-y-10 ">
       <div className=" flex items-center gap-3">
         <img
           src={userPicture}
@@ -204,6 +206,10 @@ export const MeetingsTab = () => {
   const [meetings, setMeetings] = useState([]);
   const [validatedAttendance, setValidatedAttendance] = useState();
 
+  const [numeroReuniones,setNumeroReuniones] = useState()
+  const [reunionesProximas,setReunionesProximas] = useState()
+  const [reunionesPasadas,setReunionesPasadas] = useState()
+
   const fetchMeetings = async () => {
     try {
       const response = await clienteAxios.get(
@@ -214,7 +220,12 @@ export const MeetingsTab = () => {
           },
         }
       );
+      console.log(response)
       setMeetings(response.data.meetings);
+      setNumeroReuniones(response.data.totalMeetings)
+      setReunionesProximas(response.data.upcomingMeetings)
+      setReunionesPasadas(response.data.pastMeetings)
+
     } catch (error) {
       console.error("Error al obtener las reuniones:", error);
     }
@@ -223,31 +234,27 @@ export const MeetingsTab = () => {
     fetchMeetings();
   }, []);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await clienteAxios.get(`/api/meetings/${params.id}`);
-        const { totalMeetings, pastMeetings, upcomingMeetings } = response.data;
+  // useEffect(() => {
+  //   const fetchStats = async () => {
+  //     try {
+  //       const response = await clienteAxios.get(`/api/meetings/${params.id}`);
+  //       const { totalMeetings, pastMeetings, upcomingMeetings } = response.data;
+        
+  //       setStats({
+  //         totalMeetings,
+  //         pastMeetings,
+  //         upcomingMeetings,
+  //       });
+  //     } catch (error) {
+  //       console.error("Error al obtener las estadísticas de reuniones:", error);
+  //     }
+  //   };
 
-        setStats({
-          totalMeetings,
-          pastMeetings,
-          upcomingMeetings,
-        });
-      } catch (error) {
-        console.error("Error al obtener las estadísticas de reuniones:", error);
-      }
-    };
-
-    fetchStats();
-  }, [params.id]);
+  //   fetchStats();
+  // }, [params.id]);
 
 
-  const [stats, setStats] = useState({
-    totalMeetings: 0,
-    pastMeetings: 0,
-    upcomingMeetings: 0,
-  });
+ 
   
   const [meetingDate, setMeetingDate] = useState();
   const [meetingLink, setMeetingLink] = useState();
@@ -286,12 +293,12 @@ export const MeetingsTab = () => {
 
   return (
     <div className="m-5 lg:m-16">
-      <div className="bg-[#f5f5f5] lg:w-fit p-8 rounded-2xl space-y-5 lg:flex lg:space-y-0 lg:gap-5">
+      <div className="bg-[#f5f5f5] lg:w-fit p-8 rounded-2x1space-y-5 lg:flex lg:space-y-0 lg:gap-5">
         <div className="lg:border-r-[2px] lg:pr-5 border-[#e0e0e0]">
           <MeetingsSection
             icon={allMeetingsIcon}
             title={"No. de Reuniones"}
-            numMeetings={stats.totalMeetings}
+            numMeetings={numeroReuniones}
           />
         </div>
         <hr className="border-[1px] border-[#e0e0e0] lg:hidden" />
@@ -300,7 +307,7 @@ export const MeetingsTab = () => {
           <MeetingsSection
             icon={upcomingMeetingsIcon}
             title={"Reuniones próximas"}
-            numMeetings={stats.upcomingMeetings}
+            numMeetings={reunionesProximas}
           />
         </div>
         <hr className="border-[1px] border-[#e0e0e0] lg:hidden" />
@@ -308,7 +315,7 @@ export const MeetingsTab = () => {
           <MeetingsSection
             icon={pastMeetingsIcon}
             title={"Reuniones pasadas"}
-            numMeetings={stats.pastMeetings}
+            numMeetings={reunionesPasadas}
           />
         </div>
       </div>
@@ -403,6 +410,7 @@ export const MeetingsTab = () => {
         validatedAttendance={validatedAttendance}
         fetchMeetings={fetchMeetings}
       />
+
     </div>
   );
 };
