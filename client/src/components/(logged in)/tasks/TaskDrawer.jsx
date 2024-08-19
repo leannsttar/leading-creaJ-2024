@@ -101,6 +101,58 @@ import { CommentComponent } from "./CommentComponent";
 export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
   const { usuario, userToken } = useSession();
 
+  //ESTO ES LO DE SUBIR ARCHIVOS TODAVÍA NO ESTÁ COMPLETO
+  {/* const UploadComponent = ({ selectedTask }) => {
+    const props = {
+      name: "files", 
+      multiple: true, 
+      customRequest: async ({ file, onSuccess, onError }) => {
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const response = await clienteAxios.post("/api/files/upload", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          onSuccess(response.data, file);
+          message.success(`${file.name} Archivo cargado correctamente`);
+        } catch (error) {
+          console.error(error);
+          onError(error);
+          message.error(`${file.name} Error al cargar el archivo.`);
+        }
+      },
+    };
+
+    const handleUpload = async ({ fileList }) => {
+      try {
+        const formData = new FormData();
+        fileList.forEach((file) => {
+          formData.append("files", file.originFileObj);
+        });
+
+        const response = await axios.post("/api/files/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        message.success("Archivos cargados correctamente");
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+        message.error("Error al cargar archivos");
+      }
+    };
+  }; */}
+
+
+
+
+
   const params = useParams();
 
   const timerRef = useRef();
@@ -182,6 +234,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
       const isProjectLeader = project.team.some(
         (member) => member.role === "leader" && member.user.id === usuario.id
       );
+      console.log(selectedTask.members)
       const isTaskCreator = selectedTask.creator.id === usuario.id;
       setCanEdit(isProjectLeader || isTaskCreator);
     }
@@ -391,9 +444,27 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload }) => {
   const onChangeTags = (newValue) => {
     setValueTags(newValue);
   };
-  
+  // const handleEditDescription = async () => {
+  //   if (editedDescription !== selectedTask.description) {
+  //     try {
+  //       const formData = new FormData();
+  //       formData.append("taskId", selectedTask.id);
+  //       formData.append("description", editedDescription);
 
-  
+  //       await clienteAxios.postForm("/api/tasks/updateTask", formData, {
+  //         headers: { Authorization: "Bearer " + userToken },
+  //       });
+
+  //       getProject();
+  //       setIsEditingDescription(false);
+  //       messageApi.success("Descripción actualizada exitosamente");
+  //     } catch (error) {
+  //       console.error("Error al actualizar descripción:", error);
+  //       messageApi.error("Error al actualizar descripción");
+  //     }
+  //   }
+  // };
+
   const createLink = async () => {
     try {
       const formData = new FormData();
