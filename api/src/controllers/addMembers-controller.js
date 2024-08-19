@@ -121,7 +121,7 @@ export const addTeamMember = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: correo,
       subject: "Invitación a un proyecto",
-      text: `Has sido invitado a unirte al proyecto. Por favor, acepta la invitación a través del siguiente enlace: ${process.env.FRONTEND_URL}/acceptInvitation/${invitation.id}`,
+      text: `Has sido invitado a unirte al proyecto. Por favor, acepta la invitación a través del siguiente enlace: ${process.env.FRONTEND_URL}acceptInvitation/${invitation.id}`,
     };
 
     await transporter.sendMail(mailOptions);

@@ -30,7 +30,7 @@ const MeetingsSection = ({ icon, title, numMeetings }) => {
   );
 };
 
-export const MeetingsList = ({ meetings, validatedAttendance }) => {
+export const MeetingsList = ({ meetings, validatedAttendance, fetchMeetings }) => {
   const { usuario, logout } = useSession();
   return (
     <>
@@ -51,6 +51,7 @@ export const MeetingsList = ({ meetings, validatedAttendance }) => {
               validatedAttendance={meeting.attendance.some((member) => {
                 return member.userId == usuario.id;
               })}
+            fetchMeetings={fetchMeetings}
             />
           );
         })}
@@ -67,6 +68,7 @@ const MeetingCard = ({
   teamPictures,
   link,
   validatedAttendance,
+  fetchMeetings
 }) => {
   const params = useParams();
   const { logout, usuario, userToken } = useSession();
@@ -90,6 +92,7 @@ const MeetingCard = ({
         if (response.data.attendanceConfirmed) {
           setAttendanceConfirmed(true);
           setConfirmationMessage("Asistencia confirmada");
+          fetchMeetings();
         }
       } catch (error) {
         console.error("Error al verificar la asistencia:", error);
@@ -111,7 +114,9 @@ const MeetingCard = ({
       console.log("Asistencia confirmada:", response.data);
       setConfirmationMessage("Asistencia confirmada");
       setAttendanceConfirmed(true);
+      fetchMeetings();
       setModal2Open(false);
+
     } catch (error) {
       console.error("Error:", error);
     }
@@ -396,6 +401,7 @@ export const MeetingsTab = () => {
       <MeetingsList
         meetings={meetings}
         validatedAttendance={validatedAttendance}
+        fetchMeetings={fetchMeetings}
       />
     </div>
   );

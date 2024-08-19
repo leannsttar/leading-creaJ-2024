@@ -101,6 +101,58 @@ import { CommentComponent } from "./CommentComponent";
 export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) => {
   const { usuario, userToken } = useSession();
 
+  //ESTO ES LO DE SUBIR ARCHIVOS TODAVÍA NO ESTÁ COMPLETO
+  {/* const UploadComponent = ({ selectedTask }) => {
+    const props = {
+      name: "files", 
+      multiple: true, 
+      customRequest: async ({ file, onSuccess, onError }) => {
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const response = await clienteAxios.post("/api/files/upload", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          onSuccess(response.data, file);
+          message.success(`${file.name} Archivo cargado correctamente`);
+        } catch (error) {
+          console.error(error);
+          onError(error);
+          message.error(`${file.name} Error al cargar el archivo.`);
+        }
+      },
+    };
+
+    const handleUpload = async ({ fileList }) => {
+      try {
+        const formData = new FormData();
+        fileList.forEach((file) => {
+          formData.append("files", file.originFileObj);
+        });
+
+        const response = await axios.post("/api/files/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        message.success("Archivos cargados correctamente");
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+        message.error("Error al cargar archivos");
+      }
+    };
+  }; */}
+
+
+
+
+
   const params = useParams();
 
   const timerRef = useRef();
