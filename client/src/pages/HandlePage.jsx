@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom';
 
 export const NotFoundPage = () => {
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 p-6">
-      <div className="bg-white shadow-lg rounded-lg p-8 text-center max-w-lg w-full">
-        <div className="flex items-center justify-center mb-6">
-          <div className="flex items-center justify-center w-24 h-24 bg-blue-500 rounded-full text-white">
+    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-r from-blue-100 to-purple-200 p-6">
+      <div className="bg-white shadow-xl rounded-lg p-10 text-center max-w-lg w-full border border-gray-300">
+        <div className="flex items-center justify-center mb-8">
+          <div className="flex items-center justify-center w-32 h-32 bg-yellow-400 rounded-full text-white shadow-md">
             <svg
-              className="w-16 h-16"
+              className="w-20 h-20"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -22,16 +22,27 @@ export const NotFoundPage = () => {
             </svg>
           </div>
         </div>
-        <h1 className="text-4xl font-extrabold text-gray-800 mb-4">404 - Página no encontrada</h1>
-        <p className="text-gray-600 mb-6">
+        <h1 className="text-5xl font-extrabold text-gray-800 mb-4">
+          404 - Página no encontrada
+        </h1>
+        <p className="text-gray-600 text-lg mb-8">
           La página que estás buscando no existe o ha sido eliminada.
         </p>
         <Link
           to="/"
-          className="bg-blue-500 text-white hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition duration-150"
+          className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 transition duration-300"
         >
           Regresar a la página principal
         </Link>
+        <div className="mt-8">
+          <p className="text-gray-500 text-sm">¿Necesitas ayuda?</p>
+          <a
+            href="mailto:support@example.com"
+            className="text-blue-500 hover:underline"
+          >
+            Contacta con soporte
+          </a>
+        </div>
       </div>
     </div>
   );
