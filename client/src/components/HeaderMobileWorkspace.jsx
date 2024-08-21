@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import threeLinesMenu from "../assets/3linesMenu.svg";
 import bellNotification from "../assets/bellNotification.svg";
+import { useSession } from "@/config/useSession";
 import avatar from "../assets/Avatar.jpg";
 
 export const HeaderMobileWorkspace = ({ onToggle }) => {
@@ -71,11 +72,11 @@ export const HeaderMobileWorkspace = ({ onToggle }) => {
                 <img src={bellNotification} alt="" className="w-5" />
               </div>
             </Link>
-            <img
+            {/* <img
               src={avatar}
               alt=""
               className="w-12 h-12 rounded-xl object-cover"
-            />
+            /> */}
           </div>
         </div>
       </div>

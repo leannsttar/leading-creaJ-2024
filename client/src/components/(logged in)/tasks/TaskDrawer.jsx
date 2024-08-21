@@ -63,37 +63,7 @@ import {
 } from "@ant-design/icons";
 const { Dragger } = Upload;
 
-const props = {
-  action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
-  onChange({ file, fileList }) {
-    if (file.status !== "uploading") {
-      console.log(file, fileList);
-    }
-  },
-  defaultFileList: [
-    {
-      uid: "1",
-      name: "archivo1.png",
-      status: "uploading",
-      url: "http://www.baidu.com/xxx.png",
-      percent: 33,
-    },
-    {
-      uid: "2",
-      name: "archivo2.png",
-      status: "done",
-      url: "http://www.baidu.com/yyy.png",
-    },
-    {
-      uid: "3",
-      name: "archivo3.png",
-      status: "error",
-      response: "Server Error 500",
-      // custom error message to show
-      url: "http://www.baidu.com/zzz.png",
-    },
-  ],
-};
+// 
 
 import { SubTask } from "./SubTask";
 import { CommentComponent } from "./CommentComponent";
@@ -670,6 +640,12 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
     setSection(newSection);
   }
 
+  
+
+
+
+
+
   useEffect(() => clearTimer, []);
   console.log(selectedTask);
   return (
@@ -1079,12 +1055,12 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
                         otros archivos prohibidos.
                       </p>
                     </Dragger> */}
-                    <Upload {...props}>
+                    <Upload action={"http://localhost:5000/api/files/upload"}>
                       <Button icon={<UploadOutlined />}>
                         Click para subir
                       </Button>
                     </Upload>
-                    <p className="text-lg font-medium mt-6">Adjuntar links</p>
+                    {/* <p className="text-lg font-medium mt-6">Adjuntar links</p> */}
                     <div className="mt-1 space-y-1">
                       <StyleSheetManager shouldForwardProp={isPropValid}>
                         {selectedTask.links.map((link) => {
