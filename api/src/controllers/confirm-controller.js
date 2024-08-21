@@ -14,7 +14,7 @@ export const confirmEmail = async (req, res) => {
     });
 
     if (user.count === 0) {
-      return res.status(400).json({ message: "Token inválido" });
+      return res.status(400).json({message: "Token inválido" });
     }
 
     res.status(200).json({ message: "Correo confirmado con éxito" });
