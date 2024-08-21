@@ -5,7 +5,6 @@ import { auth, perfil } from "../../middleware/auth.js";
 
 import multer from "multer";
 import { editUser } from "../controllers/user-controller.js";
-
 const router = Router();
 
 const storage = multer.diskStorage({
