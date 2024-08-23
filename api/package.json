@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
-  },
+ "scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "dev": "cross-env NODE_ENV=development nodemon index.js",
+  "build": "prisma generate && next build"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -33,6 +34,7 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nodemon": "^3.1.0",
     "prisma": "^5.17.0"
   }
