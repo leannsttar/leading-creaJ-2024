@@ -111,7 +111,7 @@ export const signup = async (req, res) => {
       <p>Gracias por registrarte en nuestro sitio. Para completar el registro, por favor confirma tu correo electrónico haciendo clic en el siguiente enlace:</p>
       <a href="${
         process.env.FRONTEND_URL
-      }verifyAccount?token=${confirmationToken}" class="button">Confirmar Correo</a>
+      }/verifyAccount?token=${confirmationToken}" class="button">Confirmar Correo</a>
     </div>
     <div class="footer">
       <p>Si no te has registrado en nuestro sitio, por favor ignora este mensaje.</p>
