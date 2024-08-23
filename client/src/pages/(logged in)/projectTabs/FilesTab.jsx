@@ -53,35 +53,7 @@ export const FilesTab = () => {
                 fileSize={"2.8 MB"}
                 dateUpload={"Dec 13, 2022"}
               />
-              <TableFileRecord
-                fileName={"Website Desing.png"}
-                task={"Create userflow website"}
-                fileSize={"2.8 MB"}
-                dateUpload={"Dec 13, 2022"}
-              />
-              <TableFileRecord
-                fileName={"Website Desing.png"}
-                task={"Create userflow website"}
-                fileSize={"2.8 MB"}
-                dateUpload={"Dec 13, 2022"}
-              />
-              <TableFileRecord
-                fileName={"Website Desing.png"}
-                task={"Create userflow website"}
-                fileSize={"2.8 MB"}
-                dateUpload={"Dec 13, 2022"}
-              />
             </tbody>
-            {/* foot */}
-            <tfoot>
-              <tr>
-                <th>Archivo</th>
-                <th>Tarea</th>
-                <th>Tamaño del archivo</th>
-                <th>Fecha de subida</th>
-                <th></th>
-              </tr>
-            </tfoot>
           </table>
         </div>
       </div>

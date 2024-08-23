@@ -63,17 +63,24 @@ import {
 } from "@ant-design/icons";
 const { Dragger } = Upload;
 
-// 
+//
 
 import { SubTask } from "./SubTask";
 import { CommentComponent } from "./CommentComponent";
 
-export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) => {
-
+export const TaskDrawer = ({
+  isOpen,
+  task,
+  close,
+  project,
+  reload,
+  overview,
+}) => {
   const { usuario, userToken } = useSession();
 
   //ESTO ES LO DE SUBIR ARCHIVOS TODAVÍA NO ESTÁ COMPLETO
-  {/* const UploadComponent = ({ selectedTask }) => {
+  {
+    /* const UploadComponent = ({ selectedTask }) => {
     const props = {
       name: "files", 
       multiple: true, 
@@ -118,11 +125,8 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
         message.error("Error al cargar archivos");
       }
     };
-  }; */}
-
-
-
-
+  }; */
+  }
 
   const params = useParams();
 
@@ -158,10 +162,12 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
   const [isEditing, setIsEditing] = useState(false);
 
   const [canEdit, setCanEdit] = useState(false);
-
   const onChangeDate = (date, dateString) => {
     setEditedDate(dateString);
   };
+
+console.log(selectedTask);
+
 
   useEffect(() => {
     setOpen(isOpen);
@@ -205,7 +211,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
       const isProjectLeader = project.team.some(
         (member) => member.role === "leader" && member.user.id === usuario.id
       );
-      console.log(selectedTask.members)
+      console.log(selectedTask.members);
       const isTaskCreator = selectedTask.creator.id === usuario.id;
       setCanEdit(isProjectLeader || isTaskCreator);
     }
@@ -214,9 +220,11 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
   const getProject = async () => {
     try {
       setLoading(true);
-      
+
       const response = await clienteAxios.get(
-        `/api/projects/${overview ? 'getProjectOverview' : 'getProjectBoard'}/${project.id}`
+        `/api/projects/${overview ? "getProjectOverview" : "getProjectBoard"}/${
+          project.id
+        }`
       );
       if (selectedTask) {
         const task = response.data.tasks.find(
@@ -351,12 +359,12 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
         return;
       }
 
-      formData.append("projectId", project.id)
-      formData.append("userId", usuario.id)
+      formData.append("projectId", project.id);
+      formData.append("userId", usuario.id);
       formData.append("taskId", selectedTask.id);
-      formData.append("actionUserName", usuario.name)
-      formData.append("taskName", selectedTask.title)
-      formData.append("assignedUsers", JSON.stringify(selectedTask.members))
+      formData.append("actionUserName", usuario.name);
+      formData.append("taskName", selectedTask.title);
+      formData.append("assignedUsers", JSON.stringify(selectedTask.members));
 
       const response = await clienteAxios.postForm(
         "/api/tasks/updateTask",
@@ -441,13 +449,13 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
     try {
       const formData = new FormData();
 
-      formData.append("projectId", project.id)
+      formData.append("projectId", project.id);
       formData.append("authorId", usuario.id);
       formData.append("taskId", selectedTask.id);
       formData.append("link", taskUrl);
-      formData.append("authorName", usuario.name)
-      formData.append("taskName", selectedTask.title)
-      formData.append("assignedUsers", JSON.stringify(selectedTask.members))
+      formData.append("authorName", usuario.name);
+      formData.append("taskName", selectedTask.title);
+      formData.append("assignedUsers", JSON.stringify(selectedTask.members));
 
       const response = await clienteAxios.postForm(
         `/api/tasks/createLink`,
@@ -480,16 +488,14 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
     }
   };
 
-  
-
   const createComment = async () => {
     try {
       const formData = new FormData();
-      
-      formData.append("projectId", project.id)
-      formData.append("authorName", usuario.name)
-      formData.append("taskName", selectedTask.title)
-      formData.append("assignedUsers", JSON.stringify(selectedTask.members))
+
+      formData.append("projectId", project.id);
+      formData.append("authorName", usuario.name);
+      formData.append("taskName", selectedTask.title);
+      formData.append("assignedUsers", JSON.stringify(selectedTask.members));
       formData.append("authorId", usuario.id);
       formData.append("taskId", selectedTask.id);
       formData.append("comment", taskComment);
@@ -528,13 +534,13 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
   const taskToInProgress = async (taskId) => {
     try {
       const formData = new FormData();
-      formData.append("projectId", project.id)
-      formData.append("userId", usuario.id)
+      formData.append("projectId", project.id);
+      formData.append("userId", usuario.id);
       formData.append("taskId", taskId);
       formData.append("status", "en progreso");
-      formData.append("actionUserName", usuario.name)
-      formData.append("taskName", selectedTask.title)
-      formData.append("assignedUsers", JSON.stringify(selectedTask.members))
+      formData.append("actionUserName", usuario.name);
+      formData.append("taskName", selectedTask.title);
+      formData.append("assignedUsers", JSON.stringify(selectedTask.members));
 
       const response = await clienteAxios.postForm(
         `/api/tasks/changeTaskStatus`,
@@ -575,13 +581,13 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
     try {
       const formData = new FormData();
 
-      formData.append("projectId", project.id)
-      formData.append("userId", usuario.id)
+      formData.append("projectId", project.id);
+      formData.append("userId", usuario.id);
       formData.append("taskId", taskId);
       formData.append("status", "terminado");
-      formData.append("actionUserName", usuario.name)
-      formData.append("taskName", selectedTask.title)
-      formData.append("assignedUsers", JSON.stringify(selectedTask.members))
+      formData.append("actionUserName", usuario.name);
+      formData.append("taskName", selectedTask.title);
+      formData.append("assignedUsers", JSON.stringify(selectedTask.members));
 
       const response = await clienteAxios.postForm(
         `/api/tasks/changeTaskStatus`,
@@ -640,12 +646,6 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
     setSection(newSection);
   }
 
-  
-
-
-
-
-
   useEffect(() => clearTimer, []);
   console.log(selectedTask);
   return (
@@ -689,7 +689,7 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
               alt=""
               className="min-w-10 min-h-10 max-w-10 max-h-10 rounded-full object-cover"
             />
-        
+
             {selectedTask ? (
               <>
                 {section === "comentarios" ? (
@@ -712,7 +712,9 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
                   <p className="text-green-600 font-semibold ml-2">
                     ✓ Esta tarea ya está completada
                   </p>
-                ) : selectedTask.members.some((member) => member.id === usuario.id) ? (
+                ) : selectedTask.members.some(
+                    (member) => member.id === usuario.id
+                  ) ? (
                   <>
                     {section === "archivos" ? (
                       <>
@@ -756,7 +758,8 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
                   </p>
                 ) : (
                   <p className="text-gray-600 font-semibold ml-2">
-                    No estás asignado a esta tarea y no tienes permiso para editarla
+                    No estás asignado a esta tarea y no tienes permiso para
+                    editarla
                   </p>
                 )}
               </>
@@ -1055,18 +1058,36 @@ export const TaskDrawer = ({ isOpen, task, close, project, reload, overview }) =
                         otros archivos prohibidos.
                       </p>
                     </Dragger> */}
-                    <Upload action={"http://localhost:5000/api/files/upload"}>
+                    <Upload
+                      action={"http://localhost:5000/api/files/upload"}
+                      customRequest={async (data) => {
+                        const formData = new FormData()
+                        formData.append("file", data.file)
+                        formData.append("taskId",selectedTask.id)
+                        const sendInformation = await clienteAxios.post(
+                          "/api/files/upload",
+                           formData,
+                          {
+                            headers: {
+                              Authorization: "Bearer " + userToken,
+                            },
+                          }
+                        );
+                        data.onSuccess("éxito uwu")
+                      }}
+                    >
                       <Button icon={<UploadOutlined />}>
                         Click para subir
                       </Button>
                     </Upload>
+
                     {/* <p className="text-lg font-medium mt-6">Adjuntar links</p> */}
                     <div className="mt-1 space-y-1">
-                      <StyleSheetManager shouldForwardProp={isPropValid}>
-                        {selectedTask.links.map((link) => {
-                          return <Microlink url={link.url} />;
+                        {selectedTask.files.map((file, index)=>{
+                          return(
+                            <p>{file.fileName}</p>
+                          )
                         })}
-                      </StyleSheetManager>
                     </div>
                   </div>
                 ) : section === "comentarios" ? (
