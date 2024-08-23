@@ -14,13 +14,26 @@ import router from "./src/routes/newfile-route.js"
 import http from "http";
 import createSocketServer from "./socket.js";
 
-
 const app = express();
 const server = http.createServer(app);
-const io = createSocketServer(server);
+
+const allowedOrigins = [
+  'https://leading-crea-j-2024-client.vercel.app',
+  'https://leading-crea-j-2024-client-k7s18hl7d-leannsttars-projects.vercel.app'
+];
 
 app.use(compression());
-app.use(cors());
+app.use(cors({
+  origin: function(origin, callback){
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 const storage = multer.diskStorage({
@@ -36,20 +49,17 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// app.use("/public",express.static('./public'));
 app.use("/uploads", express.static("./uploads"));
 
-/// app.use('/api/files', fileRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", loginRoutes);
-
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", tasksRoutes);
 app.use('/api/files', router);
-
 app.use("/api/notifications", notificationsRoutes)
+
+const io = createSocketServer(server);
 
 server.listen(PORT, () => {
   console.log(`Servidor funcionando en el puerto ${PORT}`);
 });
-
