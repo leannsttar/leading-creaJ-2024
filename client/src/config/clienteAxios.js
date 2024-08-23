@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const clienteAxios = axios.create({
-    baseURL: "http://localhost:5000/"
+    baseURL: "https://leading-crea-j-2024-server.vercel.app/"
 })
