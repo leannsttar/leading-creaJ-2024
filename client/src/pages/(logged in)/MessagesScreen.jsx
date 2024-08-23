@@ -12,7 +12,9 @@ import paperPlane from "../../assets/paper-plane.svg";
 
 import { Loader } from "@/components/Loader";
 
-const socket = io("https://leading-crea-j-2024-server.vercel.app");
+const socket = io('https://leading-crea-j-2024-server.vercel.app', {
+  withCredentials: true,
+});
 
 const ChatComponent = ({
   teamName,
