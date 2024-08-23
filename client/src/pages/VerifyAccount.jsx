@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import axios from "axios";
 
 import { Loader } from "@/components/Loader";
+import { clienteAxios } from "@/config/clienteAxios";
 
 export const VerifyAccount = () => {
   const [searchParams] = useSearchParams();
@@ -19,8 +20,8 @@ export const VerifyAccount = () => {
       }
 
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/users/confirm?token=${token}`
+        const response = await clienteAxios.get(
+          `/api/users/confirm?token=${token}`
         );
         console.log(response);
         setMessage(response.data.message);

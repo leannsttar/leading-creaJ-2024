@@ -20,7 +20,7 @@ export const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:5000/api/auth/login", {
+    const response = await fetch("https://leading-crea-j-2024-server.vercel.app/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
