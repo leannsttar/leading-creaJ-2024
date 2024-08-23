@@ -62,7 +62,7 @@ export const NotificationsScreen = () => {
       {notifications.length > 0 ? (
         notifications.map(
           (notification, index) => (
-            console.log(notification),
+
             (
               <div
                 key={index}

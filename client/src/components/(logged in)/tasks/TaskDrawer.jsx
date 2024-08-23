@@ -11,7 +11,14 @@ import "../../../index.css";
 
 import { useParams } from "react-router-dom";
 
-import { format, formatDistanceToNow, parseISO, addDays } from "date-fns";
+import {
+  format,
+  formatDistanceToNow,
+  parseISO,
+  addDays,
+  isBefore,
+  parse,
+} from "date-fns";
 import { es } from "date-fns/locale";
 
 import { clienteAxios } from "@/config/clienteAxios";
@@ -166,9 +173,6 @@ export const TaskDrawer = ({
     setEditedDate(dateString);
   };
 
-console.log(selectedTask);
-
-
   useEffect(() => {
     setOpen(isOpen);
     if (task) {
@@ -211,7 +215,7 @@ console.log(selectedTask);
       const isProjectLeader = project.team.some(
         (member) => member.role === "leader" && member.user.id === usuario.id
       );
-      console.log(selectedTask.members);
+
       const isTaskCreator = selectedTask.creator.id === usuario.id;
       setCanEdit(isProjectLeader || isTaskCreator);
     }
@@ -647,7 +651,7 @@ console.log(selectedTask);
   }
 
   useEffect(() => clearTimer, []);
-  console.log(selectedTask);
+
   return (
     <>
       {contextHolder}
@@ -734,21 +738,50 @@ console.log(selectedTask);
                       </>
                     ) : (
                       <>
-                        {selectedTask.status === "proximo" ? (
-                          <button
-                            onClick={handleTaskToInProgress}
-                            className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
-                          >
-                            Empezar tarea
-                          </button>
-                        ) : selectedTask.status === "en progreso" ? (
-                          <button
-                            onClick={handleTaskToFinished}
-                            className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
-                          >
-                            Marcar tarea como completada
-                          </button>
-                        ) : null}
+                        {(() => {
+                          // Convierte selectedTask.date a un objeto Date usando parse
+                          const taskDate = parse(
+                            selectedTask.date,
+                            "PP",
+                            new Date(),
+                            { locale: es }
+                          );
+
+                          // Verifica si la fecha ha pasado
+                          const isOverdue = isBefore(taskDate, new Date());
+
+                          return (
+                            <div className="flex items-center flex-row-reverse gap-2">
+                              {selectedTask.status === "proximo" &&
+                              isOverdue ? (
+                                <p className="text-red-600 font-semibold ml-2">
+                                  ⚠ La fecha de entrega ya pasó
+                                </p>
+                              ) : selectedTask.status === "en progreso" &&
+                                isOverdue ? (
+                                <p className="text-red-600 font-semibold ml-2">
+                                  ⚠ La fecha de entrega ya pasó
+                                </p>
+                              ) : null}
+
+                              {selectedTask.status === "proximo" ? (
+                                <button
+                                  onClick={handleTaskToInProgress}
+                                  className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
+                                >
+                                  Empezar tarea
+                                </button>
+                              ) : selectedTask.status === "en progreso" ? (
+                                <button
+                                  onClick={handleTaskToFinished}
+                                  className="text-white font-semibold bg-[#000] hover:bg-[#097969] rounded-lg px-3 py-2"
+                                >
+                                  Marcar tarea como completada
+                                </button>
+                              ) : null}
+                            </div>
+                          );
+                        })()}
                       </>
                     )}
                   </>
@@ -1061,19 +1094,19 @@ console.log(selectedTask);
                     <Upload
                       action={"http://localhost:5000/api/files/upload"}
                       customRequest={async (data) => {
-                        const formData = new FormData()
-                        formData.append("file", data.file)
-                        formData.append("taskId",selectedTask.id)
+                        const formData = new FormData();
+                        formData.append("file", data.file);
+                        formData.append("taskId", selectedTask.id);
                         const sendInformation = await clienteAxios.post(
                           "/api/files/upload",
-                           formData,
+                          formData,
                           {
                             headers: {
                               Authorization: "Bearer " + userToken,
                             },
                           }
                         );
-                        data.onSuccess("éxito uwu")
+                        data.onSuccess("éxito uwu");
                       }}
                     >
                       <Button icon={<UploadOutlined />}>
@@ -1083,11 +1116,9 @@ console.log(selectedTask);
 
                     {/* <p className="text-lg font-medium mt-6">Adjuntar links</p> */}
                     <div className="mt-1 space-y-1">
-                        {selectedTask.files.map((file, index)=>{
-                          return(
-                            <p>{file.fileName}</p>
-                          )
-                        })}
+                      {selectedTask.files.map((file, index) => {
+                        return <p>{file.fileName}</p>;
+                      })}
                     </div>
                   </div>
                 ) : section === "comentarios" ? (

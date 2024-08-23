@@ -6,7 +6,11 @@ import bellNotification from "../assets/bellNotification.svg";
 import { useSession } from "@/config/useSession";
 import avatar from "../assets/Avatar.jpg";
 
+
 export const HeaderMobileWorkspace = ({ onToggle }) => {
+
+  const { usuario } = useSession()
+
   const [prevScrollPos, setPrevScrollPos] = useState(window.scrollY);
   const [visible, setVisible] = useState(true);
 
@@ -35,7 +39,7 @@ export const HeaderMobileWorkspace = ({ onToggle }) => {
           <img
             src={threeLinesMenu}
             alt=""
-            className="ml-2 hover:cursor-pointer"
+            className="ml-2 z-[10000] hover:cursor-pointer"
             onClick={onToggle}
           />
           <div className="flex items-center gap-1">
@@ -72,11 +76,11 @@ export const HeaderMobileWorkspace = ({ onToggle }) => {
                 <img src={bellNotification} alt="" className="w-5" />
               </div>
             </Link>
-            {/* <img
-              src={avatar}
+            <img
+              src={usuario.image}
               alt=""
               className="w-12 h-12 rounded-xl object-cover"
-            /> */}
+            />
           </div>
         </div>
       </div>

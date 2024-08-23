@@ -34,7 +34,7 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
         }`}
       >
         <div className="flex justify-between">
-          <div className="flex gap-2">
+          <div translate="no" className="flex gap-2">
             {data.tags.map((tag, index) => {
               return (
                 <p
@@ -48,7 +48,7 @@ export const TaskCardProject = ({ taskData, mobile, index, onClick }) => {
           </div>
           <img src={threeDots} alt="" />
         </div>
-        <p className="text-[1.3rem]">{data.title}</p>
+        <p translate="no" className="text-[1.3rem]">{data.title}</p>
         <div className="flex justify-between text-[#959595]">
           <div className="flex items-center gap-3">
             <img src={flagTaskIcon} alt="Icon" className="w-7" />

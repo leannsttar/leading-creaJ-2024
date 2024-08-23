@@ -6,3 +6,36 @@
     color: #c0c0c0;
     font-weight: 200; /* o cualquier otro color que desees */
   }
+
+  .task-count {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .ant-picker-cell-inner {
+    height: 100%;
+  }
+  
+  .ant-badge-count {
+    z-index: 2;
+  }
+  
+  @media (max-width: 768px) {
+    .ant-picker-cell-inner {
+      height: 24px;
+      width: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .task-count {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+  }

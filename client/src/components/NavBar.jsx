@@ -13,7 +13,7 @@ const navLinks = [
 export const NavBar = () => {
   return (
     <header className="flex gap-6 p-5 items-center font-prompt z-20">
-      <img src="../../public/logoTerminado.png" alt="" className="w-14"/>
+      <img src="/logoTerminado.png" alt="" className="w-14"/>
       <nav className="flex justify-between w-full">
         <div className="flex gap-5 items-center">
           {navLinks.map((link, index) => {

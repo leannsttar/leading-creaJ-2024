@@ -280,7 +280,7 @@ export const OverviewTab = () => {
         reload={fetchProjectData2}
         overview
       />
-      {console.log(selectedTask)}
+   
       <div className="m-5 lg:m-12 lg:flex lg:gap-8">
         <div className="space-y-5 lg:w-[65%] 2xl:w-[70%]">
           <div className="bg-[#f7f7f7] px-4 py-3 rounded-xl flex items-start lg:items-center">

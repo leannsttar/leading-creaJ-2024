@@ -381,7 +381,7 @@ export const SideBar = () => {
                 alt="Logo"
                 className="w-[2rem]"
               />
-              <p className="font-[600] text-[1.3rem]">Leading</p>
+              <p translate="no" className="font-[600] text-[1.3rem]">Leading</p>
             </div>
             <img
               src={threeLinesMenu}
@@ -433,7 +433,7 @@ export const SideBar = () => {
                     className={`cursor-pointer ${isShrinked && "h-[18px]"}`}
                   />
                 </div>
-                <div className="mt-3 flex flex-col gap-1 lg:h-[10rem] ">
+                <div translate="no" className="mt-3 flex flex-col gap-1 lg:h-[10rem] ">
                   {proyectos &&
                     proyectos.map((proyecto) => {
                       return (
@@ -531,8 +531,8 @@ export const SideBar = () => {
                 className={`${isShrinked ? "opacity-0" : ""}`}
                 style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
               >
-                <p className="font-semibold">{usuario.name}</p>
-                <p className="text-[.7rem] text-[#667085] overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[8rem]">
+                <p translate="no" className="font-semibold">{usuario.name}</p>
+                <p translate="no" className="text-[.7rem] text-[#667085] overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[8rem]">
                   {usuario.email}
                 </p>
               </div>
@@ -993,7 +993,7 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
                 alt="Logo"
                 className="w-[2rem]"
               />
-              <p className="font-[600] text-[1.3rem]">Leading</p>
+              <p translate="no" className="font-[600] text-[1.3rem]">Leading</p>
             </div>
             <div className="bg-[#ebebeb] p-2 rounded-full">
               <MdKeyboardArrowLeft
@@ -1045,7 +1045,7 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
                     className={`cursor-pointer ${isShrinked && "h-[18px]"}`}
                   />
                 </div>
-                <div className="mt-3 space-y-1" onClick={onClose}>
+                <div translate="no" className="mt-3 space-y-1" onClick={onClose}>
                   {proyectos &&
                     proyectos.map((proyecto) => {
                       return (
@@ -1077,8 +1077,10 @@ export const MobileSideBar = ({ isOpen, onClose }) => {
                 className={`${isShrinked ? "opacity-0" : ""}`}
                 style={{ whiteSpace: "nowrap", transition: "all 250ms ease" }}
               >
-                <p className="font-semibold">{usuario.name}</p>
-                <p className="text-[.8rem] text-[#667085]">{usuario.email}</p>
+                <p translate="no" className="font-semibold">{usuario.name}</p>
+                <p translate="no" className="text-[.7rem] text-[#667085] overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[10rem]">
+                  {usuario.email}
+                </p>
               </div>
             </div>
             <Dropdown

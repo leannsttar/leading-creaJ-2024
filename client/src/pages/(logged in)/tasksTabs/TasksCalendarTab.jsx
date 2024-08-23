@@ -32,6 +32,21 @@ export const TasksCalendarTab = () => {
     getUserTasks();
   }, [usuario.id]);
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "proximo":
+        return "bg-[#FECF63]"; // Slightly Brighter Pastel Yellow
+      case "en progreso":
+        return "bg-[#7FB8FF]"; // Slightly Brighter Pastel Blue
+      case "terminado":
+        return "bg-[#5EE0A0]"; // Slightly Brighter Pastel Green
+      default:
+        return "bg-[#C4C7D1]"; // Slightly Darker Neutral Gray
+    }
+  };
+  
+  
+
   const getListData = (value) => {
     const formattedDate = value.format("YYYY-MM-DD");
     return tasks.filter(
@@ -124,8 +139,7 @@ export const TasksCalendarTab = () => {
   const cellRender = (value, info) => {
     const listData =
       info?.type === "month" ? getMonthData(value) : getListData(value);
-
-    const cellClass = listData.length > 0 ? "bg-[#2f2f2f] text-white bg-opacity-0 md:bg-opacity-100" : "";
+  
     if (info?.type === "month") {
       return (
         <div
@@ -140,16 +154,16 @@ export const TasksCalendarTab = () => {
                 {listData.map((item) => (
                   <p
                     key={item.id}
-                    className={`font-semibold p-1 rounded-lg ${cellClass}`}
+                    className={`font-semibold p-1 rounded-lg ${getStatusColor(item.status)} text-white`}
                   >
                     • {item.name}
                   </p>
                 ))}
               </div>
             )}
-            <div className={`md:hidden flex items-center justify-center h-full w-full ${cellClass}`}>
+            <div className={`md:hidden flex items-center justify-center h-full w-full`}>
               {listData.length > 0 && (
-                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
+                <div className={`w-8 h-8 flex items-center justify-center rounded-full ${getStatusColor(listData[0].status)} text-white font-semibold`}>
                   {listData.length}
                 </div>
               )}
@@ -158,7 +172,7 @@ export const TasksCalendarTab = () => {
         </div>
       );
     }
-
+  
     return (
       <Popover
         content={
@@ -167,10 +181,9 @@ export const TasksCalendarTab = () => {
               listData.map((item) => {
                 const projectImage = getProjectImage(item.projectId);
                 return (
-                  <Link to={`/dashboard/project/${item.projectId}/board`}>
+                  <Link to={`/dashboard/project/${item.projectId}/board`} key={item.id}>
                     <div
-                      key={item.id}
-                      className="flex cursor-pointer items-start mb-2 border rounded-lg shadow-sm p-2"
+                      className={`flex cursor-pointer items-start mb-2 border rounded-lg shadow-sm p-2 ${getStatusColor(item.status)}`}
                     >
                       {projectImage && (
                         <img
@@ -179,11 +192,11 @@ export const TasksCalendarTab = () => {
                           className="w-12 h-12 object-cover rounded-full ml-1 my-auto mr-3"
                         />
                       )}
-                      <div className="flex flex-col mr-2 space-y-0.5">
+                      <div className="flex flex-col mr-2 space-y-0.5 text-white">
                         <p className="font-semibold overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[12rem] md:max-w-[20rem]">
                           • {item.name}
                         </p>
-                        <p className="text-xs text-gray-500 overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[12rem] md:max-w-[20rem]">
+                        <p className="text-xs overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[12rem] md:max-w-[20rem]">
                           {item.description}
                         </p>
                         <p className="text-xs">
@@ -192,11 +205,11 @@ export const TasksCalendarTab = () => {
                         </p>
                         <p className="text-xs">
                           <span className="font-semibold">Estado:</span>{" "}
-                          {item.status === "completed"
+                          {item.status === "terminado"
                             ? "Completada"
-                            : item.status === "in-progress"
+                            : item.status === "en progreso"
                             ? "En Progreso"
-                            : "Pendiente"}
+                            : "Próxima"}
                         </p>
                       </div>
                     </div>
@@ -212,26 +225,26 @@ export const TasksCalendarTab = () => {
         trigger="click"
         overlayClassName="popover-task"
       >
-        <div className={`h-full w-full p-2 rounded-lg `}>
+        <div className={`h-full w-full p-2 rounded-lg`}>
           {listData.length > 0 && (
-            <div className={` rounded-sm space-y-1 hidden lg:block`}>
+            <div className={`rounded-sm space-y-1 hidden lg:block`}>
               {listData.map((item) => (
                 <p
                   key={item.id}
-                  className={`font-semibold p-1 rounded-lg ${cellClass}`}
+                  className={`font-semibold p-1 rounded-lg ${getStatusColor(item.status)} text-white`}
                 >
                   • {item.name}
                 </p>
               ))}
             </div>
           )}
-          <div className={`lg:hidden flex items-center justify-center h-full w-full bg-[#FEE4CB] bg-opacity-0 lg:bg-opacity-100`}>
-              {listData.length > 0 && (
-                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                  {listData.length}
-                </div>
-              )}
-            </div>
+          <div className={`lg:hidden flex items-center justify-center h-full w-full`}>
+            {listData.length > 0 && (
+              <div className={`w-8 h-8 flex items-center justify-center rounded-full ${getStatusColor(listData[0].status)} text-white font-semibold`}>
+                {listData.length}
+              </div>
+            )}
+          </div>
         </div>
       </Popover>
     );
@@ -252,7 +265,7 @@ export const TasksCalendarTab = () => {
         onCancel={handleModalClose}
         footer={null}
         width={800}
-        bodyStyle={{ padding: 0 }}
+        
       >
         {modalContent}
       </Modal>

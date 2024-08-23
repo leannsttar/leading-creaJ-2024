@@ -56,7 +56,7 @@ export const FilesTab = () => {
   const { userToken } = useSession();
   const [files, setFiles] = useState([]);
   const { id } = useParams();
-  console.log(files, "waza");
+  // console.log(files, "waza");
   useEffect(() => {
     const fetchFiles = async () => {
       try {

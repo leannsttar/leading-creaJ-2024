@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 import { Link } from "react-router-dom";
 
 import { format } from "date-fns";
+
+import MiniCalendar from "@/components/(logged in)/tasks/MiniCalendar";
 
 import mailIcon from "../../assets/mailIcon.svg";
 import threeDotsIcon from "../../assets/threeDotsSmaller.svg";
@@ -66,7 +68,7 @@ const ProjectCard = ({
   title,
   image,
   date,
-  members,
+  members, 
   category,
   progress,
 }) => {
@@ -90,7 +92,7 @@ const ProjectCard = ({
           <img src={threeDotsIcon} alt="" className="rotate-90" />
         </div>
         <div className="flex flex-col justify-center items-center w-full text-center pt-1 lg:gap-4">
-          <div>
+          <div translate="no">
             <p className="text-2xl font-bold">{title}</p>
             <p className="text-lg text-gray-500">{category}</p>
           </div>
@@ -126,6 +128,22 @@ export const DashboardScreen = () => {
   const { usuario } = useSession(); //datos del usuario y función para el login y cerrar sesión
 
   const { proyectos } = useProject();
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const getUserTasks = async () => {
+      try {
+        const response = await clienteAxios.get(
+          `/api/tasks/getUserTasksCalendar/${usuario.id}`
+        );
+        setTasks(response.data);
+      } catch (error) {
+        console.log("Error al obtener las tareas:", error);
+      }
+    };
+
+    getUserTasks();
+  }, [usuario.id]);
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -143,7 +161,7 @@ export const DashboardScreen = () => {
         <CreateProjectModal openModal={openModal} onClose={onClose}/>
         <div className="flex flex-col w-[90%] lg:w-full lg:flex-row-reverse">
           <div className="flex flex-col items-center w-full lg:w-[30rem] lg:bg-[#F7F7F7] lg:h-screen lg:overflow-auto">
-            <h1 className="text-[1.8rem] font-semibold text-center font-prompt lg:hidden">
+            <h1 translate="no" className="text-[1.8rem] font-semibold text-center font-prompt lg:hidden">
               Bienvenido {usuario.name}
             </h1>
             <div className="flex w-full justify-between px-5 pt-3">
@@ -165,18 +183,18 @@ export const DashboardScreen = () => {
               />
             </div>
             <div className="mt-4 text-center text-[1.2rem]">
-              <p className="font-inter font-semibold ">{usuario.name}</p>
+              <p translate="no" className="font-inter font-semibold ">{usuario.name}</p>
             </div>
             <div className="bg-[#F7F7F7] rounded-xl w-full py-3 px-4 font-inter mt-4 lg:px-6">
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <p className="font-semibold">Mensajes</p>
                 <div className="flex items-center gap-1">
                   <p>Ver más </p>
                   <MdKeyboardArrowDown />
                 </div>
-              </div>
+              </div> */}
               <div className="mt-3 space-y-3">
-                <MessageComponent
+                {/* <MessageComponent
                   name={"Florencio Dorrance"}
                   message={"How is the project going?"}
                   img={
@@ -196,10 +214,12 @@ export const DashboardScreen = () => {
                   img={
                     "https://i.pinimg.com/564x/fd/90/23/fd902362a39ef9b403f6f766f50ef5c5.jpg"
                   }
-                />
+                /> */}
+                {/**Acá el calendario en pequeño */}
+                <MiniCalendar tasks={tasks} />
               </div>
             </div>
-            <div className="bg-[#F7F7F7] rounded-xl w-full px-3 pt-3 pb-4 font-inter mt-4 lg:px-6">
+            {/* <div className="bg-[#F7F7F7] rounded-xl w-full px-3 pt-3 pb-4 font-inter mt-4 lg:px-6">
               <div className="flex justify-between">
                 <p className="font-semibold">Invitaciones</p>
                 <div className="flex items-center gap-1">
@@ -225,7 +245,7 @@ export const DashboardScreen = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
           <div
             className="mt-[4rem] lg:mt-[2.2rem] lg:w-[90%] lg:ml-12 lg:mr-12 xl:ml-14 xl:mr-0 lg:overflow-auto lg:h-screen lg:pb-[15rem] "
@@ -236,7 +256,7 @@ export const DashboardScreen = () => {
 
               <div className="flex flex-col gap-3 mt-7 md:mt-0 lg:gap-5 lg:w-full lg:flex-row lg:flex-wrap ">
                 {proyectos.slice(0, 4).map((proyecto, index) => {
-                  console.log(proyecto)
+                
                   return (
                     <ProjectCard
                       key={proyecto.id}

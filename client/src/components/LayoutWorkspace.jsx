@@ -140,7 +140,7 @@ const LayoutTasks = () => {
               />
             </div>
           </div>
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             <div className="hidden border-[1px] rounded-md h-[2.7rem] w-[2.7rem] lg:grid place-items-center cursor-pointer">
               <img src={configIcon} alt="" />
             </div>
@@ -151,7 +151,7 @@ const LayoutTasks = () => {
               <img src={plusIcon} alt="" className="w-4" />
               <p>Nueva tarea</p>
             </div>
-          </div>
+          </div> */}
         </div>
         <hr />
         <div
@@ -337,7 +337,7 @@ const LayoutProject = () => {
                   src={project.imagen}
                   className="rounded-md object-cover"
                 />
-                <p className="text-[1.8rem] font-semibold">{project.name}</p>
+                <p translate="no" className="text-[1.8rem] font-semibold">{project.name}</p>
                 <img src={editIcon} alt="" className="w-6 h-6 ml-3" />
               </div>
               <div className="hidden lg:flex items-center gap-3 mt-1">

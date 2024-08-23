@@ -62,7 +62,6 @@ export const TasksBoardTab = () => {
       const response = await clienteAxios.get(
         `/api/tasks/getUserTasks/${usuario.id}`
       );
-      console.log(response.data);
 
       const allTasks = response.data.map((task) => {
         // Obtener el equipo del proyecto asociado a la tarea
@@ -143,7 +142,6 @@ export const TasksBoardTab = () => {
       const response = await clienteAxios.get(
         `/api/tasks/getUserTasks/${usuario.id}`
       );
-      console.log(response.data);
 
       const allTasks = response.data.map((task) => {
         // Obtener el equipo del proyecto asociado a la tarea

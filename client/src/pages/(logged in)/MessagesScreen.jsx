@@ -153,6 +153,7 @@ export const MessagesScreen = () => {
             />
           </div>
           <div
+          translate="no"
             className="overflow-auto"
             style={{ height: isMobile ? "h-full" : "calc(100vh - 10rem)" }}
           >

@@ -355,7 +355,7 @@ const HeaderTaskCards = memo(({ title, numCards, hidden, project, reload }) => {
       reload()
       onClose()
 
-      console.log("Respuesta del backend:", response.data);
+      // console.log("Respuesta del backend:", response.data);
     } catch (error) {
       messageApi.open({
         type: "error",
@@ -610,7 +610,7 @@ export const BoardTab = () => {
         `/api/projects/getProjectBoard/${params.id}`
       );
       setProject(response.data);
-      console.log(response.data.tasks)
+      // console.log(response.data.tasks)
       setUpcomingTasks(
         response.data.tasks.map((task) => {
           let progressList = 0;

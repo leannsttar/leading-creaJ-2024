@@ -113,7 +113,7 @@ const MeetingCard = ({
           userId: usuario.id,
         }
       );
-      console.log("Asistencia confirmada:", response.data);
+      // console.log("Asistencia confirmada:", response.data);
       setConfirmationMessage("Asistencia confirmada");
       setAttendanceConfirmed(true);
       fetchMeetings();
@@ -220,7 +220,7 @@ export const MeetingsTab = () => {
           },
         }
       );
-      console.log(response)
+      // console.log(response)
       setMeetings(response.data.meetings);
       setNumeroReuniones(response.data.totalMeetings)
       setReunionesProximas(response.data.upcomingMeetings)
@@ -280,7 +280,7 @@ export const MeetingsTab = () => {
       );
       setModal1Open(false);
       fetchMeetings();
-      console.log("Respuesta del backend:", response.data);
+      // console.log("Respuesta del backend:", response.data);
       // setModal2Open(false);
     } catch (error) {
       console.error("Error al enviar los datos", error);
