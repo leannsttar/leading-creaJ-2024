@@ -522,3 +522,43 @@ export const changeTaskStatus = async (req, res) => {
     res.status(500).json({ error: "Error al cambiar el estado de la tarea" });
   }
 };
+
+
+
+export const getFilesByProject = async (req, res) => {
+  const { projectId } = req.params;
+
+  try {
+    const projectIdInt = +projectId;
+
+    const files = await prisma.files.findMany({
+      where: {
+        task: {
+          projectId: +projectId,
+        },
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        task: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({
+      message: 'Archivos obtenidos correctamente',
+      data: files,
+    });
+  } catch (error) {
+    console.error("Error al obtener los archivos", error);
+    res.status(500).json({ message: 'Error al obtener los archivos', error });
+  }
+};

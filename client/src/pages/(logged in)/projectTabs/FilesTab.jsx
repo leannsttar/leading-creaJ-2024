@@ -1,5 +1,9 @@
+import { clienteAxios } from "@/config/clienteAxios";
 import filePurpleIcon from "../../../assets/filePurpleIcon.svg";
 import { TfiDownload } from "react-icons/tfi";
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useSession } from "../../../config/useSession.jsx";
 
 const TableFileRecord = ({ fileName, task, fileSize, dateUpload }) => {
   return (
@@ -31,6 +35,30 @@ const TableFileRecord = ({ fileName, task, fileSize, dateUpload }) => {
 };
 
 export const FilesTab = () => {
+  const { userToken } = useSession();
+  const [files, setFiles] = useState([]);
+  const { id } = useParams();
+  console.log(files, "waza");
+  useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        const response = await clienteAxios.get(
+          `api/tasks/files/project/${id}`,
+          {
+            headers: {
+              Authorization: "Bearer " + userToken,
+            },
+          }
+        );
+        setFiles(response.data.data);
+      } catch (error) {
+        console.error("Error al obtener los archivos", error);
+      }
+    };
+
+    fetchFiles();
+  }, []);
+
   return (
     <div className="m-5 lg:m-10 xl:m-20">
       <div className="bg-[#f8f8f8] rounded-2xl">
@@ -42,17 +70,21 @@ export const FilesTab = () => {
                 <th>Archivo</th>
                 <th>Tarea</th>
                 <th>Tamaño del archivo</th>
-                <th>Fecha de subida</th>
+                <th>Remitente del archivo</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              <TableFileRecord
-                fileName={"Website Desing.png"}
-                task={"Create userflow website"}
-                fileSize={"2.8 MB"}
-                dateUpload={"Dec 13, 2022"}
-              />
+              {files.map((file, index) => {
+                return (
+                  <TableFileRecord
+                    fileName={file.fileName}
+                    task={file.task.name}
+                    fileSize={file.fileSize}
+                    dateUpload={file.author.name}
+                  />
+                );
+              })}
             </tbody>
           </table>
         </div>
