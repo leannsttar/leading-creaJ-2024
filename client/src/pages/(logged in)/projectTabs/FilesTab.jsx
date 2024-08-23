@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { useSession } from "../../../config/useSession.jsx";
 
 const TableFileRecord = ({ fileName, task, fileSize, dateUpload }) => {
+  const { userToken } = useSession();
+
   return (
     <>
       <tr className="border-t-[1px] border-b-[1px] border-[#dfdfdf]">
@@ -22,10 +24,26 @@ const TableFileRecord = ({ fileName, task, fileSize, dateUpload }) => {
           </div>
         </td>
         <td className="underline font-semibold">{task}</td>
-        <td className="font-semibold">{fileSize}</td>
+        <td className="font-semibold">{fileSize} MB</td>
         <td className="font-semibold">{dateUpload}</td>
         <th>
-          <button className="btn btn-ghost btn-xs">
+          <button
+            className="btn btn-ghost btn-xs"
+            onClick={async () => {
+              const getToDownload = await clienteAxios.post(
+                "/api/files/uploadfiles",
+                {
+                  fileName,
+                },
+                {
+                  headers: {
+                    Authorization: "Bearer " + userToken,
+                  },
+                }
+              );
+              window.open(getToDownload.data.downloadLink, "_blank");
+            }}
+          >
             <TfiDownload size={18} />
           </button>
         </th>

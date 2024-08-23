@@ -55,7 +55,7 @@ export const MobileNavBar = () => {
   return (
     <header>
       <nav className="flex justify-between items-center py-4 px-4 h-[10vh] font-prompt">
-        <img src="/logoTemporalBlack.svg" alt="" />
+        <img src="../../public/logoTerminado.png" alt="" className="w-14"/>
         <img
           onClick={toggleMenu}
           className="mr-1"
