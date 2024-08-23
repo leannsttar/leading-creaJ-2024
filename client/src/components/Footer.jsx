@@ -21,7 +21,7 @@ export const Footer = () => {
   return (
     <div className="w-full bg-[#151515] px-[1.25rem] py-[2rem] text-white font-anonymous space-y-[3rem] md:px-[5rem]">
       <div className="flex justify-between items-start">
-        <img src="./logoTemporalWhite.svg" alt="" />
+        <img src="../../public/logoInvertido.png" alt="" className="w-14"/>
         <div className="md:flex md:gap-[10rem]">
           <div className="space-y-[1rem] text-right md:text-left">
             <p className="font-semibold font-prompt">Email</p>
