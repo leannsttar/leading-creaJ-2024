@@ -294,10 +294,26 @@ const LayoutProject = () => {
           },
         }
       );
+      messageApi.open({
+        type: "success",
+        content: "Se ha enviado un correo a la persona invitada",
+      });
       projectChange();
       setModal1Open(false);
+      
       console.log("Respuesta del backend:", response.data);
     } catch (error) {
+      if (error.response.data.error == "Usuario no encontrado") {
+        messageApi.open({
+          type: "error",
+          content: "Este correo no esta asociado a ninguna cuenta de Leading",
+        });
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Ocurrió un error al enviar la invitación",
+        });
+      }
       console.error("Error al enviar los datos", error);
     }
   };

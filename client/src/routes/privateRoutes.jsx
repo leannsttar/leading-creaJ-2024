@@ -1,4 +1,5 @@
 import React from "react";
+import ProtectedRoute from "./ProtectedRoute.jsx";
 import { DashboardScreen } from "../pages/(logged in)/DashboardScreen.jsx";
 import { LayoutWorkspace } from "../components/LayoutWorkspace.jsx";
 import { TasksScreen } from "../pages/(logged in)/TasksScreen.jsx";
@@ -15,71 +16,75 @@ import { TasksBoardTab } from "../pages/(logged in)/tasksTabs/TasksBoardTab.jsx"
 import { TasksListTab } from "../pages/(logged in)/tasksTabs/TasksListTab.jsx";
 import { TasksCalendarTab } from "../pages/(logged in)/tasksTabs/TasksCalendarTab.jsx";
 
-
 const privateRoutes = [
   {
     path: "/dashboard",
-    element: <LayoutWorkspace />,
+    element: <ProtectedRoute />,
     children: [
       {
-        path: "",
-        element: <DashboardScreen />,
-      },
-      {
-        path: "tasks",
-        element: <TasksScreen />,
+        element: <LayoutWorkspace />,
         children: [
           {
             path: "",
-            element: <TasksBoardTab />
+            element: <DashboardScreen />,
           },
           {
-            path: "list",
-            element: <TasksListTab />
+            path: "tasks",
+            element: <TasksScreen />,
+            children: [
+              {
+                path: "",
+                element: <TasksBoardTab />
+              },
+              {
+                path: "list",
+                element: <TasksListTab />
+              },
+              {
+                path: "calendar",
+                element: <TasksCalendarTab />
+              },
+            ]
           },
           {
-            path: "calendar",
-            element: <TasksCalendarTab />
-          },
-        ]
-      },
-      {
-        path: "messages",
-        element: <MessagesScreen />,
-      },
-      {
-        path: "notifications",
-        element: <NotificationsScreen />,
-      },
-      {
-        path: "project/:id",
-        element: <ProjectScreen />,
-        children: [
-          {
-            path: "",
-            element: <OverviewTab />
+            path: "messages",
+            element: <MessagesScreen />,
           },
           {
-            path: "board",
-            element: <BoardTab />
+            path: "notifications",
+            element: <NotificationsScreen />,
           },
           {
-            path: "timeline",
-            element: <TimelineTab />
+            path: "project/:id",
+            element: <ProjectScreen />,
+            children: [
+              {
+                path: "",
+                element: <OverviewTab />
+              },
+              {
+                path: "board",
+                element: <BoardTab />
+              },
+              {
+                path: "timeline",
+                element: <TimelineTab />
+              },
+              {
+                path: "meetings",
+                element: <MeetingsTab />
+              },
+              {
+                path: "files",
+                element: <FilesTab />
+              },
+              {
+                path: "config",
+                element: <ConfigTab />
+              }
+            ]
           },
-          {
-            path: "meetings",
-            element: <MeetingsTab />
-          },
-          {
-            path: "files",
-            element: <FilesTab />
-          },
-          {
-            path: "config",
-            element: <ConfigTab />
-          }
-        ]
+        ],
       },
     ],
   },

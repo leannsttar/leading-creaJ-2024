@@ -54,6 +54,10 @@ export const SignUpPage = () => {
 
     const data = await response.json();
     console.log(data);
+    messageApi.open({
+      type: "success",
+      content: data,
+    });
 
     if (response.ok) {
       //comprobar la respuesta y según eso lo manda
@@ -71,7 +75,7 @@ export const SignUpPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, name }),
       }
     );
     console.log(response);

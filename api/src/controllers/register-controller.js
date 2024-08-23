@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import nodemailer from "nodemailer";
-import { v4 as uuidv4 } from "uuid"; 
+import { v4 as uuidv4 } from "uuid";
 
 const prisma = new PrismaClient();
 
@@ -22,7 +22,7 @@ export const signup = async (req, res) => {
   console.log(name, email, password);
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const confirmationToken = uuidv4(); 
+  const confirmationToken = uuidv4();
 
   try {
     const user = await prisma.users.create({
@@ -103,7 +103,7 @@ export const signup = async (req, res) => {
 <body>
   <div class="container">
     <div class="header">
-      <img src="https://example.com/logo.png" alt="Logo">
+      <img src="https://res.cloudinary.com/dv79d6y4e/image/upload/v1724385713/ir0dprqg5sbztbzqdjdb.png" alt="Logo">
       <h1>Confirmación de Registro</h1>
     </div>
     <div class="content">
@@ -143,7 +143,7 @@ export const signup = async (req, res) => {
 };
 
 export const resendEmail = async (req, res) => {
-  const { email } = req.body;
+  const { email, name } = req.body;
 
   try {
     const user = await prisma.users.findUnique({
@@ -166,7 +166,7 @@ export const resendEmail = async (req, res) => {
       to: email,
       subject: "Confirmación de Registro",
       html: `
-        !DOCTYPE html>
+      <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -225,7 +225,7 @@ export const resendEmail = async (req, res) => {
 <body>
   <div class="container">
     <div class="header">
-      <img src="https://example.com/logo.png" alt="Logo">
+      <img src="https://res.cloudinary.com/dv79d6y4e/image/upload/v1724385713/ir0dprqg5sbztbzqdjdb.png  " alt="Logo">
       <h1>Confirmación de Registro</h1>
     </div>
     <div class="content">
