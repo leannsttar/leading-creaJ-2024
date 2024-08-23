@@ -322,7 +322,7 @@ const LayoutProject = () => {
                   className="rounded-md object-cover"
                 />
                 <p className="text-[1.8rem] font-semibold">{project.name}</p>
-                <img src={editIcon} alt="" className="w-6 h-6 ml-3" />
+                {/* <img src={editIcon} alt="" className="w-6 h-6 ml-3" /> */}
               </div>
               <div className="hidden lg:flex items-center gap-3 mt-1">
                 <img src={usersProjectIcon} alt="" />
