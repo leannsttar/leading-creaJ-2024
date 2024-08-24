@@ -22,6 +22,6 @@ router.post("/signup", signup);
 router.post("/resendConfirmation", resendEmail)
 router.get("/confirm", confirmEmail); 
 router.get("/", auth, perfil);
-router.post("/editUser", upload.single("imagen"), editUser);
+router.post("/editUser", editUser);
 
 export default router;

@@ -23,10 +23,10 @@ router.get('/meetings/:id', getMeetings);
 router.post('/meetings/attendance', confirmAttendance);
 router.get('/:usuarioId', getAllProjects);
 
-router.post("/addMember", upload.single(), addTeamMember);
+router.post("/addMember", addTeamMember);
 router.get('/acceptInvitation/:id', acceptInvitation)
 
-router.post("/createMeeting", upload.none(), createMeeting);
+router.post("/createMeeting", createMeeting);
 
 router.get('/getProjectInvitations/:projectId', getProjectInvitations);
 router.get("/getProject/:id", getProject);
@@ -34,10 +34,10 @@ router.get("/getProjectOverview/:id", getProjectOverview);
 router.get("/getProjectConfig/:id", getProjectConfig);
 router.get("/getProjectBoard/:id", getProjectBoard);
 
-router.post("/updateProject/", upload.single("imagen"), updateProject);
+router.post("/updateProject/", updateProject);
 
-router.post("/createTag", upload.single(), createTag);
+router.post("/createTag", createTag);
 
-router.post("/createTask", upload.single(), createTask);
+router.post("/createTask", createTask);
 
 export default router;
