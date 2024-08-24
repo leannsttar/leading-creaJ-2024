@@ -13,9 +13,7 @@ const createSocketServer = (server) => {
         'https://leading-crea-j-2024-client-k7s18hl7d-leannsttars-projects.vercel.app',
         'https://leading-crea-j-2024-client-jkgossca5-leannsttars-projects.vercel.app',
         process.env.FRONTEND_URL
-      ].filter(Boolean),
-      methods: ["GET", "POST"],
-      credentials: true
+      ]
     },
   });
 
