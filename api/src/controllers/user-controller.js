@@ -7,6 +7,7 @@ export const editUser = async (req, res) => {
   const { nombre, usuarioId } = req.body;
   const imagePath = req.file?.path;
 
+  console.log(usuarioId)
   try {
     let imageUrl;
     let oldImagePublicId;
