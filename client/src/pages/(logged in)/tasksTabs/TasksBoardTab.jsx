@@ -125,7 +125,7 @@ export const TasksBoardTab = () => {
             };
           }),
           status: task.status,
-          project: task.project
+          project: task.project,
         };
       });
       setTasks(allTasks);
@@ -205,7 +205,7 @@ export const TasksBoardTab = () => {
             };
           }),
           status: task.status,
-          project: task.project
+          project: task.project,
         };
       });
       setTasks(allTasks);
@@ -216,7 +216,6 @@ export const TasksBoardTab = () => {
     }
   };
 
-
   const showDrawer = (task) => {
     setSelectedTask(task);
     setOpen(true);
@@ -226,7 +225,8 @@ export const TasksBoardTab = () => {
     setOpen(false);
   };
 
-  if (tasks.length < 1) return <Loader />;
+  if (tasks.length == 0)
+    return <p className="text-gray-500">No hay tareas por ahora</p>;
 
   return (
     <>

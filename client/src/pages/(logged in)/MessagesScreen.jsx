@@ -142,7 +142,7 @@ export const MessagesScreen = () => {
         <div className="px-6 border-b-[1px]">
           <div className="flex justify-between py-4 lg:py-6">
             <p className="font-semibold text-xl">Messages</p>
-            <img src={plusTasksIcon} alt="" className="w-8 cursor-pointer" />
+            {/* <img src={plusTasksIcon} alt="" className="w-8 cursor-pointer" /> */}
           </div>
         </div>
         <div className="pt-5 space-y-3">

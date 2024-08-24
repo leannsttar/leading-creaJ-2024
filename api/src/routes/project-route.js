@@ -7,18 +7,18 @@ import multer from 'multer';
 import { createTask, createTag } from '../controllers/tasks-controller.js';
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.originalname);
+//   },
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
-router.post('/', auth, upload.single('imagen'), createProject);
+router.post('/', auth, createProject);
 router.get('/meetings/:id', getMeetings); 
 router.post('/meetings/attendance', confirmAttendance);
 router.get('/:usuarioId', getAllProjects);
