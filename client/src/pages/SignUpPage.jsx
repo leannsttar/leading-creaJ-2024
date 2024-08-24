@@ -130,7 +130,7 @@ export const SignUpPage = () => {
   
   return (
     <>
-      {contextHolder}
+      {/* {contextHolder} */}
       <Modal
         title=""
         footer={null}
