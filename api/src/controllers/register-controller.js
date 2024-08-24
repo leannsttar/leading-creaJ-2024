@@ -37,7 +37,7 @@ export const signup = async (req, res) => {
       },
     });
 
-    const confirmationUrl = `http://localhost:5000/api/users/confirm?token=${confirmationToken}`;
+    const confirmationUrl = `https://leading-crea-j-2024-server.vercel.app/users/confirm?token=${confirmationToken}`;
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -159,7 +159,7 @@ export const resendEmail = async (req, res) => {
     }
 
     const confirmationToken = user.confirmationToken;
-    const confirmationUrl = `http://localhost:5000/api/users/confirm?token=${confirmationToken}`;
+    const confirmationUrl = `https://leading-crea-j-2024-server.vercel.app/api/users/confirm?token=${confirmationToken}`;
 
     const mailOptions = {
       from: process.env.EMAIL_USER,

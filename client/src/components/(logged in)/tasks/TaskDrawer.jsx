@@ -1092,7 +1092,7 @@ export const TaskDrawer = ({
                       </p>
                     </Dragger> */}
                     <Upload
-                      action={"http://localhost:5000/api/files/upload"}
+                      action={"https:leading-crea-j-2024-server.vercel.app/api/files/upload"}
                       customRequest={async (data) => {
                         const formData = new FormData();
                         formData.append("file", data.file);
