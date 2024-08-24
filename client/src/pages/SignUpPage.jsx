@@ -44,7 +44,7 @@ export const SignUpPage = () => {
       });
       return 
     }
-    const response = await fetch("https://leading-crea-j-2024-server.vercel.app/api/users/signup", {
+    const response = await fetch("https://leading-creaj-2024.onrender.com/api/users/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export const SignUpPage = () => {
     setLoading(true);
 
     const response = await fetch(
-      "https://leading-crea-j-2024-server.vercel.app/api/users/resendConfirmation",
+      "https://leading-creaj-2024.onrender.com/api/users/resendConfirmation",
       {
         method: "POST",
         headers: {

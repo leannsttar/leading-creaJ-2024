@@ -9,7 +9,7 @@ const obtenerPerfil = async (token) => {
         Authorization: `Bearer ${token}`,
       },
     };
-    const data = await axios.get("https://leading-crea-j-2024-server.vercel.app/api/users", configHeaders);
+    const data = await axios.get("https://leading-creaj-2024.onrender.com/api/users", configHeaders);
     return data;
   } catch (error) {
     return error;
