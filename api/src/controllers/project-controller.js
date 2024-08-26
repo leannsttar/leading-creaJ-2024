@@ -6,6 +6,7 @@ import cloudinary from "../../cloudinaryConfig.js";
 export const createProject = async (req, res) => {
   const { nombre, descripcion } = req.body;
   const usuarioId = req.usuario.id;
+  console.log(req.usuario.id)
   if (!req.file || !nombre || !descripcion) {
     return res.status(400).json({ error: "Faltan campos" });
   }
@@ -36,6 +37,7 @@ export const createProject = async (req, res) => {
 
     res.status(200).json(result);
   } catch (error) {
+
     console.error("Error al crear el proyecto:", error);
     res.status(500).json({ error: "Error al crear el proyecto" });
   }
