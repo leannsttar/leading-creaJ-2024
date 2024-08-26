@@ -60,7 +60,7 @@ export const LoginPage = () => {
         <div className="flex h-screen w-screen bg-white shadow-2xl overflow-hidden md:gap-3">
           <img
             className="h-screen hidden md:block md:w-[50%] xl:w-[60%] object-cover "
-            src="../../public/loginBg.jpg"
+            src="/loginBg.jpg"
             alt=""
           />
           <div className="w-full md:w-[50%] xl:w-[40%] px-10 md:px-6 lg:px-12 ">
