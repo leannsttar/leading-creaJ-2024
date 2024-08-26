@@ -26,6 +26,8 @@ app.use(compression());
 app.use(cors())
 app.use(express.json());
 
+app.use(express.urlencoded({ extended: true }));
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "src/uploads/projectImages");
