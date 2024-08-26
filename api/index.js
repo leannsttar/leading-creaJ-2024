@@ -4,7 +4,7 @@ import express from "express";
 import cors from "cors";
 import multer from "multer";
 import compression from "compression";
-import { PORT } from "./config.js";
+//import { PORT } from "./config.js";
 import userRoutes from "./src/routes/register-route.js";
 import loginRoutes from "./src/routes/login-route.js";
 import projectRoutes from "./src/routes/project-route.js";
@@ -50,6 +50,8 @@ app.use('/api/files', router);
 app.use("/api/notifications", notificationsRoutes)
 
 const io = createSocketServer(server);
+
+const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
   console.log(`Servidor funcionando en el puerto ${PORT}`);
