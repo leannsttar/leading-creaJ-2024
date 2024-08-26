@@ -17,16 +17,15 @@ import createSocketServer from "./socket.js";
 const app = express();
 const server = http.createServer(app);
 
+app.use(compression());
+app.use(cors())
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 const allowedOrigins = [
   'https://leading-crea-j-2024-client.vercel.app',
   'https://leading-crea-j-2024-client-k7s18hl7d-leannsttars-projects.vercel.app'
 ];
-
-app.use(compression());
-app.use(cors())
-app.use(express.json());
-
-app.use(express.urlencoded({ extended: true }));
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

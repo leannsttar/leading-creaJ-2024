@@ -252,6 +252,7 @@ export const SideBar = () => {
         {
           headers: {
             Authorization: "Bearer " + userToken,
+            'Content-Type': 'application/json'
           },
         }
       );
