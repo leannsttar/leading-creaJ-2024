@@ -21,12 +21,12 @@ router.get("/getTasks", upload.single(), getTasks)
 router.get("/getUserTasks/:userId", upload.single(), getUserTasks)
 router.get("/getUserTasksCalendar/:userId", upload.single(), getUserTasksCalendar)
 router.get('/files/project/:projectId', getFilesByProject);
-router.post("/createTag", createTag);
-router.post("/createTask", createTask);
-router.post("/updateTask", updateTask)
-router.put("/updateSubtask", updateSubtaskStatus)
-router.post("/createLink", addLinkToTask)
-router.post("/createComment", createComment)
-router.post("/changeTaskStatus", changeTaskStatus)
+router.post("/createTag", upload.single(), createTag);
+router.post("/createTask", upload.single(), createTask);
+router.post("/updateTask", upload.single(), updateTask)
+router.put("/updateSubtask", upload.single(), updateSubtaskStatus)
+router.post("/createLink", upload.single(), addLinkToTask)
+router.post("/createComment", upload.single(), createComment)
+router.post("/changeTaskStatus", upload.single(), changeTaskStatus)
 
 export default router;

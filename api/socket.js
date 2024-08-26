@@ -8,12 +8,8 @@ const prisma = new PrismaClient();
 const createSocketServer = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: [
-        'https://leading-crea-j-2024-client.vercel.app',
-        'https://leading-crea-j-2024-client-k7s18hl7d-leannsttars-projects.vercel.app',
-        'https://leading-crea-j-2024-client-jkgossca5-leannsttars-projects.vercel.app',
-        process.env.FRONTEND_URL
-      ]
+      origin: "*", // Permitir cualquier origen
+      methods: ["GET", "POST"], // Métodos permitidos
     },
   });
 
