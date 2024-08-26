@@ -16,6 +16,7 @@ import createSocketServer from "./socket.js";
 
 const app = express();
 const server = http.createServer(app);
+const io = createSocketServer(server);
 
 app.use(compression());
 app.use(cors())
@@ -49,7 +50,7 @@ app.use("/api/tasks", tasksRoutes);
 app.use('/api/files', router);
 app.use("/api/notifications", notificationsRoutes)
 
-const io = createSocketServer(server);
+
 
 const PORT = process.env.PORT || 3000;
 
