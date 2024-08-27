@@ -12,7 +12,7 @@ import paperPlane from "../../assets/paper-plane.svg";
 import { Loader } from "@/components/Loader";
 
 const socket = io('https://leading-creaj-2024.onrender.com', {
-  withCredentials: true,
+  withCredentials: false,
 });
 
 const ChatComponent = ({

@@ -175,7 +175,7 @@ export const SignUpPage = () => {
           {/* <div style={{ backgroundImage: "url(https://images.pexels.com/photos/925743/pexels-photo-925743.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)" }} className="bg-contain h-screen w-[60%]"></div> */}
           <img
             className="h-screen hidden md:block md:w-[50%] xl:w-[60%] object-cover "
-            src="../../public/signupBg.jpg"
+            src="/signupBg.jpg"
             alt=""
           />
 
