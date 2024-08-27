@@ -57,7 +57,7 @@ export const TasksBoardTab = () => {
 
   const fetchUserTasks = async () => {
     try {
-      setTasks([]);
+      
       setLoading(true);
       const response = await clienteAxios.get(
         `/api/tasks/getUserTasks/${usuario.id}`
@@ -225,9 +225,13 @@ export const TasksBoardTab = () => {
     setOpen(false);
   };
 
-  if (tasks.length == 0)
-    return <p className="text-gray-500">No hay tareas por ahora</p>;
+  if (loading) {
+    return <Loader />;
+  }
 
+  if (tasks.length === 0) {
+    return <p className="text-gray-500">No hay tareas por ahora</p>;
+  }
   return (
     <>
       <TaskDrawer
