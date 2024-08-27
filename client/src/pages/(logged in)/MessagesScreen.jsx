@@ -206,7 +206,7 @@ export const MessagesScreen = () => {
                   <Loader />
                 </div>
               ) : (
-                <div className="mt-10 space-y-4">
+                <div className="mt-10 space-y-6">
                   {messages.map((msg, index) => {
                     const showImage = msg.sender.id !== lastSenderId;
                     lastSenderId = msg.sender.id;
