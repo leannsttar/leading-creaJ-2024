@@ -8,7 +8,7 @@ import MiniCalendar from "@/components/(logged in)/tasks/MiniCalendar";
 
 import mailIcon from "../../assets/mailIcon.svg";
 import threeDotsIcon from "../../assets/threeDotsSmaller.svg";
-import threeDotsProfile from "../../assets/threeDotsProfile.svg";
+// import threeDotsProfile from "../../assets/threeDotsProfile.svg";
 import { TitleSection } from "../../components/ui/TitleSection";
 
 import useProject from "@/hooks/useProject";
@@ -89,7 +89,7 @@ const ProjectCard = ({
       <div>
         <div className="flex justify-between items-center">
           <p className="text-gray-500">{date}</p>
-          <img src={threeDotsIcon} alt="" className="rotate-90" />
+          {/* <img src={threeDotsIcon} alt="" className="rotate-90" /> */}
         </div>
         <div className="flex flex-col justify-center items-center w-full text-center pt-1 lg:gap-4">
           <div translate="no">
@@ -169,11 +169,12 @@ export const DashboardScreen = () => {
                 title={"Mi perfil"}
                 className={"hidden lg:block "}
               />
-              <img
+              ヾ(≧▽≦*)o
+              {/* <img
                 src={threeDotsProfile}
                 alt=""
                 className="hidden lg:block w-7"
-              />
+              /> */}
             </div>
             <div className="rounded-full shadow-xl w-[13rem] h-[13rem]">
               <img

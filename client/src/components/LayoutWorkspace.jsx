@@ -83,16 +83,16 @@ export const LayoutHome = () => {
               Bienvenida/o {usuario.name}
             </p>
             <p className="text-[1.1rem]">
-              Comienza a trabajar en equipo y organizar proyectos juntos!
+              ¡Comienza a trabajar en equipo y organizar proyectos juntos!
             </p>
           </div>
           <div className="flex gap-2">
-            <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
+            {/* <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
               <img src={configIcon} alt="" />
-            </div>
-            <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
+            </div> */}
+            {/* <div className="border-[1px] rounded-md h-[2.7rem] w-[2.7rem] grid place-items-center cursor-pointer">
               <img src={threeDotsSmaller} alt="" />
-            </div>
+            </div> */}
             <div
               onClick={() => setOpenModal(true)}
               className="bg-black rounded-md text-white flex gap-3 items-center py-2 px-3 cursor-pointer"

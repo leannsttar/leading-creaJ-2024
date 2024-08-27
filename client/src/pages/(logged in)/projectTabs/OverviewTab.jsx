@@ -295,9 +295,9 @@ export const OverviewTab = () => {
                   <div className="flex justify-between items-center">
                     <p className="font-semibold text-xl mb-2">
                       {project.name}{" "}
-                      <span className="text-[#A692DF] font-normal">
+                      {/* <span className="text-[#A692DF] font-normal">
                         {project.percentage}%
-                      </span>
+                      </span> */}
                     </p>
                   </div>
                   <div>

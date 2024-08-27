@@ -278,6 +278,7 @@ export const MeetingsTab = () => {
           },
         }
       );
+      console.log(response, "waza");
       setModal1Open(false);
       fetchMeetings();
       // console.log("Respuesta del backend:", response.data);

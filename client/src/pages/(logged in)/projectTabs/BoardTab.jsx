@@ -352,8 +352,8 @@ const HeaderTaskCards = memo(({ title, numCards, hidden, project, reload }) => {
         content: "Tarea creada correctamente",
       });
 
-      reload()
-      onClose()
+      reload();
+      onClose();
 
       // console.log("Respuesta del backend:", response.data);
     } catch (error) {
@@ -575,7 +575,12 @@ const ColTasks = ({ title, numCards, children, index, project, reload }) => {
   return (
     <div key={index} className="space-y-3 lg:w-[30%] lg:space-y-8">
       {title === "Próximo" ? (
-        <HeaderTaskCards title={title} numCards={numCards} project={project} reload={reload}/>
+        <HeaderTaskCards
+          title={title}
+          numCards={numCards}
+          project={project}
+          reload={reload}
+        />
       ) : (
         <HeaderTaskCards
           title={title}
@@ -630,7 +635,7 @@ export const BoardTab = () => {
             progressList: task.subTasks.filter(
               (subTask) => subTask.status == "terminado"
             ).length,
-            date: format(addDays(task.due_date, 1), 'PP', { locale: es }),
+            date: format(addDays(task.due_date, 1), "PP", { locale: es }),
             members: task.assignees.map((assignee) => {
               const member = response.data.team.find(
                 (projectMember) => projectMember.user.id === assignee.userId
@@ -698,9 +703,21 @@ export const BoardTab = () => {
   return (
     <>
       {contextHolder}
-      <TaskDrawer isOpen={open} task={selectedTask} close={onClose} reload={getProject} project={project}/>
+      <TaskDrawer
+        isOpen={open}
+        task={selectedTask}
+        close={onClose}
+        reload={getProject}
+        project={project}
+      />
       <div className="mx-5 my-9 lg:mx-11 lg:my-16 space-y-10 lg:flex lg:space-y-0 lg:justify-around">
-        <ColTasks title={"Próximo"} numCards={12} index={1} project={project} reload={getProject}>
+        <ColTasks
+          title={"Próximo"}
+          numCards={upcomingTasks.filter((task) => task.status == "proximo").length }
+          index={1}
+          project={project}
+          reload={getProject}
+        >
           {upcomingTasks
             .filter((task) => task.status === "proximo")
             .map((task) => (
@@ -716,7 +733,7 @@ export const BoardTab = () => {
 
         <ColTasks
           title={"En proceso"}
-          numCards={12}
+          numCards={upcomingTasks.filter((task) => task.status == "en progreso").length}
           index={2}
           project={project}
           reload={getProject}
@@ -736,7 +753,7 @@ export const BoardTab = () => {
 
         <ColTasks
           title={"Terminadas"}
-          numCards={12}
+          numCards={upcomingTasks.filter((task) => task.status == "terminado").length}
           index={3}
           project={project}
           reload={getProject}
