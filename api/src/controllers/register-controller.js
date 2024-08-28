@@ -11,6 +11,7 @@ const transporter = nodemailer.createTransport({
     type: "OAuth2",
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
+    logger: true,
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     refreshToken: process.env.REFRESH_TOKEN,
@@ -125,6 +126,7 @@ export const signup = async (req, res) => {
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
+      console.log(info);
       if (error) {
         console.log(error);
         return res
@@ -137,7 +139,7 @@ export const signup = async (req, res) => {
       });
     });
   } catch (error) {
-    res.status(400).json({ error: "Algo pasó" });
+    res.status(500).json({ error: "Algo pasó" });
     console.log(error);
   }
 };
