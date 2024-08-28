@@ -104,7 +104,7 @@ export const NotificationsScreen = () => {
           )
         )
       ) : (
-        <p>No tienes notificaciones</p>
+        <p className="font-bold text-lg font-Poppins">No tienes notificaciones</p>
       )}
     </div>
   );

@@ -80,7 +80,7 @@ export const LayoutHome = () => {
         <div className="flex justify-between items-center w-full">
           <div>
             <p className="text-[2rem] font-semibold">
-              Bienvenida/o {usuario.name}
+              Te damos la bienvenida {usuario.name}
             </p>
             <p className="text-[1.1rem]">
               ¡Comienza a trabajar en equipo y organizar proyectos juntos!
@@ -125,7 +125,7 @@ const LayoutTasks = () => {
           <div className="flex flex-col h-full justify-between w-full lg:w-auto">
             <div className="flex flex-col gap-1 justify-center lg:justify-normal lg:gap-0 lg:flex-row lg:items-center w-full lg:mt-[3rem]">
               <div className="flex justify-between">
-                <p className="text-[2rem] font-semibold">Mis Tareas</p>
+                <p className="text-[2rem] font-semibold">Mis tareas</p>
                 <div className="bg-black rounded-md text-white flex gap-3 items-center p-3 h-fit cursor-pointer lg:hidden">
                   <img src={plusIcon} alt="" className="w-4 h-4" />
                 </div>

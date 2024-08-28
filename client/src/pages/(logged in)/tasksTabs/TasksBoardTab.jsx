@@ -230,7 +230,7 @@ export const TasksBoardTab = () => {
   }
 
   if (tasks.length === 0) {
-    return <p className="text-gray-500">No hay tareas por ahora</p>;
+    return <p className="p-6 font-bold text-lg font-Poppins">No hay tareas por ahora</p>;
   }
   return (
     <>
