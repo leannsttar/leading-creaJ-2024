@@ -29,7 +29,6 @@ export const LoginPage = () => {
     });
 
     const data = await response.json();
-    console.log(data);
 
     if (data.token) {
       await login(data);
